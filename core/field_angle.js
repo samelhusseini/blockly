@@ -125,7 +125,10 @@ Blockly.FieldAngle.RADIUS = Blockly.FieldAngle.HALF - 1;
 Blockly.FieldAngle.prototype.initView = function() {
   Blockly.FieldAngle.superClass_.initView.call(this);
   // Add the degree symbol to the left of the number, even in RTL (issue #2380)
-  this.symbol_ = Blockly.utils.dom.createSvgElement('tspan', {}, null);
+  this.symbol_ = Blockly.utils.dom.createSvgElement('tspan',
+      {
+        'dominant-baseline': 'middle' // Safari needs a hint.
+      }, null);
   this.symbol_.appendChild(document.createTextNode('\u00B0'));
   this.textElement_.appendChild(this.symbol_);
 };

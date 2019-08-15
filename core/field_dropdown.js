@@ -153,7 +153,10 @@ Blockly.FieldDropdown.prototype.initView = function() {
         'y': Blockly.FieldDropdown.IMAGE_Y_OFFSET
       }, this.fieldGroup_);
 
-  this.arrow_ = Blockly.utils.dom.createSvgElement('tspan', {}, this.textElement_);
+  this.arrow_ = Blockly.utils.dom.createSvgElement('tspan',
+      {
+        'dominant-baseline': 'middle' // Safari needs a hint.
+      }, this.textElement_);
   this.arrow_.appendChild(document.createTextNode(
       this.sourceBlock_.RTL ?
       Blockly.FieldDropdown.ARROW_CHAR + ' ' :
@@ -522,6 +525,7 @@ Blockly.FieldDropdown.prototype.renderSelectedText_ = function() {
   this.textContent_.nodeValue = this.getDisplayText_();
   this.textElement_.setAttribute('text-anchor', 'start');
   this.textElement_.setAttribute('x', Blockly.Field.DEFAULT_TEXT_OFFSET);
+  this.textElement_.setAttribute('dominant-baseline', 'central');
   // Height and width include the border rect.
   this.size_.height = Blockly.Field.BORDER_RECT_DEFAULT_HEIGHT;
   this.size_.width =

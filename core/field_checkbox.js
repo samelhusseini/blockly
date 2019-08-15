@@ -87,13 +87,6 @@ Blockly.FieldCheckbox.CHECK_CHAR = '\u2713';
 Blockly.FieldCheckbox.CHECK_X_OFFSET = Blockly.Field.DEFAULT_TEXT_OFFSET - 3;
 
 /**
- * Used to correctly position the check mark.
- * @type {number}
- * @const
- */
-Blockly.FieldCheckbox.CHECK_Y_OFFSET = 14;
-
-/**
  * Serializable fields are saved by the XML renderer, non-serializable fields
  * are not. Editable fields should also be serializable.
  * @type {boolean}
@@ -123,7 +116,6 @@ Blockly.FieldCheckbox.prototype.initView = function() {
   Blockly.FieldCheckbox.superClass_.initView.call(this);
 
   this.textElement_.setAttribute('x', Blockly.FieldCheckbox.CHECK_X_OFFSET);
-  this.textElement_.setAttribute('y', Blockly.FieldCheckbox.CHECK_Y_OFFSET);
   Blockly.utils.dom.addClass(this.textElement_, 'blocklyCheckbox');
 
   var textNode = document.createTextNode(Blockly.FieldCheckbox.CHECK_CHAR);

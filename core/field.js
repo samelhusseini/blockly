@@ -339,9 +339,12 @@ Blockly.Field.prototype.createTextElement_ = function() {
       {
         'class': 'blocklyText',
         // The y position is the baseline of the text.
-        'y': Blockly.Field.TEXT_DEFAULT_HEIGHT,
+        'y': this.size_.height / 2,
         'x': xOffset
       }, this.fieldGroup_);
+  if (this.borderRect_) {
+    this.textElement_.setAttribute('dominant-baseline', 'central');
+  }
   this.textContent_ = document.createTextNode('');
   this.textElement_.appendChild(this.textContent_);
 };
