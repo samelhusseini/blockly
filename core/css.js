@@ -114,7 +114,7 @@ Blockly.Css.setCursor = function(cursor) {
  */
 Blockly.Css.CONTENT = [
   '.blocklySvg {',
-    'background-color: #fff;',
+    'background-color: #F9F9F9;',
     'outline: none;',
     'overflow: hidden;',  /* IE overflows by default. */
     'position: absolute;',
@@ -589,15 +589,16 @@ Blockly.Css.CONTENT = [
   '}',
 
   '.blocklyZoom>image, .blocklyZoom>svg>image {',
-    'opacity: .4;',
+    'opacity: .9;',
+    'cursor: pointer;',
   '}',
 
   '.blocklyZoom>image:hover, .blocklyZoom>svg>image:hover {',
-    'opacity: .6;',
+    'opacity: .95;',
   '}',
 
   '.blocklyZoom>image:active, .blocklyZoom>svg>image:active {',
-    'opacity: .8;',
+    'opacity: 1;',
   '}',
 
   /* Darken flyout scrollbars due to being on a grey background. */
@@ -660,7 +661,7 @@ Blockly.Css.CONTENT = [
 
   /* Category tree in Toolbox. */
   '.blocklyToolboxDiv {',
-    'background-color: #ddd;',
+    'background-color: #fff;',
     'overflow-x: visible;',
     'overflow-y: auto;',
     'position: absolute;',

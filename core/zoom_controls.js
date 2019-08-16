@@ -168,8 +168,8 @@ Blockly.ZoomControls.prototype.position = function() {
   } else {
     this.top_ = metrics.viewHeight + metrics.absoluteTop -
         this.HEIGHT_ - this.verticalSpacing_;
-    this.zoomInGroup_.setAttribute('transform', 'translate(0, 43)');
-    this.zoomOutGroup_.setAttribute('transform', 'translate(0, 77)');
+    this.zoomInGroup_.setAttribute('transform', 'translate(0, 38)');
+    this.zoomOutGroup_.setAttribute('transform', 'translate(0, 70)');
   }
 
   this.svgGroup_.setAttribute('transform',
@@ -264,8 +264,8 @@ Blockly.ZoomControls.prototype.createZoomInSvg_ = function(rnd) {
       {
         'width': Blockly.SPRITE.width,
         'height': Blockly.SPRITE.height,
-        'x': -32,
-        'y': -92,
+        'x': -64,
+        'y': -60,
         'clip-path': 'url(#blocklyZoominClipPath' + rnd + ')'
       },
       this.zoomInGroup_);
