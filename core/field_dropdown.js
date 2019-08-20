@@ -184,6 +184,12 @@ Blockly.FieldDropdown.prototype.showEditor_ = function() {
   // Otherwise it will cause a page scroll to get the misplaced menu in
   // view. See issue #1329.
   this.menu_.focus();
+
+  // Scroll the dropdown to show the selected menu item.
+  if (this.selectedMenuItem_) {
+    Blockly.utils.style.scrollIntoContainerView(
+        this.selectedMenuItem_.getElement(), this.menu_.getElement());
+  }
 };
 
 /**
@@ -197,7 +203,6 @@ Blockly.FieldDropdown.prototype.widgetCreate_ = function() {
   menu.setRole('listbox');
 
   var options = this.getOptions();
-  var selectedMenuItem;
   for (var i = 0; i < options.length; i++) {
     var content = options[i][0]; // Human-readable text or image.
     var value = options[i][1];   // Language-neutral value.
@@ -216,14 +221,14 @@ Blockly.FieldDropdown.prototype.widgetCreate_ = function() {
     menu.addChild(menuItem, true);
     menuItem.setChecked(value == this.value_);
     if (value == this.value_) {
-      selectedMenuItem = menuItem;
+      this.selectedMenuItem_ = menuItem;
     }
     menuItem.onAction(this.handleMenuActionEvent_, this);
   }
 
   Blockly.utils.aria.setState(/** @type {!Element} */ (menu.getElement()),
       Blockly.utils.aria.State.ACTIVEDESCENDANT,
-      selectedMenuItem ? selectedMenuItem.getId() : '');
+      this.selectedMenuItem_ ? this.selectedMenuItem_.getId() : '');
 
   return menu;
 };
