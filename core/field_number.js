@@ -40,18 +40,18 @@ goog.require('Blockly.FieldTextInput');
  * @param {Function=} opt_validator A function that is called to validate
  *    changes to the field's value. Takes in a number & returns a validated
  *    number, or null to abort the change.
- * @extends {Blockly.FieldTextInput}
+ * @extends {Blockly.FieldTextInput<string|number>}
  * @constructor
  */
 Blockly.FieldNumber = function(opt_value, opt_min, opt_max, opt_precision,
     opt_validator) {
   this.setConstraints(opt_min, opt_max, opt_precision);
-  opt_value = this.doClassValidation_(opt_value);
-  if (opt_value === null) {
-    opt_value = 0;
+  var value = this.doClassValidation_(opt_value);
+  if (value === null) {
+    value = 0;
   }
   Blockly.FieldNumber.superClass_.constructor.call(
-      this, opt_value, opt_validator);
+      this, value, opt_validator);
 };
 goog.inherits(Blockly.FieldNumber, Blockly.FieldTextInput);
 
@@ -73,6 +73,7 @@ Blockly.FieldNumber.fromJson = function(options) {
  * are not. Editable fields should also be serializable.
  * @type {boolean}
  * @const
+ * @suppress {constantProperty}
  */
 Blockly.FieldNumber.prototype.SERIALIZABLE = true;
 

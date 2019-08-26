@@ -75,6 +75,7 @@ Blockly.FieldDate.fromJson = function(options) {
  * are not. Editable fields should also be serializable.
  * @type {boolean}
  * @const
+ * @suppress {constantProperty}
  */
 Blockly.FieldDate.prototype.SERIALIZABLE = true;
 

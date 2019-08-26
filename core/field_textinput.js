@@ -46,15 +46,16 @@ goog.require('Blockly.utils.userAgent');
  * @param {Function=} opt_validator A function that is called to validate
  *    changes to the field's value. Takes in a string & returns a validated
  *    string, or null to abort the change.
- * @extends {Blockly.Field}
+ * @extends {Blockly.Field<V>}
  * @constructor
+ * @template V
  */
 Blockly.FieldTextInput = function(opt_value, opt_validator) {
-  opt_value = this.doClassValidation_(opt_value);
-  if (opt_value === null) {
-    opt_value = '';
+  var value = this.doClassValidation_(opt_value);
+  if (value === null) {
+    value = '';
   }
-  Blockly.FieldTextInput.superClass_.constructor.call(this, opt_value,
+  Blockly.FieldTextInput.superClass_.constructor.call(this, value,
       opt_validator);
 };
 goog.inherits(Blockly.FieldTextInput, Blockly.Field);
@@ -82,6 +83,7 @@ Blockly.FieldTextInput.fromJson = function(options) {
  * are not. Editable fields should also be serializable.
  * @type {boolean}
  * @const
+ * @suppress {constantProperty}
  */
 Blockly.FieldTextInput.prototype.SERIALIZABLE = true;
 
@@ -108,8 +110,8 @@ Blockly.FieldTextInput.prototype.spellcheck_ = true;
 
 /**
  * Ensure that the input value casts to a valid string.
- * @param {string=} opt_newValue The input value.
- * @return {?string} A valid string, or null if invalid.
+ * @param {V=} opt_newValue The input value.
+ * @return {?V} A valid string, or null if invalid.
  * @protected
  */
 Blockly.FieldTextInput.prototype.doClassValidation_ = function(opt_newValue) {

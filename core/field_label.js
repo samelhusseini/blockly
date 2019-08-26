@@ -39,17 +39,17 @@ goog.require('Blockly.utils.Size');
  * @param {string=} opt_value The initial value of the field. Should cast to a
  *    string. Defaults to an empty string if null or undefined.
  * @param {string=} opt_class Optional CSS class for the field's text.
- * @extends {Blockly.Field}
+ * @extends {Blockly.Field<string>}
  * @constructor
  */
 Blockly.FieldLabel = function(opt_value, opt_class) {
   this.size_ = new Blockly.utils.Size(0, Blockly.Field.TEXT_DEFAULT_HEIGHT);
   this.class_ = opt_class;
-  opt_value = this.doClassValidation_(opt_value);
-  if (opt_value === null) {
-    opt_value = '';
+  var value = this.doClassValidation_(opt_value);
+  if (value === null) {
+    value = '';
   }
-  this.setValue(opt_value);
+  this.setValue(value);
 };
 goog.inherits(Blockly.FieldLabel, Blockly.Field);
 
@@ -71,6 +71,7 @@ Blockly.FieldLabel.fromJson = function(options) {
  * editable. This field should not.
  * @type {boolean}
  * @const
+ * @suppress {constantProperty}
  */
 Blockly.FieldLabel.prototype.EDITABLE = false;
 

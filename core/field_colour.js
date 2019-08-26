@@ -48,16 +48,16 @@ goog.require('Blockly.utils.Size');
  * @param {Object=} opt_config A map of options used to configure the field.
  *    See the [field creation documentation]{@link https://developers.google.com/blockly/guides/create-custom-blocks/fields/built-in-fields/colour}
  *    for a list of properties this parameter supports.
- * @extends {Blockly.Field}
+ * @extends {Blockly.Field<string>}
  * @constructor
  */
 Blockly.FieldColour = function(opt_value, opt_validator, opt_config) {
-  opt_value = this.doClassValidation_(opt_value);
-  if (opt_value === null) {
-    opt_value = Blockly.FieldColour.COLOURS[0];
+  var value = this.doClassValidation_(opt_value);
+  if (value === null) {
+    value = Blockly.FieldColour.COLOURS[0];
   }
   Blockly.FieldColour.superClass_.constructor.call(
-      this, opt_value, opt_validator, opt_config);
+      this, value, opt_validator);
 
   this.configure_(opt_config);
 };
@@ -95,6 +95,7 @@ Blockly.FieldColour.DEFAULT_HEIGHT = Blockly.Field.BORDER_RECT_DEFAULT_HEIGHT;
  * are not. Editable fields should also be serializable.
  * @type {boolean}
  * @const
+ * @suppress {constantProperty}
  */
 Blockly.FieldColour.prototype.SERIALIZABLE = true;
 
@@ -152,10 +153,11 @@ Blockly.FieldColour.prototype.DROPDOWN_BACKGROUND_COLOUR = 'white';
 
 /**
  * Configure the field based on the given map of options.
- * @param {Object} opt_config A map of options to configure the field based on.
+ * @param {Object=} opt_config A map of options to configure the field based on.
  * @private
  */
 Blockly.FieldColour.prototype.configure_ = function(opt_config) {
+  Blockly.FieldColour.superClass_.configure_.call(this, opt_config);
   if (!opt_config) {
     return;
   }

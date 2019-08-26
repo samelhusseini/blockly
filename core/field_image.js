@@ -70,7 +70,7 @@ Blockly.FieldImage = function(src, width, height,
   this.size_ = new Blockly.utils.Size(imageWidth,
       imageHeight + Blockly.FieldImage.Y_PADDING);
 
-  this.flipRtl_ = opt_flipRtl;
+  this.flipRtl_ = opt_flipRtl || false;
   this.text_ = opt_alt || '';
   this.setValue(src || '');
 
@@ -112,6 +112,7 @@ Blockly.FieldImage.Y_PADDING = 1;
  * editable. This field should not.
  * @type {boolean}
  * @const
+ * @suppress {constantProperty}
  */
 Blockly.FieldImage.prototype.EDITABLE = false;
 

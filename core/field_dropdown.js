@@ -50,7 +50,7 @@ goog.require('Blockly.utils.userAgent');
  *    changes to the field's value. Takes in a language-neutral dropdown
  *    option & returns a validated language-neutral dropdown option, or null to
  *    abort the change.
- * @extends {Blockly.Field}
+ * @extends {Blockly.Field<string>}
  * @constructor
  */
 Blockly.FieldDropdown = function(menuGenerator, opt_validator) {
@@ -84,6 +84,7 @@ Blockly.FieldDropdown.fromJson = function(options) {
  * are not. Editable fields should also be serializable.
  * @type {boolean}
  * @const
+ * @suppress {constantProperty}
  */
 Blockly.FieldDropdown.prototype.SERIALIZABLE = true;
 
@@ -299,7 +300,7 @@ Blockly.FieldDropdown.prototype.getAnchorDimensions_ = function() {
  * @param {!Blockly.MenuItem} menuItem The MenuItem selected within menu.
  */
 Blockly.FieldDropdown.prototype.onItemSelected = function(menu, menuItem) {
-  this.setValue(menuItem.getValue());
+  this.setValue(/** @type {string} */ (menuItem.getValue()));
 };
 
 /**
@@ -425,7 +426,7 @@ Blockly.FieldDropdown.prototype.doClassValidation_ = function(opt_newValue) {
     }
     return null;
   }
-  return opt_newValue;
+  return opt_newValue || null;
 };
 
 /**

@@ -95,6 +95,7 @@ Blockly.FieldVariable.prototype.workspace_ = null;
  * are not. Editable fields should also be serializable.
  * @type {boolean}
  * @const
+ * @suppress {constantProperty}
  */
 Blockly.FieldVariable.prototype.SERIALIZABLE = true;
 
@@ -223,15 +224,20 @@ Blockly.FieldVariable.prototype.getValidator = function() {
 
 /**
  * Ensure that the id belongs to a valid variable of an allowed type.
- * @param {string} newId The id of the new variable to set.
+ * @param {string=} opt_newId The id of the new variable to set.
  * @return {?string} The validated id, or null if invalid.
  * @protected
  */
-Blockly.FieldVariable.prototype.doClassValidation_ = function(newId) {
-  var variable = Blockly.Variables.getVariable(this.workspace_, newId);
+Blockly.FieldVariable.prototype.doClassValidation_ = function(opt_newId) {
+  if (!opt_newId) {
+    console.warn('Undefined variable id!');
+    return null;
+  }
+  var variable = Blockly.Variables.getVariable(
+      /** @type {!Blockly.Workspace} */ (this.workspace_), opt_newId);
   if (!variable) {
     console.warn('Variable id doesn\'t point to a real variable! ' +
-        'ID was ' + newId);
+        'ID was ' + opt_newId);
     return null;
   }
   // Type Checks.
@@ -240,7 +246,7 @@ Blockly.FieldVariable.prototype.doClassValidation_ = function(newId) {
     console.warn('Variable type doesn\'t match this field!  Type was ' + type);
     return null;
   }
-  return newId;
+  return opt_newId;
 };
 
 /**
@@ -252,7 +258,8 @@ Blockly.FieldVariable.prototype.doClassValidation_ = function(newId) {
  * @protected
  */
 Blockly.FieldVariable.prototype.doValueUpdate_ = function(newId) {
-  this.variable_ = Blockly.Variables.getVariable(this.workspace_, newId);
+  this.variable_ = Blockly.Variables.getVariable(
+      /** @type {!Blockly.Workspace} */ (this.workspace_), newId);
   this.value_ = newId;
   this.text_ = this.variable_.name;
   this.isDirty_ = true;
@@ -418,7 +425,7 @@ Blockly.FieldVariable.prototype.onItemSelected = function(menu, menuItem) {
     }
   }
   // Handle unspecial case.
-  this.setValue(id);
+  this.setValue(/** @type {string} */ (id));
 };
 
 /**

@@ -45,16 +45,13 @@ goog.require('Blockly.utils.Size');
  * @param {Object=} opt_config A map of options used to configure the field.
  *    See the [field creation documentation]{@link https://developers.google.com/blockly/guides/create-custom-blocks/fields/built-in-fields/checkbox#creation}
  *    for a list of properties this parameter supports.
- * @extends {Blockly.Field}
+ * @extends {Blockly.Field<string|boolean>}
  * @constructor
  */
 Blockly.FieldCheckbox = function(opt_value, opt_validator, opt_config) {
-  opt_value = this.doClassValidation_(opt_value);
-  if (opt_value === null) {
-    opt_value = 'FALSE';
-  }
+  var value = this.doClassValidation_(opt_value);
   Blockly.FieldCheckbox.superClass_.constructor.call(
-      this, opt_value, opt_validator, opt_config);
+      this, value, opt_validator);
 
   this.size_.width = Blockly.FieldCheckbox.WIDTH;
 
@@ -114,6 +111,7 @@ Blockly.FieldCheckbox.CHECK_Y_OFFSET = 14;
  * are not. Editable fields should also be serializable.
  * @type {boolean}
  * @const
+ * @suppress {constantProperty}
  */
 Blockly.FieldCheckbox.prototype.SERIALIZABLE = true;
 
@@ -133,10 +131,11 @@ Blockly.FieldCheckbox.prototype.isDirty_ = false;
 
 /**
  * Configure the field based on the given map of options.
- * @param {Object} opt_config A map of options to configure the field based on.
- * @private
+ * @param {Object=} opt_config A map of options to configure the field based on.
+ * @protected
  */
 Blockly.FieldCheckbox.prototype.configure_ = function(opt_config) {
+  Blockly.FieldCheckbox.superClass_.configure_.call(this, opt_config);
   if (opt_config) {
     if (opt_config['checkCharacter']) {
       this.checkChar_ = opt_config['checkCharacter'];
@@ -198,7 +197,7 @@ Blockly.FieldCheckbox.prototype.doClassValidation_ = function(opt_newValue) {
 
 /**
  * Update the value of the field, and update the checkElement.
- * @param {string} newValue The new value ('TRUE' or 'FALSE') of the field.
+ * @param {string|boolean} newValue The new value ('TRUE' or 'FALSE') of the field.
  * @protected
  */
 Blockly.FieldCheckbox.prototype.doValueUpdate_ = function(newValue) {
@@ -219,7 +218,7 @@ Blockly.FieldCheckbox.prototype.getValue = function() {
 
 /**
  * Get the boolean value of this field.
- * @return {string} The boolean value of this field.
+ * @return {boolean} The boolean value of this field.
  */
 Blockly.FieldCheckbox.prototype.getValueBoolean = function() {
   return this.value_;

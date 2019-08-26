@@ -41,7 +41,7 @@ goog.require('Blockly.utils.style');
 
 /**
  * Abstract class for an editable field.
- * @param {*} value The initial value of the field.
+ * @param {V} value The initial value of the field.
  * @param {Function=} opt_validator  A function that is called to validate
  *    changes to the field's value. Takes in a value & returns a validated
  *    value, or null to abort the change.
@@ -49,6 +49,7 @@ goog.require('Blockly.utils.style');
  *    the individual field's documentation for a list of properties this
  *    parameter supports.
  * @constructor
+ * @template V
  */
 Blockly.Field = function(value, opt_validator, opt_config) {
   /**
@@ -57,7 +58,7 @@ Blockly.Field = function(value, opt_validator, opt_config) {
    */
   this.size_ = new Blockly.utils.Size(0, 0);
   this.setValue(value);
-  this.setValidator(opt_validator);
+  opt_validator && this.setValidator(opt_validator);
   this.configure_(opt_config);
 };
 
@@ -112,7 +113,7 @@ Blockly.Field.prototype.maxDisplayLength = 50;
 /**
  * A generic value possessed by the field.
  * Should generally be non-null, only null when the field is created.
- * @type {*}
+ * @type {?}
  * @protected
  */
 Blockly.Field.prototype.value_ = null;
@@ -144,7 +145,7 @@ Blockly.Field.prototype.sourceBlock_ = null;
 /**
  * Does this block need to be re-rendered?
  * @type {boolean}
- * @private
+ * @protected
  */
 Blockly.Field.prototype.isDirty_ = true;
 
@@ -180,7 +181,6 @@ Blockly.Field.NBSP = '\u00A0';
  * They will also be saved by the XML renderer.
  * @type {boolean}
  * @const
- * @default
  */
 Blockly.Field.prototype.EDITABLE = true;
 
@@ -190,15 +190,14 @@ Blockly.Field.prototype.EDITABLE = true;
  * case by default so that SERIALIZABLE is backwards compatible.
  * @type {boolean}
  * @const
- * @default
  */
 Blockly.Field.prototype.SERIALIZABLE = false;
 
 /**
  * Configure the field based on the given map of options.
- * @param {Object} opt_config The map of options to configure the field
+ * @param {Object=} opt_config The map of options to configure the field
  *    based on.
- * @private
+ * @protected
  */
 Blockly.Field.prototype.configure_ = function(opt_config) {
   if (!opt_config) {
@@ -653,7 +652,7 @@ Blockly.Field.prototype.getText = function() {
 
 /**
  * Set the text in this field.  Trigger a rerender of the source block.
- * @param {*} newText New text.
+ * @param {V} newText New text.
  * @deprecated 2019 setText should not be used directly. Use setValue instead.
  */
 Blockly.Field.prototype.setText = function(newText) {
@@ -689,7 +688,7 @@ Blockly.Field.prototype.forceRerender = function() {
  * Used to change the value of the field. Handles validation and events.
  * Subclasses should override doClassValidation_ and doValueUpdate_ rather
  * than this method.
- * @param {*} newValue New value.
+ * @param {V} newValue New value.
  */
 Blockly.Field.prototype.setValue = function(newValue) {
   var doLogging = false;
@@ -737,9 +736,9 @@ Blockly.Field.prototype.setValue = function(newValue) {
 
 /**
  * Process the result of validation.
- * @param {*} newValue New value.
- * @param {*} validatedValue Validated value.
- * @return {*} New value, or an Error object.
+ * @param {V} newValue New value.
+ * @param {?V} validatedValue Validated value.
+ * @return {V|Error} New value, or an Error object.
  * @private
  */
 Blockly.Field.prototype.processValidation_ = function(newValue,
@@ -759,29 +758,32 @@ Blockly.Field.prototype.processValidation_ = function(newValue,
 
 /**
  * Get the current value of the field.
- * @return {*} Current value.
+ * @return {V} Current value.
  */
 Blockly.Field.prototype.getValue = function() {
-  return this.value_;
+  return /** @type {V} */ (this.value_);
 };
 
 /**
  * Used to validate a value. Returns input by default. Can be overridden by
  * subclasses, see FieldDropdown.
- * @param {*} newValue The value to be validated.
- * @return {*} The validated value, same as input by default.
+ * @param {?=} opt_newValue The value to be validated.
+ * @return {?V} The validated value, same as input by default.
  * @protected
+ * @suppress {deprecated}
  */
-Blockly.Field.prototype.doClassValidation_ = function(newValue) {
-  // For backwards compatibility.
-  newValue = this.classValidator(newValue);
-  return newValue;
+Blockly.Field.prototype.doClassValidation_ = function(opt_newValue) {
+  if (opt_newValue) {
+    // For backwards compatibility.
+    opt_newValue = this.classValidator(opt_newValue);
+  }
+  return opt_newValue;
 };
 
 /**
  * Used to update the value of a field. Can be overridden by subclasses to do
  * custom storage of values/updating of external things.
- * @param {*} newValue The value to be saved.
+ * @param {V} newValue The value to be saved.
  * @protected
  */
 Blockly.Field.prototype.doValueUpdate_ = function(newValue) {
