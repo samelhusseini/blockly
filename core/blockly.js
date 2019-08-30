@@ -723,6 +723,10 @@ Blockly.setTheme = function(theme) {
   var ws = Blockly.getMainWorkspace();
 
   if (ws) {
+    if (theme.rendering) {
+      Blockly.blockRendering.rendererName = theme.rendering;
+      Blockly.blockRendering.init();
+    }
     Blockly.refreshTheme_(ws);
   }
 };

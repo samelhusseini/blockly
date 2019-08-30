@@ -382,7 +382,6 @@ Blockly.blockRendering.RenderInfo.prototype.alignRowElements_ = function() {
       }
       var missingSpace = desiredWidth - currentWidth;
       if (missingSpace) {
-        console.log(row.elements);
         this.addAlignmentPadding_(row, missingSpace);
       }
     }
@@ -400,6 +399,12 @@ Blockly.blockRendering.RenderInfo.prototype.alignRowElements_ = function() {
 Blockly.blockRendering.RenderInfo.prototype.addAlignmentPadding_ = function(row,
     missingSpace) {
   var lastSpacer = row.getLastSpacer();
+  // Skip the right corner element on the top and bottom row, so as to not add
+  // any spacing after the corner element.
+  if (row.type == 'top row' || row.type == 'bottom row') {
+    // There's a spacer before the first element in the row.
+    lastSpacer = row.elements[row.elements.length - 3];
+  }
   if (lastSpacer) {
     lastSpacer.width += missingSpace;
     row.width += missingSpace;

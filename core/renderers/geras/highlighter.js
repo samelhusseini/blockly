@@ -84,9 +84,9 @@ Blockly.geras.Highlighter.prototype.drawTopCorner = function(row) {
   this.steps_.push(
       Blockly.utils.svgPaths.moveBy(row.xPos, this.info_.startY));
   for (var i = 0, elem; (elem = row.elements[i]); i++) {
-    if (elem.type == 'square corner') {
+    if (elem.type == 'square corner left') {
       this.steps_.push(this.highlightConstants_.START_POINT);
-    } else if (elem.type == 'round corner') {
+    } else if (elem.type == 'round corner left') {
       this.steps_.push(
           this.outsideCornerPaths_.topLeft(this.RTL_));
     } else if (elem.type == 'previous connection') {
@@ -175,12 +175,12 @@ Blockly.geras.Highlighter.prototype.drawBottomRow = function(row) {
     this.steps_.push('V', height - this.highlightOffset_);
   } else {
     var cornerElem = this.info_.bottomRow.elements[0];
-    if (cornerElem.type == 'square corner') {
+    if (cornerElem.type == 'square corner left') {
       this.steps_.push(
           Blockly.utils.svgPaths.moveTo(
               row.xPos + this.highlightOffset_,
               height - this.highlightOffset_));
-    } else if (cornerElem.type == 'round corner') {
+    } else if (cornerElem.type == 'round corner left') {
       this.steps_.push(Blockly.utils.svgPaths.moveTo(row.xPos, height));
       this.steps_.push(this.outsideCornerPaths_.bottomLeft());
     }

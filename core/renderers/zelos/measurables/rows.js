@@ -51,37 +51,45 @@ Blockly.zelos.TopRow = function() {
 };
 goog.inherits(Blockly.zelos.TopRow, Blockly.blockRendering.TopRow);
 
-// /**
-//  * @override
-//  */
-// Blockly.zelos.TopRow.prototype.measure = function() {
-//   Blockly.zelos.TopRow.superClass_.measure.call(this);
-//   // TODO (samelh): the height of the notch may be larger than our padding.
-//   this.height = this.constants_.NOTCH_HEIGHT / 2;
-// };
+/**
+ * Create all non-spacer elements that belong on the top row.
+ * @param {!Blockly.BlockSvg} block The block whose top row this represents.
+ * @package
+ * @override
+ */
+Blockly.zelos.TopRow.prototype.populate = function(block) {
+  Blockly.zelos.TopRow.superClass_.populate.call(this, block);
 
+  var rightSquareCorner = this.hasRightSquareCorner(block);
+
+  if (rightSquareCorner) {
+    this.elements.push(new Blockly.blockRendering.SquareCorner('right'));
+  } else {
+    this.elements.push(new Blockly.blockRendering.RoundCorner('right'));
+  }
+};
 
 /**
- * Never render a square corner. Always round.
+ * Never render a left square corner. Always round.
  * @override
  */
 Blockly.zelos.TopRow.prototype.hasLeftSquareCorner = function(_block) {
   return false;
 };
 
-
 /**
- * Never render a square corner. Always round.
+ * Never render a right square corner. Always round.
  * @override
  */
 Blockly.zelos.TopRow.prototype.hasRightSquareCorner = function(_block) {
-  return false;
+  return true;
 };
 
 /**
  * An object containing information about what elements are in the bottom row of
  * a block as well as spacing information for the top row.
- * Elements in a bottom row can consist of corners, spacers and next connections.
+ * Elements in a bottom row can consist of corners, spacers and next
+ * connections.
  * @package
  * @constructor
  * @extends {Blockly.blockRendering.BottomRow}
@@ -92,7 +100,25 @@ Blockly.zelos.BottomRow = function() {
 goog.inherits(Blockly.zelos.BottomRow, Blockly.blockRendering.BottomRow);
 
 /**
- * Never render a square corner. Always round.
+ * Create all non-spacer elements that belong on the bottom row.
+ * @param {!Blockly.BlockSvg} block The block whose bottom row this represents.
+ * @package
+ * @override
+ */
+Blockly.zelos.BottomRow.prototype.populate = function(block) {
+  Blockly.zelos.BottomRow.superClass_.populate.call(this, block);
+
+  var rightSquareCorner = this.hasRightSquareCorner(block);
+
+  if (rightSquareCorner) {
+    this.elements.push(new Blockly.blockRendering.SquareCorner('right'));
+  } else {
+    this.elements.push(new Blockly.blockRendering.RoundCorner('right'));
+  }
+};
+
+/**
+ * Never render a left square corner. Always round.
  * @override
  */
 Blockly.zelos.BottomRow.prototype.hasLeftSquareCorner = function(_block) {
@@ -100,7 +126,7 @@ Blockly.zelos.BottomRow.prototype.hasLeftSquareCorner = function(_block) {
 };
 
 /**
- * Never render a square corner. Always round.
+ * Never render a right square corner. Always round.
  * @override
  */
 Blockly.zelos.BottomRow.prototype.hasRightSquareCorner = function(_block) {

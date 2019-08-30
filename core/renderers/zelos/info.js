@@ -118,11 +118,11 @@ Blockly.zelos.RenderInfo.prototype.getInRowSpacing_ = function(prev, next) {
       return this.constants_.LARGE_PADDING;
     }
     // Between rounded corner and the end of the row.
-    if (prev.isRoundedCorner() && !prev.isRightCorner()) { // .isRoundedCorner()) {
+    if (prev.isRoundedCorner() && !prev.isRightCorner()) {
       return this.constants_.MIN_BLOCK_WIDTH;
     }
     // No padding between corner and end of the row.
-    if (prev.isRoundedCorner() && prev.isRightCorner()) { // .isRoundedCorner()) {
+    if (prev.isRoundedCorner() && prev.isRightCorner()) {
       return this.constants_.NO_PADDING;
     }
     // Between a jagged edge and the end of the row.
@@ -222,4 +222,27 @@ Blockly.zelos.RenderInfo.prototype.getInRowSpacing_ = function(prev, next) {
   }
 
   return this.constants_.MEDIUM_PADDING;
+};
+
+/**
+ * Modify the given row to add the given amount of padding around its fields.
+ * The exact location of the padding is based on the alignment property of the
+ * last input in the field.
+ * @param {Blockly.blockRendering.Row} row The row to add padding to.
+ * @param {number} missingSpace How much padding to add.
+ * @protected
+ */
+Blockly.blockRendering.RenderInfo.prototype.addAlignmentPadding_ = function(row,
+    missingSpace) {
+  var lastSpacer = row.getLastSpacer();
+  // Skip the right corner element on the top and bottom row, so as to not add
+  // any spacing after the corner element.
+  if (row.type == 'top row' || row.type == 'bottom row') {
+    // There's a spacer before the first element in the row.
+    lastSpacer = row.elements[row.elements.length - 3];
+  }
+  if (lastSpacer) {
+    lastSpacer.width += missingSpace;
+    row.width += missingSpace;
+  }
 };

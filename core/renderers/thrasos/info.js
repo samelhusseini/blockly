@@ -60,6 +60,20 @@ goog.require('Blockly.RenderedConnection');
  */
 Blockly.thrasos.RenderInfo = function(block) {
   Blockly.thrasos.RenderInfo.superClass_.constructor.call(this, block);
+
+  /**
+   * An object with rendering information about the top row of the block.
+   * @type {!Blockly.zelos.TopRow}
+   * @override
+   */
+  this.topRow = new Blockly.zelos.TopRow();
+
+  /**
+   * An object with rendering information about the bottom row of the block.
+   * @type {!Blockly.zelos.BottomRow}
+   * @override
+   */
+  this.bottomRow = new Blockly.zelos.BottomRow();
 };
 goog.inherits(Blockly.thrasos.RenderInfo, Blockly.blockRendering.RenderInfo);
 
