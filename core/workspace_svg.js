@@ -125,6 +125,13 @@ Blockly.WorkspaceSvg = function(options,
         Blockly.Procedures.flyoutCategory);
   }
 
+  /**
+   * The search box for workspace search.
+   * @type {!Blockly.Search}
+   * @private
+   */
+  this.search_ = this.createSearchBox();
+
   Blockly.blockRendering.init();
 };
 goog.inherits(Blockly.WorkspaceSvg, Blockly.Workspace);
@@ -408,6 +415,14 @@ Blockly.WorkspaceSvg.prototype.createCursor = function() {
  */
 Blockly.WorkspaceSvg.prototype.createMarker = function() {
   return new Blockly.CursorSvg(this, true);
+};
+
+/**
+ * Adds a search box to the workspace.
+ * @return {!Blockly.Search} Search box for workspace search.
+ */
+Blockly.WorkspaceSvg.prototype.createSearchBox = function() {
+  return new Blockly.Search(this);
 };
 
 /**
@@ -748,6 +763,15 @@ Blockly.WorkspaceSvg.prototype.getFlyout = function() {
  */
 Blockly.WorkspaceSvg.prototype.getToolbox = function() {
   return this.toolbox_;
+};
+
+/**
+ * Getter for the search box associated with this workspace, if one exists.
+ * @return {Blockly.Search} The search box on this workspace.
+ * @package
+ */
+Blockly.WorkspaceSvg.prototype.getSearch = function() {
+  return this.search_;
 };
 
 /**

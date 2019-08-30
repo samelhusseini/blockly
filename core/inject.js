@@ -423,6 +423,10 @@ Blockly.init_ = function(mainWorkspace) {
     }
   }
 
+  if (options.hasSearch) {
+    mainWorkspace.search_.init(mainWorkspace);
+  }
+
   var verticalSpacing = Blockly.Scrollbar.scrollbarThickness;
   if (options.hasTrashcan) {
     verticalSpacing = mainWorkspace.trashcan.init(verticalSpacing);

@@ -48,6 +48,7 @@ goog.require('Blockly.FieldVariable');
 goog.require('Blockly.Generator');
 goog.require('Blockly.navigation');
 goog.require('Blockly.Procedures');
+goog.require('Blockly.Search');
 goog.require('Blockly.Toolbox');
 goog.require('Blockly.Tooltip');
 goog.require('Blockly.Touch');
@@ -235,6 +236,12 @@ Blockly.onKeyDown_ = function(e) {
     }
     if (Blockly.selected && Blockly.selected.isDeletable()) {
       deleteBlock = true;
+    }
+  } else if (e.keyCode === Blockly.utils.KeyCodes.F && (e.ctrlKey || e.metaKey)) {
+    var search = mainWorkspace.getSearch();
+    if (search) {
+      search.show();
+      e.preventDefault();
     }
   } else if (e.altKey || e.ctrlKey || e.metaKey) {
     // Don't use meta keys during drags.
@@ -724,6 +731,21 @@ Blockly.setTheme = function(theme) {
 
   if (ws) {
     Blockly.refreshTheme_(ws);
+
+    var renderer = Blockly.blockRendering.rendererName;
+    if (theme.rendering) {
+      renderer = theme.rendering;
+    } else {
+      renderer = 'geras';
+    }
+    if (Blockly.blockRendering.rendererName != renderer) {
+      Blockly.blockRendering.rendererName = renderer;
+      // Refresh.
+      Blockly.blockRendering.init();
+
+      var xml = Blockly.Xml.workspaceToDom(ws);
+      Blockly.Xml.clearWorkspaceAndLoadFromXml(xml, ws);
+    }
   }
 };
 
