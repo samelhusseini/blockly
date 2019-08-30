@@ -39,13 +39,25 @@ goog.require('Blockly.utils.svgPaths');
 Blockly.zelos.ConstantProvider = function() {
   Blockly.zelos.ConstantProvider.superClass_.constructor.call(this);
 
-  this.CORNER_RADIUS = 4;
+  var GRID_UNIT = 4;
 
-  this.NOTCH_WIDTH = 36;
+  this.CORNER_RADIUS = 1 * GRID_UNIT;
 
-  this.NOTCH_HEIGHT = 8;
+  this.NOTCH_WIDTH = 9 * GRID_UNIT;
 
-  this.NOTCH_OFFSET_LEFT = 12;
+  this.NOTCH_HEIGHT = 2 * GRID_UNIT;
+
+  this.NOTCH_OFFSET_LEFT = 3 * GRID_UNIT;
+
+  this.MIN_BLOCK_HEIGHT = 12 * GRID_UNIT;
+
+  // TODO (samelh): is this the best way to get rid of the tab?
+  this.TAB_HEIGHT = 0;
+  this.TAB_WIDTH = 0;
+
+  // TODO (samelh): Is this the best way to get rid of the offset?
+  this.DARK_PATH_OFFSET = 0;
+
 };
 goog.inherits(Blockly.zelos.ConstantProvider,
     Blockly.blockRendering.ConstantProvider);
@@ -163,5 +175,78 @@ Blockly.zelos.ConstantProvider.prototype.makeNotch = function() {
     height: height,
     pathLeft: pathLeft,
     pathRight: pathRight
+  };
+};
+
+/**
+ * @override
+ */
+Blockly.zelos.ConstantProvider.prototype.makeOutsideCorners = function() {
+  var radius = this.CORNER_RADIUS;
+  /**
+   * SVG path for drawing the rounded top-left corner.
+   * @const
+   */
+  var topLeft =
+      Blockly.utils.svgPaths.moveBy(0, radius) +
+      Blockly.utils.svgPaths.arc('a', '0 0,1', radius,
+          Blockly.utils.svgPaths.point(radius, -radius));
+
+  /**
+   * SVG path for drawing the rounded top-right corner.
+   * @const
+   */
+  var topRight =
+      Blockly.utils.svgPaths.arc('a', '0 0,1', radius,
+          Blockly.utils.svgPaths.point(radius, radius));
+    
+  /**
+   * SVG path for drawing the rounded bottom-left corner.
+   * @const
+   */
+  var bottomLeft = Blockly.utils.svgPaths.arc('a', '0 0,1', radius,
+      Blockly.utils.svgPaths.point(-radius, -radius));
+
+  /**
+   * SVG path for drawing the rounded bottom-right corner.
+   * @const
+   */
+  var bottomRight = Blockly.utils.svgPaths.arc('a', '0 0,1', radius,
+      Blockly.utils.svgPaths.point(-radius, radius));
+
+  return {
+    topLeft: topLeft,
+    topRight: topRight,
+    bottomLeft: bottomLeft,
+    bottomRight: bottomRight
+  };
+};
+
+
+/**
+ * @override
+ */
+Blockly.zelos.ConstantProvider.prototype.makeInsideCorners = function() {
+  var radius = this.CORNER_RADIUS;
+
+  var innerTopLeftCorner = Blockly.utils.svgPaths.arc('a', '0 0,0', radius,
+      Blockly.utils.svgPaths.point(-radius, radius));
+
+  var innerTopRightCorner = Blockly.utils.svgPaths.arc('a', '0 0,1', radius,
+      Blockly.utils.svgPaths.point(-radius, radius));
+
+  var innerBottomLeftCorner = Blockly.utils.svgPaths.arc('a', '0 0,0', radius,
+      Blockly.utils.svgPaths.point(radius, radius));
+
+  var innerBottomRightCorner = Blockly.utils.svgPaths.arc('a', '0 0,0', radius,
+      Blockly.utils.svgPaths.point(radius, radius));
+
+  return {
+    width: radius,
+    height: radius,
+    pathTop: innerTopLeftCorner,
+    pathBottom: innerBottomLeftCorner,
+    pathTopRight: innerTopRightCorner,
+    pathBottomRight: innerBottomRightCorner
   };
 };

@@ -120,3 +120,5 @@ Blockly.Themes.Modern.categoryStyles = {
 Blockly.Themes.Modern =
     new Blockly.Theme(Blockly.Themes.Modern.defaultBlockStyles,
         Blockly.Themes.Modern.categoryStyles);
+
+Blockly.Themes.Modern.rendering = 'thrasos';

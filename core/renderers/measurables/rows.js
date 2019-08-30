@@ -251,14 +251,12 @@ goog.inherits(Blockly.blockRendering.TopRow, Blockly.blockRendering.Row);
 Blockly.blockRendering.TopRow.prototype.populate = function(block) {
   var hasHat = block.hat ? block.hat === 'cap' : Blockly.BlockSvg.START_HAT;
   var hasPrevious = !!block.previousConnection;
-  var prevBlock = block.getPreviousBlock();
-  var squareCorner = !!block.outputConnection ||
-      hasHat || (prevBlock && prevBlock.getNextBlock() == block);
+  var leftSquareCorner = this.hasLeftSquareCorner(block);
 
-  if (squareCorner) {
-    this.elements.push(new Blockly.blockRendering.SquareCorner());
+  if (leftSquareCorner) {
+    this.elements.push(new Blockly.blockRendering.SquareCorner('left'));
   } else {
-    this.elements.push(new Blockly.blockRendering.RoundCorner());
+    this.elements.push(new Blockly.blockRendering.RoundCorner('left'));
   }
 
   if (hasHat) {
@@ -282,6 +280,36 @@ Blockly.blockRendering.TopRow.prototype.populate = function(block) {
   } else {
     this.minHeight = this.constants_.MEDIUM_PADDING;
   }
+
+  var rightSquareCorner = this.hasRightSquareCorner(block);
+
+  if (rightSquareCorner) {
+    this.elements.push(new Blockly.blockRendering.SquareCorner('right'));
+  } else {
+    this.elements.push(new Blockly.blockRendering.RoundCorner('right'));
+  }
+};
+
+/**
+ * Returns whether or not the top row has a square corner.
+ * @param {!Blockly.BlockSvg} block The block whose top row this represents.
+ * @returns {boolean} Whether or not the top row has a square corner.
+ */
+Blockly.blockRendering.TopRow.prototype.hasLeftSquareCorner = function(block) {
+  var hasHat = block.hat ? block.hat === 'cap' : Blockly.BlockSvg.START_HAT;
+  var prevBlock = block.getPreviousBlock();
+
+  return !!block.outputConnection ||
+      hasHat || (prevBlock && prevBlock.getNextBlock() == block);
+};
+
+/**
+ * Returns whether or not the top row has a square corner.
+ * @param {!Blockly.BlockSvg} _block The block whose top row this represents.
+ * @returns {boolean} Whether or not the top row has a square corner.
+ */
+Blockly.blockRendering.TopRow.prototype.hasRightSquareCorner = function(_block) {
+  return true;
 };
 
 /**
@@ -345,6 +373,13 @@ goog.inherits(Blockly.blockRendering.BottomRow, Blockly.blockRendering.Row);
  * @package
  */
 Blockly.blockRendering.BottomRow.prototype.populate = function(block) {
+  var leftSquareCorner = this.hasLeftSquareCorner(block);
+
+  if (leftSquareCorner) {
+    this.elements.push(new Blockly.blockRendering.SquareCorner('left'));
+  } else {
+    this.elements.push(new Blockly.blockRendering.RoundCorner('left'));
+  }
   this.hasNextConnection = !!block.nextConnection;
 
   var followsStatement =
@@ -359,19 +394,37 @@ Blockly.blockRendering.BottomRow.prototype.populate = function(block) {
     this.minHeight = this.constants_.NOTCH.height;
   }
 
-  var squareCorner = !!block.outputConnection || !!block.getNextBlock();
-
-  if (squareCorner) {
-    this.elements.push(new Blockly.blockRendering.SquareCorner());
-  } else {
-    this.elements.push(new Blockly.blockRendering.RoundCorner());
-  }
-
   if (this.hasNextConnection) {
     this.connection = new Blockly.blockRendering.NextConnection(
         /** @type {Blockly.RenderedConnection} */ (block.nextConnection));
     this.elements.push(this.connection);
   }
+
+  var rightSquareCorner = this.hasRightSquareCorner(block);
+
+  if (rightSquareCorner) {
+    this.elements.push(new Blockly.blockRendering.SquareCorner('right'));
+  } else {
+    this.elements.push(new Blockly.blockRendering.RoundCorner('right'));
+  }
+};
+
+/**
+ * Returns whether or not the bottom row has a square corner.
+ * @param {!Blockly.BlockSvg} block The block whose bottom row this represents.
+ * @returns {boolean} Whether or not the bottom row has a square corner.
+ */
+Blockly.blockRendering.BottomRow.prototype.hasLeftSquareCorner = function(block) {
+  return !!block.outputConnection || !!block.getNextBlock();
+};
+
+/**
+ * Returns whether or not the bottom row has a square corner.
+ * @param {!Blockly.BlockSvg} _block The block whose bottom row this represents.
+ * @returns {boolean} Whether or not the bottom row has a square corner.
+ */
+Blockly.blockRendering.BottomRow.prototype.hasRightSquareCorner = function(_block) {
+  return true;
 };
 
 /**

@@ -88,13 +88,14 @@ goog.inherits(Blockly.blockRendering.Hat, Blockly.blockRendering.Measurable);
 /**
  * An object containing information about the space a square corner takes up
  * during rendering.
+ * @param {string=} opt_position The position of this corner.
  * @package
  * @constructor
  * @extends {Blockly.blockRendering.Measurable}
  */
-Blockly.blockRendering.SquareCorner = function() {
+Blockly.blockRendering.SquareCorner = function(opt_position) {
   Blockly.blockRendering.SquareCorner.superClass_.constructor.call(this);
-  this.type = 'square corner';
+  this.type = 'square corner' + (opt_position ? ' ' + opt_position : '');
   this.height = this.constants_.NOTCH.height;
   this.width = this.constants_.NO_PADDING;
 
@@ -104,13 +105,14 @@ goog.inherits(Blockly.blockRendering.SquareCorner, Blockly.blockRendering.Measur
 /**
  * An object containing information about the space a rounded corner takes up
  * during rendering.
+ * @param {string=} opt_position The position of this corner.
  * @package
  * @constructor
  * @extends {Blockly.blockRendering.Measurable}
  */
-Blockly.blockRendering.RoundCorner = function() {
+Blockly.blockRendering.RoundCorner = function(opt_position) {
   Blockly.blockRendering.RoundCorner.superClass_.constructor.call(this);
-  this.type = 'round corner';
+  this.type = 'round corner' + (opt_position ? ' ' + opt_position : '');
   this.width = this.constants_.CORNER_RADIUS;
   // The rounded corner extends into the next row by 4 so we only take the
   // height that is aligned with this row.

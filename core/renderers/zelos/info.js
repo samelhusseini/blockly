@@ -46,6 +46,9 @@ goog.require('Blockly.blockRendering.OutputConnection');
 
 goog.require('Blockly.RenderedConnection');
 
+goog.require('Blockly.zelos.BottomRow');
+goog.require('Blockly.zelos.TopRow');
+
 /**
  * An object containing all sizing information needed to draw this block.
  *
@@ -60,6 +63,19 @@ goog.require('Blockly.RenderedConnection');
  */
 Blockly.zelos.RenderInfo = function(block) {
   Blockly.zelos.RenderInfo.superClass_.constructor.call(this, block);
+  /**
+   * An object with rendering information about the top row of the block.
+   * @type {!Blockly.zelos.TopRow}
+   * @override
+   */
+  this.topRow = new Blockly.zelos.TopRow();
+
+  /**
+   * An object with rendering information about the bottom row of the block.
+   * @type {!Blockly.zelos.BottomRow}
+   * @override
+   */
+  this.bottomRow = new Blockly.zelos.BottomRow();
 };
 goog.inherits(Blockly.zelos.RenderInfo, Blockly.blockRendering.RenderInfo);
 
@@ -102,8 +118,12 @@ Blockly.zelos.RenderInfo.prototype.getInRowSpacing_ = function(prev, next) {
       return this.constants_.LARGE_PADDING;
     }
     // Between rounded corner and the end of the row.
-    if (prev.isRoundedCorner()) {
+    if (prev.isRoundedCorner() && !prev.isRightCorner()) { // .isRoundedCorner()) {
       return this.constants_.MIN_BLOCK_WIDTH;
+    }
+    // No padding between corner and end of the row.
+    if (prev.isRoundedCorner() && prev.isRightCorner()) { // .isRoundedCorner()) {
+      return this.constants_.NO_PADDING;
     }
     // Between a jagged edge and the end of the row.
     if (prev.isJaggedEdge()) {

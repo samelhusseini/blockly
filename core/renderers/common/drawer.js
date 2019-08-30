@@ -140,9 +140,12 @@ Blockly.blockRendering.Drawer.prototype.drawTop_ = function() {
   this.outlinePath_ +=
       Blockly.utils.svgPaths.moveBy(topRow.xPos, this.info_.startY);
   for (var i = 0, elem; (elem = elements[i]); i++) {
-    if (elem.type == 'round corner') {
+    if (elem.isRoundedCorner() && !elem.isRightCorner()) {
       this.outlinePath_ +=
           this.constants_.OUTSIDE_CORNERS.topLeft;
+    } else if (elem.isRoundedCorner() && elem.isRightCorner()) {
+      this.outlinePath_ +=
+        this.constants_.OUTSIDE_CORNERS.topRight;
     } else if (elem.type == 'previous connection') {
       this.outlinePath_ += elem.shape.pathLeft;
     } else if (elem.type == 'hat') {
@@ -243,10 +246,14 @@ Blockly.blockRendering.Drawer.prototype.drawBottom_ = function() {
   for (var i = elems.length - 1, elem; (elem = elems[i]); i--) {
     if (elem.isNextConnection()) {
       this.outlinePath_ += elem.shape.pathRight;
-    } else if (elem.isSquareCorner()) {
+    } else if (elem.type == "square corner left") {
       this.outlinePath_ += Blockly.utils.svgPaths.lineOnAxis('H', bottomRow.xPos);
-    } else if (elem.isRoundedCorner()) {
-      this.outlinePath_ += this.constants_.OUTSIDE_CORNERS.bottomLeft;
+    } else if (elem.isRoundedCorner() && !elem.isRightCorner()) {
+      this.outlinePath_ +=
+          this.constants_.OUTSIDE_CORNERS.bottomLeft;
+    } else if (elem.isRoundedCorner() && elem.isRightCorner()) {
+      this.outlinePath_ +=
+        this.constants_.OUTSIDE_CORNERS.bottomRight;
     } else if (elem.isSpacer()) {
       this.outlinePath_ += Blockly.utils.svgPaths.lineOnAxis('h', elem.width * -1);
     }

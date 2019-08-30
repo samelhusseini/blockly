@@ -138,23 +138,42 @@ Blockly.blockRendering.Measurable.prototype.isNextConnection = function() {
 };
 
 /**
+ * Whether this stores information about a corner.
+ * @return {boolean} True if this object stores information about a corner.
+ * @package
+ */
+Blockly.blockRendering.Measurable.prototype.isCorner = function() {
+  return this.type.indexOf('corner') > -1;
+};
+
+/**
  * Whether this stores information about a rounded corner.
- * @return {boolean} True if this object stores information about an rounded
+ * @return {boolean} True if this object stores information about a rounded
  * corner.
  * @package
  */
 Blockly.blockRendering.Measurable.prototype.isRoundedCorner = function() {
-  return this.type == 'round corner';
+  return this.type.indexOf('round corner') == 0;
 };
 
 /**
  * Whether this stores information about a square corner.
- * @return {boolean} True if this object stores information about an square
+ * @return {boolean} True if this object stores information about a square
  * corner.
  * @package
  */
 Blockly.blockRendering.Measurable.prototype.isSquareCorner = function() {
-  return this.type == 'square corner';
+  return this.type.indexOf('square corner') == 0;
+};
+
+/**
+ * Whether this stores information about a right corner.
+ * @return {boolean} True if this object stores information about a right
+ * corner.
+ * @package
+ */
+Blockly.blockRendering.Measurable.prototype.isRightCorner = function() {
+  return this.type.indexOf('corner right') > -1;
 };
 
 /**

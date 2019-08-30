@@ -104,6 +104,7 @@ function start() {
             colour: '#ccc',
             snap: true
           },
+        theme: Blockly.Themes.Zelos,
         horizontalLayout: side == 'top' || side == 'bottom',
         maxBlocks: Infinity,
         maxInstances: {'test_basic_limit_instances': 3},
@@ -116,14 +117,15 @@ function start() {
           drag: true,
           wheel: false,
         },
+        search: true,
         toolbox: toolbox,
         toolboxPosition: side == 'top' || side == 'start' ? 'start' : 'end',
         zoom:
           {
             controls: true,
             wheel: true,
-            startScale: 1.0,
-            maxScale: 4,
+            startScale: 4,
+            maxScale: 15,
             minScale: 0.25,
             scaleSpeed: 1.1
           }
@@ -141,11 +143,16 @@ function start() {
     // Restore render debug state.
     var renderDebugState = sessionStorage.getItem('blockRenderDebug');
     toggleRenderingDebug(Boolean(Number(renderDebugState)));
+    // Restore theme state.
+    var theme = sessionStorage.getItem('theme');
+    setTheme(theme);
   } else {
     // MSIE 11 does not support sessionStorage on file:// URLs.
     logEvents(false);
   }
   taChange();
+
+  fromXml();
 }
 
 function addToolboxButtonCallbacks() {
@@ -254,13 +261,24 @@ function addToolboxButtonCallbacks() {
 
 function changeTheme() {
   var theme = document.getElementById('themeChanger');
-  if (theme.value === "modern") {
+  setTheme(theme.value);
+}
+
+function setTheme(theme) {
+  if (theme === "modern") {
     Blockly.setTheme(Blockly.Themes.Modern);
-  } else if (theme.value === "high_contrast") {
+  } else if (theme === "high_contrast") {
     Blockly.setTheme(Blockly.Themes.HighContrast);
+  } else if (theme === "zelos") {
+    Blockly.setTheme(Blockly.Themes.Zelos);
   } else {
     Blockly.setTheme(Blockly.Themes.Classic);
   }
+  if (sessionStorage) {
+    sessionStorage.setItem('theme', theme);
+  }
+  var themeChanger = document.getElementById('themeChanger');
+  themeChanger.value = theme;
 }
 
 function setBackgroundColour() {
@@ -427,9 +445,26 @@ h1 {
   font-weight: normal;
   font-size: 140%;
 }
+#rendering-selector {
+  float: right;
+  height: 100px;
+  width: 100%;
+}
+#rendering-selector .button {
+  float: right;
+  width: 100px;
+  height: 100px;
+  background-color: grey;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: white;
+  margin-left: 10px;
+  cursor: pointer;
+}
 #blocklyDiv {
   float: right;
-  height: 95%;
+  height: 90%;
   width: 70%;
 }
 #importExport {
@@ -452,6 +487,11 @@ h1 {
 </head>
 <body onload="start()">
 
+  <div id="rendering-selector">
+    <div class="button" onclick="setTheme('zelos')">New</div>
+    <div class="button" onclick="setTheme('modern')">Modern</div>
+    <div class="button" onclick="setTheme('classic')">Legacy</div>
+  </div>
   <div id="blocklyDiv"></div>
 
   <h1>Blockly Playground</h1>
@@ -480,6 +520,7 @@ h1 {
   <select id="themeChanger" name="theme" onchange="changeTheme()">
     <option value="classic">Classic</option>
     <option value="modern">Modern</option>
+    <option value="zelos">Zelos</option>
     <option value="high_contrast">High Contrast</option>
   </select>
   <p>
