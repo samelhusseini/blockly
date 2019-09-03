@@ -682,10 +682,12 @@ Blockly.Css.CONTENT = [
   '}',
 
   '.blocklyWidgetDiv .goog-option-selected .goog-menuitem-checkbox,',
-  '.blocklyWidgetDiv .goog-option-selected .goog-menuitem-icon,',
+  '.blocklyWidgetDiv .goog-option-selected .goog-menuitem-icon {',
+    'background: url(<<<PATH>>>/sprites.png) no-repeat -53px -15px;',
+  '}',
   '.blocklyDropDownDiv .goog-option-selected .goog-menuitem-checkbox,',
   '.blocklyDropDownDiv .goog-option-selected .goog-menuitem-icon {',
-    'background: url(<<<PATH>>>/sprites.png) no-repeat -48px -16px;',
+    'background: url(<<<PATH>>>/sprites.png) no-repeat -74px -15px;',
   '}',
 
   /* Category tree in Toolbox. */
