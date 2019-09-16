@@ -259,6 +259,19 @@ Blockly.defineBlocksWithJsonArray([  // BEGIN JSON EXTRACT
     "style": "math_blocks",
   },
   {
+    "type": "test_fields_file",
+    "message0": "file: %1",
+    "args0": [
+      {
+        "type": "field_fileinput",
+        "name": "FIELDNAME",
+        "file": "./folder/file.csv",
+        "accept": "image/*"
+      }
+    ],
+    "style": "math_blocks",
+  },
+  {
     "type": "test_fields_text_input",
     "message0": "text input %1",
     "args0": [
