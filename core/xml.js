@@ -38,6 +38,7 @@ goog.require('Blockly.utils');
 goog.require('Blockly.utils.dom');
 goog.require('Blockly.utils.global');
 goog.require('Blockly.utils.xml');
+// goog.require('Blockly.utils.json');
 goog.require('Blockly.WorkspaceComment');
 goog.require('Blockly.WorkspaceCommentSvg');
 

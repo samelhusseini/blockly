@@ -491,6 +491,23 @@ var spaghettiXml = [
   '    <next></next>',
   '  </block>'].join('\n');
 
+function benchmark() {
+  var t0 = performance.now();
+  for (var i = 0; i < 1000; i++) {
+    var text = Blockly.Xml.domToText(Blockly.Xml.workspaceToDom(Blockly.mainWorkspace));
+    var workspace = new Blockly.Workspace();
+    Blockly.Xml.domToWorkspace(Blockly.Xml.textToDom(text), workspace);
+  }
+  var t1 = performance.now();
+  for (var i = 0; i < 1000; i++) {
+    var text = Blockly.Json.domToText(Blockly.Json.workspaceToDom(Blockly.mainWorkspace));
+    var workspace = new Blockly.Workspace();
+    Blockly.Json.domToWorkspace(Blockly.Json.textToDom(text), workspace);
+  }
+  var t2 = performance.now();
+  console.log('benchmark: ', t1 - t0);
+  console.log('benchmark: ', t2 - t1);
+}
 </script>
 
 <style>
@@ -637,13 +654,6 @@ var spaghettiXml = [
     <block type="logic_boolean"></block>
     <block type="logic_null" disabled="true"></block>
     <block type="logic_ternary"></block>
-    <block type="text_charAt">
-      <value name="VALUE">
-        <block type="variables_get">
-          <field name="VAR">text</field>
-        </block>
-      </value>
-    </block>
   </xml>
 
   <!-- toolbox-categories has a category menu and an auto-closing flyout.  The
