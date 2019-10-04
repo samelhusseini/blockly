@@ -70,8 +70,8 @@ run_test_command "typings" "tests/scripts/compile_typings.sh"
 # Check the sizes of built files for unexpected growth.
 run_test_command "metadata" "tests/scripts/check_metadata.sh"
 
-# # Attempt advanced compilation of a Blockly app.
-# run_test_command "compile" "tests/compile/compile.sh"
+# Attempt advanced compilation of a Blockly app.
+run_test_command "compile" "tests/compile/compile.sh"
 
 
 # End of tests.
