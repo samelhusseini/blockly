@@ -99,7 +99,8 @@ Blockly.WorkspaceSvg = function(options,
    * @private
    */
   this.grid_ = this.options.gridPattern ?
-      new Blockly.Grid(options.gridPattern, options.gridOptions) : null;
+      new Blockly.Grid(/** @type {!SVGElement} */
+          (options.gridPattern), options.gridOptions) : null;
 
   /**
    * Holds the cursors svg element when the cursor is attached to the workspace.
@@ -792,7 +793,7 @@ Blockly.WorkspaceSvg.prototype.addZoomControls = function() {
  * @private
  */
 Blockly.WorkspaceSvg.prototype.addFlyout_ = function(tagName) {
-  var workspaceOptions = {
+  var workspaceOptions = /** @type {!Blockly.Options} */ ({
     disabledPatternId: this.options.disabledPatternId,
     parentWorkspace: this,
     RTL: this.RTL,
@@ -800,7 +801,7 @@ Blockly.WorkspaceSvg.prototype.addFlyout_ = function(tagName) {
     horizontalLayout: this.horizontalLayout,
     toolboxPosition: this.options.toolboxPosition,
     renderer: this.options.renderer
-  };
+  });
   if (this.horizontalLayout) {
     if (!Blockly.HorizontalFlyout) {
       throw Error('Missing require for Blockly.HorizontalFlyout');

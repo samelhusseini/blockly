@@ -23,6 +23,7 @@
 
 goog.provide('Blockly.Options');
 
+goog.require('Blockly.Themes.Classic');
 goog.require('Blockly.utils.userAgent');
 goog.require('Blockly.Xml');
 
@@ -30,9 +31,10 @@ goog.require('Blockly.Xml');
 /**
  * Parse the user-specified options, using reasonable defaults where behaviour
  * is unspecified.
- * @param {!Object} options Dictionary of options.  Specification:
- *   https://developers.google.com/blockly/guides/get-started/web#configuration
+ * @param {!Blockly.WorkspaceOptions} options Dictionary of options.
+ *     Specification: https://developers.google.com/blockly/guides/get-started/web#configuration
  * @constructor
+ * @struct
  */
 Blockly.Options = function(options) {
   var readOnly = !!options['readOnly'];
@@ -114,37 +116,73 @@ Blockly.Options = function(options) {
   } else {
     var oneBasedIndex = !!options['oneBasedIndex'];
   }
-  var theme = options['theme'];
   var keyMap = options['keyMap'] || Blockly.user.keyMap.createDefaultKeyMap();
 
   var renderer = options['renderer'] || 'geras';
 
+  /** @type {boolean} */
   this.RTL = rtl;
+  /** @type {boolean} */
   this.oneBasedIndex = oneBasedIndex;
+  /** @type {boolean} */
   this.collapse = hasCollapse;
+  /** @type {boolean} */
   this.comments = hasComments;
+  /** @type {boolean} */
   this.disable = hasDisable;
+  /** @type {boolean} */
   this.readOnly = readOnly;
+  /** @type {number} */
   this.maxBlocks = options['maxBlocks'] || Infinity;
+  /** @type {boolean} */
   this.maxInstances = options['maxInstances'];
+  /** @type {string} */
   this.pathToMedia = pathToMedia;
+  /** @type {boolean} */
   this.hasCategories = hasCategories;
-  this.moveOptions = Blockly.Options.parseMoveOptions(options, hasCategories);
-  /** @deprecated  January 2019 */
+  /** @type {!Object} */
+  this.moveOptions = Blockly.Options.parseMoveOptions_(options, hasCategories);
+  /**
+   * @type {boolean}
+   * @deprecated January 2019
+   */
   this.hasScrollbars = this.moveOptions.scrollbars;
+  /** @type {boolean} */
   this.hasTrashcan = hasTrashcan;
+  /** @type {number} */
   this.maxTrashcanContents = maxTrashcanContents;
+  /** @type {boolean} */
   this.hasSounds = hasSounds;
+  /** @type {boolean} */
   this.hasCss = hasCss;
+  /** @type {boolean} */
   this.horizontalLayout = horizontalLayout;
+  /** @type {Node} */
   this.languageTree = languageTree;
+  /** @type {!Object} */
   this.gridOptions = Blockly.Options.parseGridOptions_(options);
+  /** @type {!Object} */
   this.zoomOptions = Blockly.Options.parseZoomOptions_(options);
+  /** @type {number} */
   this.toolboxPosition = toolboxPosition;
-  this.theme = theme;
+  /** @type {!Blockly.Theme} */
+  this.theme = Blockly.Options.parseThemeOptions_(options);
+  /** @type {!Object<string,Blockly.Action>} */
   this.keyMap = keyMap;
+  /** @type {string} */
   this.renderer = renderer;
+  /** @type {?string} */
+  this.embossFilterId = null;
+  /** @type {?string} */
+  this.disabledPatternId = null;
+  /** @type {SVGElement} */
+  this.gridPattern = null;
 };
+
+/**
+ * @typedef {*}
+ */
+Blockly.WorkspaceOptions;
 
 /**
  * The parent of the current workspace, or null if there is no parent workspace.
@@ -154,24 +192,28 @@ Blockly.Options.prototype.parentWorkspace = null;
 
 /**
  * If set, sets the translation of the workspace to match the scrollbars.
+ * @param {!Object} xyRatio Contains a y property which is a float
+ *     between 0 and 1 specifying the degree of scrolling and a
+ *     similar x property.
+ * @return {void}
  */
-Blockly.Options.prototype.setMetrics = null;
+Blockly.Options.prototype.setMetrics;
 
 /**
  * Return an object with the metrics required to size the workspace.
  * @return {Object} Contains size and position metrics, or null.
  */
-Blockly.Options.prototype.getMetrics = null;
+Blockly.Options.prototype.getMetrics;
 
 /**
  * Parse the user-specified move options, using reasonable defaults where
  *    behaviour is unspecified.
- * @param {!Object} options Dictionary of options.
+ * @param {!Blockly.WorkspaceOptions} options Dictionary of options.
  * @param {boolean} hasCategories Whether the workspace has categories or not.
  * @return {!Object} A dictionary of normalized options.
  * @private
  */
-Blockly.Options.parseMoveOptions = function(options, hasCategories) {
+Blockly.Options.parseMoveOptions_ = function(options, hasCategories) {
   var move = options['move'] || {};
   var moveOptions = {};
   if (move['scrollbars'] === undefined && options['scrollbars'] === undefined) {
@@ -200,7 +242,7 @@ Blockly.Options.parseMoveOptions = function(options, hasCategories) {
  * Parse the user-specified zoom options, using reasonable defaults where
  * behaviour is unspecified.  See zoom documentation:
  *   https://developers.google.com/blockly/guides/configure/web/zoom
- * @param {!Object} options Dictionary of options.
+ * @param {!Blockly.WorkspaceOptions} options Dictionary of options.
  * @return {!Object} A dictionary of normalized options.
  * @private
  */
@@ -244,7 +286,7 @@ Blockly.Options.parseZoomOptions_ = function(options) {
  * Parse the user-specified grid options, using reasonable defaults where
  * behaviour is unspecified. See grid documentation:
  *   https://developers.google.com/blockly/guides/configure/web/grid
- * @param {!Object} options Dictionary of options.
+ * @param {!Blockly.WorkspaceOptions} options Dictionary of options.
  * @return {!Object} A dictionary of normalized options.
  * @private
  */
@@ -256,6 +298,22 @@ Blockly.Options.parseGridOptions_ = function(options) {
   gridOptions.length = Number(grid['length']) || 1;
   gridOptions.snap = gridOptions.spacing > 0 && !!grid['snap'];
   return gridOptions;
+};
+
+/**
+ * Parse the user-specified theme options, using the classic theme as a default.
+ *   https://developers.google.com/blockly/guides/configure/web/themes
+ * @param {!Blockly.WorkspaceOptions} options Dictionary of options.
+ * @return {!Blockly.Theme} A Blockly Theme.
+ * @private
+ */
+Blockly.Options.parseThemeOptions_ = function(options) {
+  var theme = options['theme'] || Blockly.Themes.Classic;
+  if (theme instanceof Blockly.Theme) {
+    return /** @type {!Blockly.Theme} */ (theme);
+  }
+  return new Blockly.Theme(
+      theme['blockStyles'], theme['categoryStyles'], theme['componentStyles']);
 };
 
 /**

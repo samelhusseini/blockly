@@ -141,7 +141,7 @@ Blockly.Mutator.prototype.createEditor_ = function() {
   } else {
     var quarkXml = null;
   }
-  var workspaceOptions = {
+  var workspaceOptions = /** @type {!Blockly.Options} */ ({
     // If you want to enable disabling, also remove the
     // event filter from workspaceChanged_ .
     disable: false,
@@ -156,7 +156,7 @@ Blockly.Mutator.prototype.createEditor_ = function() {
     getMetrics: this.getFlyoutMetrics_.bind(this),
     setMetrics: null,
     renderer: this.block_.workspace.options.renderer
-  };
+  });
   this.workspace_ = new Blockly.WorkspaceSvg(workspaceOptions);
   this.workspace_.isMutator = true;
   this.workspace_.addChangeListener(Blockly.Events.disableOrphans);

@@ -43,7 +43,8 @@ goog.require('Blockly.Xml');
 
 /**
  * Class for a flyout.
- * @param {!Object} workspaceOptions Dictionary of options for the workspace.
+ * @param {!Blockly.Options} workspaceOptions Dictionary of options for the
+ *     workspace.
  * @constructor
  */
 Blockly.Flyout = function(workspaceOptions) {

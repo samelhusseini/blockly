@@ -169,7 +169,7 @@ Blockly.Toolbox.prototype.init = function() {
         }
         Blockly.Touch.clearTouchIdentifier();  // Don't block future drags.
       }, /* opt_noCaptureIdentifier */ false, /* opt_noPreventDefault */ true);
-  var workspaceOptions = {
+  var workspaceOptions = /** @type {!Blockly.Options} */ ({
     disabledPatternId: workspace.options.disabledPatternId,
     parentWorkspace: workspace,
     RTL: workspace.RTL,
@@ -177,7 +177,7 @@ Blockly.Toolbox.prototype.init = function() {
     horizontalLayout: workspace.horizontalLayout,
     toolboxPosition: workspace.options.toolboxPosition,
     renderer: workspace.options.renderer
-  };
+  });
   /**
    * @type {!Blockly.Flyout}
    * @private

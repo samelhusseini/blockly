@@ -1,7 +1,7 @@
 
 declare module Blockly {
 
-  interface BlocklyOptions {
+  interface WorkspaceOptions {
     toolbox?: HTMLElement | string;
     readOnly?: boolean;
     trashcan?: boolean;
