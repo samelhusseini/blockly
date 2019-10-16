@@ -27,6 +27,7 @@ goog.require('Blockly.blockRendering.Renderer');
 goog.require('Blockly.utils.object');
 goog.require('Blockly.minimalist.ConstantProvider');
 goog.require('Blockly.minimalist.Drawer');
+goog.require('Blockly.minimalist.PathObject');
 goog.require('Blockly.minimalist.RenderInfo');
 
 
@@ -75,6 +76,17 @@ Blockly.minimalist.Renderer.prototype.makeRenderInfo_ = function(block) {
 Blockly.minimalist.Renderer.prototype.makeDrawer_ = function(block, info) {
   return new Blockly.minimalist.Drawer(block,
       /** @type {!Blockly.minimalist.RenderInfo} */ (info));
+};
+
+/**
+ * Create a new instance of a renderer path object.
+ * @param {!SVGElement} root The root SVG element.
+ * @return {!Blockly.minimalist.PathObject} The renderer path object.
+ * @package
+ * @override
+ */
+Blockly.minimalist.Renderer.prototype.makePathObject = function(root) {
+  return new Blockly.minimalist.PathObject(root);
 };
 
 Blockly.blockRendering.register('minimalist', Blockly.minimalist.Renderer);

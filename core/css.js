@@ -772,6 +772,10 @@ Blockly.Css.CONTENT = [
   '.blocklyDropDownDiv .goog-menuitem-rtl .goog-menuitem-icon {',
     'float: right;',
     'margin-right: -24px;',
-  '}'
+  '}',
+
+  '.blocklyBlock {',
+    'border-radius: 5px;',
+  '}',
   /* eslint-enable indent */
 ];
