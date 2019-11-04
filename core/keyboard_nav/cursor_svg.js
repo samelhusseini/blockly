@@ -482,6 +482,15 @@ Blockly.CursorSvg.prototype.hide = function() {
 };
 
 /**
+ * Decide whether or not to draw the cursor.
+ * @return {boolean} True if we should draw the cursor.
+ * @package
+ */
+Blockly.CursorSvg.prototype.shouldDraw = function() {
+  return this.workspace_.keyboardAccessibilityMode;
+};
+
+/**
  * Update the cursor.
  * @param {Blockly.ASTNode} oldNode The previous node the cursor was on or null.
  * @param {Blockly.ASTNode} curNode The node that we want to draw the cursor for.

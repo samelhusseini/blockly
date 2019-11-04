@@ -149,7 +149,9 @@ Blockly.navigation.focusWorkspace_ = function() {
 
   Blockly.navigation.resetFlyout_(reset);
   Blockly.navigation.currentState_ = Blockly.navigation.STATE_WS;
-  if (topBlocks.length > 0) {
+  if (cursor.getCurNode()) {
+    cursor.setCurNode(cursor.getCurNode());
+  } else if (topBlocks.length > 0) {
     cursor.setCurNode(Blockly.navigation.getTopNode(topBlocks[0]));
   } else {
     // TODO: Find the center of the visible workspace.
