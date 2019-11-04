@@ -687,6 +687,12 @@ Blockly.BlockSvg.prototype.tab = function(start, forward) {
   if (nextNode) {
     var nextField = /** @type {!Blockly.Field} */ (nextNode.getLocation());
     nextField.showEditor();
+
+    // Update the workspace cursor with the new node.
+    var wsCursor = this.workspace.getCursor();
+    if (wsCursor) {
+      wsCursor.setCurNode(nextNode);
+    }
   }
 };
 
