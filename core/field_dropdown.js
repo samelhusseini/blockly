@@ -114,11 +114,25 @@ Blockly.FieldDropdown = function(menuGenerator, opt_validator, opt_config) {
   this.imageElement_ = null;
 
   /**
-   * SVG arrow element.
+   * Text arrow element.
    * @type {SVGTSpanElement}
    * @private
    */
   this.arrow_ = null;
+
+  /**
+   * SVG arrow element.
+   * @type {SVGElement}
+   * @private
+   */
+  this.svgArrow_ = null;
+
+  /**
+   * SVG arrow size.
+   * @type {number}
+   * @private
+   */
+  this.svgArrowSize_ = 0;
 };
 Blockly.utils.object.inherits(Blockly.FieldDropdown, Blockly.Field);
 
@@ -188,7 +202,9 @@ Blockly.FieldDropdown.ARROW_CHAR =
 /**
  * Mouse cursor style when over the hotspot that initiates the editor.
  */
-Blockly.FieldDropdown.prototype.CURSOR = 'default';
+Blockly.FieldDropdown.prototype.CURSOR = 'pointer';
+
+Blockly.FieldDropdown.DROPDOWN_SVG_DATAURI = 'data:image/svg+xml;base64,PHN2ZyBpZD0iTGF5ZXJfMSIgZGF0YS1uYW1lPSJMYXllciAxIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMi43MSIgaGVpZ2h0PSI4Ljc5IiB2aWV3Qm94PSIwIDAgMTIuNzEgOC43OSI+PHRpdGxlPmRyb3Bkb3duLWFycm93PC90aXRsZT48ZyBvcGFjaXR5PSIwLjEiPjxwYXRoIGQ9Ik0xMi43MSwyLjQ0QTIuNDEsMi40MSwwLDAsMSwxMiw0LjE2TDguMDgsOC4wOGEyLjQ1LDIuNDUsMCwwLDEtMy40NSwwTDAuNzIsNC4xNkEyLjQyLDIuNDIsMCwwLDEsMCwyLjQ0LDIuNDgsMi40OCwwLDAsMSwuNzEuNzFDMSwwLjQ3LDEuNDMsMCw2LjM2LDBTMTEuNzUsMC40NiwxMiwuNzFBMi40NCwyLjQ0LDAsMCwxLDEyLjcxLDIuNDRaIiBmaWxsPSIjMjMxZjIwIi8+PC9nPjxwYXRoIGQ9Ik02LjM2LDcuNzlhMS40MywxLjQzLDAsMCwxLTEtLjQyTDEuNDIsMy40NWExLjQ0LDEuNDQsMCwwLDEsMC0yYzAuNTYtLjU2LDkuMzEtMC41Niw5Ljg3LDBhMS40NCwxLjQ0LDAsMCwxLDAsMkw3LjM3LDcuMzdBMS40MywxLjQzLDAsMCwxLDYuMzYsNy43OVoiIGZpbGw9IiNmZmYiLz48L3N2Zz4=';
 
 /**
  * Create the block UI for this dropdown.
@@ -203,17 +219,37 @@ Blockly.FieldDropdown.prototype.initView = function() {
             'y': Blockly.FieldDropdown.IMAGE_Y_OFFSET
           }, this.fieldGroup_));
 
-  this.arrow_ = /** @type {!SVGTSpanElement} */
-      (Blockly.utils.dom.createSvgElement('tspan',
-          {}, this.textElement_));
-  this.arrow_.appendChild(document.createTextNode(
-      this.sourceBlock_.RTL ?
-      Blockly.FieldDropdown.ARROW_CHAR + ' ' :
-      ' ' + Blockly.FieldDropdown.ARROW_CHAR));
-  if (this.sourceBlock_.RTL) {
-    this.textElement_.insertBefore(this.arrow_, this.textContent_);
+  if (this.constants_.FIELD_DROPDOWN_SVG_ARROW) {
+    this.svgArrowSize_ = 12;
+
+    // IE and iOS have issues with the <use> element, place the image inline instead
+    // https://developer.mozilla.org/en-US/docs/Web/SVG/Element/use#Browser_compatibility
+    var placeImageInline = true; //Blockly.utils.userAgent.IE || Blockly.utils.userAgent.IOS;
+    var arrowElement = placeImageInline ? 'image' : 'use';
+    var arrowHref = placeImageInline ? Blockly.FieldDropdown.DROPDOWN_SVG_DATAURI : '#blocklyDropdownArrowSvg';
+
+    this.svgArrow_ = Blockly.utils.dom.createSvgElement(arrowElement, {
+      'height': this.svgArrowSize_ + 'px',
+      'width': this.svgArrowSize_ + 'px'
+    });
+    this.svgArrow_.setAttributeNS('http://www.w3.org/1999/xlink',
+        'xlink:href', arrowHref);
+
+    this.textElement_.parentNode.appendChild(this.svgArrow_);
   } else {
-    this.textElement_.appendChild(this.arrow_);
+    this.arrow_ = /** @type {!SVGTSpanElement} */
+        (Blockly.utils.dom.createSvgElement('tspan',
+            {}, this.textElement_));
+    this.arrow_.appendChild(document.createTextNode(
+        this.sourceBlock_.RTL ?
+        Blockly.FieldDropdown.ARROW_CHAR + ' ' :
+        ' ' + Blockly.FieldDropdown.ARROW_CHAR));
+
+    if (this.sourceBlock_.RTL) {
+      this.textElement_.insertBefore(this.arrow_, this.textContent_);
+    } else {
+      this.textElement_.appendChild(this.arrow_);
+    }
   }
 };
 
@@ -242,6 +278,8 @@ Blockly.FieldDropdown.prototype.showEditor_ = function() {
         /** @type {!Element} */ (this.selectedMenuItem_.getElement()),
         /** @type {!Element} */ (this.menu_.getElement()));
   }
+
+  this.applyColour();
 };
 
 /**
@@ -296,6 +334,7 @@ Blockly.FieldDropdown.prototype.dropdownDispose_ = function() {
   }
   this.menu_ = null;
   this.selectedMenuItem_ = null;
+  this.applyColour();
 };
 
 /**
@@ -469,6 +508,14 @@ Blockly.FieldDropdown.prototype.doValueUpdate_ = function(newValue) {
  * @package
  */
 Blockly.FieldDropdown.prototype.applyColour = function() {
+  if (this.borderRect_) {
+    this.borderRect_.setAttribute('stroke', this.sourceBlock_.style.colourTertiary);
+    if (this.menu_) {
+      this.borderRect_.setAttribute('fill', this.sourceBlock_.style.colourTertiary);
+    } else {
+      this.borderRect_.setAttribute('fill', this.sourceBlock_.style.colourPrimary);
+    }
+  }
   // Update arrow's colour.
   if (this.sourceBlock_ && this.arrow_) {
     if (this.sourceBlock_.isShadow()) {
@@ -499,6 +546,10 @@ Blockly.FieldDropdown.prototype.render_ = function() {
   }
   this.borderRect_.setAttribute('height', this.size_.height);
   this.borderRect_.setAttribute('width', this.size_.width);
+};
+
+Blockly.FieldDropdown.prototype.shouldShowRect = function() {
+  return true;
 };
 
 /**
@@ -547,14 +598,56 @@ Blockly.FieldDropdown.prototype.renderSelectedImage_ = function(imageJson) {
 Blockly.FieldDropdown.prototype.renderSelectedText_ = function() {
   // Retrieves the selected option to display through getText_.
   this.textContent_.nodeValue = this.getDisplayText_();
+  Blockly.utils.dom.addClass(this.textElement_, 'blocklyDropdownText');
   this.textElement_.setAttribute('text-anchor', 'start');
   this.textElement_.setAttribute('x', Blockly.Field.DEFAULT_TEXT_OFFSET);
   // Height and width include the border rect.
-  this.size_.height = Blockly.Field.BORDER_RECT_DEFAULT_HEIGHT;
-  this.size_.width = Blockly.utils.dom.getFastTextWidth(this.textElement_,
+  var width = Blockly.utils.dom.getFastTextWidth(this.textElement_,
       Blockly.Field.FONTSIZE, Blockly.Field.FONTWEIGHT,
-      Blockly.Field.FONTFAMILY) +
-      Blockly.Field.X_PADDING;
+      Blockly.Field.FONTFAMILY);
+
+  this.size_.height = this.constants_.FIELD_DROPDOWN_HEIGHT;
+  if (this.svgArrow_) {
+    this.textElement_.setAttribute('y', this.size_.height / 2);
+    width += 8;
+    this.arrowY_ = this.size_.height / 2 - this.svgArrowSize_ / 2;
+    var arrowWidth = this.positionArrow(width);
+    width += arrowWidth + 8;
+  } else {
+    width += Blockly.Field.X_PADDING;
+  }
+  this.size_.width = width;
+};
+
+
+/**
+ * Position a drop-down arrow at the appropriate location at render-time.
+ * @param {number} x X position the arrow is being rendered at, in px.
+ * @return {number} Amount of space the arrow is taking up, in px.
+ */
+Blockly.FieldDropdown.prototype.positionArrow = function(x) {
+  if (!this.svgArrow_) {
+    return 0;
+  }
+
+  var padding = 8;
+
+  var addedWidth = 0;
+  if (this.sourceBlock_.RTL) {
+    this.arrowX_ = this.svgArrowSize_ - padding;
+    addedWidth = this.svgArrowSize_ + padding;
+  } else {
+    this.arrowX_ = x + padding / 2;
+    addedWidth = this.svgArrowSize_ + padding;
+  }
+  if (this.box_) {
+    // Bump positioning to the right for a box-type drop-down.
+    this.arrowX_ += 8;
+  }
+  this.svgArrow_.setAttribute('transform',
+      'translate(' + this.arrowX_ + ',' + this.arrowY_ + ')'
+  );
+  return addedWidth;
 };
 
 /**

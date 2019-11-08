@@ -441,16 +441,16 @@ Blockly.FieldTextInput.prototype.resizeEditor_ = function() {
   var xy = new Blockly.utils.Coordinate(x, bBox.top);
 
   // Shift by a few pixels to line up exactly.
-  xy.y += 1;
-  if (Blockly.utils.userAgent.GECKO && Blockly.WidgetDiv.DIV.style.top) {
-    // Firefox mis-reports the location of the border by a pixel
-    // once the WidgetDiv is moved into position.
-    xy.x -= 1;
-    xy.y -= 1;
-  }
-  if (Blockly.utils.userAgent.WEBKIT) {
-    xy.y -= 3;
-  }
+  // xy.y += 1;
+  // if (Blockly.utils.userAgent.GECKO && Blockly.WidgetDiv.DIV.style.top) {
+  //   // Firefox mis-reports the location of the border by a pixel
+  //   // once the WidgetDiv is moved into position.
+  //   xy.x -= 1;
+  //   xy.y -= 1;
+  // }
+  // if (Blockly.utils.userAgent.WEBKIT) {
+  //   xy.y -= 3;
+  // }
   div.style.left = xy.x + 'px';
   div.style.top = xy.y + 'px';
 };

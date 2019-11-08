@@ -92,6 +92,19 @@ Blockly.zelos.ConstantProvider = function() {
   this.EMPTY_INLINE_INPUT_HEIGHT = 8 * this.GRID_UNIT;
 
   /**
+   * @override
+   */
+  this.FIELD_BORDER_RECT_RADIUS = this.CORNER_RADIUS;
+
+  this.FIELD_BASELINE_CENTER = true;
+
+  this.FIELD_DROPDOWN_SVG_ARROW = true;
+
+  this.FIELD_X_PADDING = 16;
+
+  this.FIELD_DROPDOWN_HEIGHT = 8 * this.GRID_UNIT;
+
+  /**
    * The ID of the highlight glow filter, or the empty string if no filter is
    * set.
    * @type {string}

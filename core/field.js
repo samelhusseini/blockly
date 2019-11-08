@@ -303,6 +303,8 @@ Blockly.Field.prototype.setSourceBlock = function(block) {
     throw Error('Field already bound to a block.');
   }
   this.sourceBlock_ = block;
+  this.constants_ =
+      this.getSourceBlock().workspace.getRenderer().getConstants();
 };
 
 /**
@@ -368,8 +370,8 @@ Blockly.Field.prototype.createBorderRect_ = function() {
   this.borderRect_ = /** @type {!SVGRectElement} **/
       (Blockly.utils.dom.createSvgElement('rect',
           {
-            'rx': 4,
-            'ry': 4,
+            'rx': this.constants_.FIELD_BORDER_RECT_RADIUS,
+            'ry': this.constants_.FIELD_BORDER_RECT_RADIUS,
             'x': 0,
             'y': 0,
             'height': this.size_.height,
@@ -390,7 +392,10 @@ Blockly.Field.prototype.createTextElement_ = function() {
           {
             'class': 'blocklyText',
             // The y position is the baseline of the text.
-            'y': Blockly.Field.TEXT_DEFAULT_HEIGHT,
+            'y': this.constants_.FIELD_BASELINE_CENTER ?
+              this.size_.height / 2 : Blockly.Field.TEXT_DEFAULT_HEIGHT,
+            'dominant-baseline': this.constants_.FIELD_BASELINE_CENTER ?
+              'central' : '',
             'x': xOffset
           }, this.fieldGroup_));
   this.textContent_ = document.createTextNode('');

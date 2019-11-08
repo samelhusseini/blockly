@@ -106,7 +106,8 @@ Blockly.FieldLabel.prototype.configure_ = function(config) {
 Blockly.FieldLabel.prototype.initView = function() {
   this.createTextElement_();
   // The y attribute of an SVG text element is the baseline.
-  this.textElement_.setAttribute('y', this.size_.height);
+  this.textElement_.setAttribute('y', this.constants_.FIELD_BASELINE_CENTER ?
+    this.size_.height / 2 : this.size_.height);
   if (this.class_) {
     Blockly.utils.dom.addClass(this.textElement_, this.class_);
   }

@@ -344,8 +344,8 @@ Blockly.Css.CONTENT = [
     'pointer-events: none;',
   '}',
 
-  '.blocklyNonEditableText>rect,',
-  '.blocklyEditableText>rect {',
+  '.injectionDiv:not(.zelos-renderer) .blocklyNonEditableText>rect,',
+  '.injectionDiv:not(.zelos-renderer) .blocklyEditableText>rect {',
     'fill: #fff;',
     'fill-opacity: .6;',
   '}',
@@ -353,6 +353,15 @@ Blockly.Css.CONTENT = [
   '.blocklyNonEditableText>text,',
   '.blocklyEditableText>text {',
     'fill: #000;',
+  '}',
+
+  '.zelos-renderer .blocklyNonEditableText>text,',
+  '.zelos-renderer .blocklyEditableText>text {',
+    'fill: #575E75;',
+  '}',
+
+  '.zelos-renderer .blocklyDropdownText {',
+    'fill: #fff !important;',
   '}',
 
   '.blocklyEditableText:hover>rect {',
@@ -492,6 +501,7 @@ Blockly.Css.CONTENT = [
     'padding: 0;',
     'width: 100%;',
     'text-align: center;',
+    'display: block;',
   '}',
 
   /* Edge and IE introduce a close icon when the input value is longer than a

@@ -136,6 +136,14 @@ Blockly.blockRendering.ConstantProvider = function() {
    */
   this.JAGGED_TEETH_WIDTH = 6;
 
+  this.FIELD_BORDER_RECT_RADIUS = 4;
+
+  this.FIELD_BASELINE_CENTER = false;
+
+  this.FIELD_X_PADDING = 16;
+
+  this.FIELD_DROPDOWN_HEIGHT = 16;
+
   /**
    * The ID of the emboss filter, or the empty string if no filter is set.
    * @type {string}
