@@ -291,10 +291,10 @@ Blockly.zelos.RenderInfo.prototype.getSpacerRowHeight_ = function(
     return this.constants_.EMPTY_BLOCK_SPACER_HEIGHT;
   }
   // Top and bottom rows act as a spacer so we don't need any extra padding.
-  if ((Blockly.blockRendering.Types.isTopRow(prev) && !prev.hasPreviousConnection)) {
+  if (Blockly.blockRendering.Types.isTopRow(prev)) {
     return this.constants_.NO_PADDING;
   }
-  if ((Blockly.blockRendering.Types.isBottomRow(next) && !next.hasNextConnection)) {
+  if (Blockly.blockRendering.Types.isBottomRow(next)) {
     return this.constants_.NO_PADDING;
   }
   return this.constants_.MEDIUM_PADDING;

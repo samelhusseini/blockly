@@ -355,6 +355,11 @@ Blockly.Css.CONTENT = [
     'fill: #000;',
   '}',
 
+  // '.zelos-renderer .blocklyNonEditableText>rect,',
+  // '.zelos-renderer .blocklyEditableText>rect {',
+  //   'fill: #fff;',
+  // '}',
+
   '.zelos-renderer .blocklyNonEditableText>text,',
   '.zelos-renderer .blocklyEditableText>text {',
     'fill: #575E75;',

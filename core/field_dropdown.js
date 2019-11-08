@@ -600,7 +600,7 @@ Blockly.FieldDropdown.prototype.renderSelectedText_ = function() {
   this.textContent_.nodeValue = this.getDisplayText_();
   Blockly.utils.dom.addClass(this.textElement_, 'blocklyDropdownText');
   this.textElement_.setAttribute('text-anchor', 'start');
-  this.textElement_.setAttribute('x', Blockly.Field.DEFAULT_TEXT_OFFSET);
+  this.textElement_.setAttribute('x', this.constants_.FIELD_DEFAULT_TEXT_OFFSET);
   // Height and width include the border rect.
   var width = Blockly.utils.dom.getFastTextWidth(this.textElement_,
       Blockly.Field.FONTSIZE, Blockly.Field.FONTWEIGHT,
@@ -609,10 +609,10 @@ Blockly.FieldDropdown.prototype.renderSelectedText_ = function() {
   this.size_.height = this.constants_.FIELD_DROPDOWN_HEIGHT;
   if (this.svgArrow_) {
     this.textElement_.setAttribute('y', this.size_.height / 2);
-    width += 8;
+    width += this.constants_.FIELD_DEFAULT_TEXT_OFFSET;
     this.arrowY_ = this.size_.height / 2 - this.svgArrowSize_ / 2;
     var arrowWidth = this.positionArrow(width);
-    width += arrowWidth + 8;
+    width += arrowWidth + this.constants_.FIELD_DEFAULT_TEXT_OFFSET;
   } else {
     width += Blockly.Field.X_PADDING;
   }

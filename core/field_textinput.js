@@ -181,6 +181,17 @@ Blockly.FieldTextInput.prototype.doValueUpdate_ = function(newValue) {
 };
 
 /**
+ * Create the block UI for this text input.
+ * @package
+ */
+Blockly.FieldTextInput.prototype.initView = function() {
+  Blockly.FieldTextInput.superClass_.initView.call(this);
+
+  this.textElement_.setAttribute('dominant-baseline',
+    this.constants_.FIELD_BASELINE_CENTER ? 'central' : '');
+};
+
+/**
  * Updates the colour of the htmlInput given the current validity of the
  * field's value.
  * @protected

@@ -144,6 +144,8 @@ Blockly.blockRendering.ConstantProvider = function() {
 
   this.FIELD_DROPDOWN_HEIGHT = 16;
 
+  this.FIELD_DEFAULT_TEXT_OFFSET = 5;
+
   /**
    * The ID of the emboss filter, or the empty string if no filter is set.
    * @type {string}

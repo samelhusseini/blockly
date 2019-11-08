@@ -394,7 +394,7 @@ Blockly.Field.prototype.createTextElement_ = function() {
             'y': this.constants_.FIELD_BASELINE_CENTER ?
               this.size_.height / 2 : Blockly.Field.TEXT_DEFAULT_HEIGHT,
             'dominant-baseline': this.constants_.FIELD_BASELINE_CENTER ?
-              'central' : '',
+              'middle' : '',
             'x': xOffset
           }, this.fieldGroup_));
   this.textContent_ = document.createTextNode('');
