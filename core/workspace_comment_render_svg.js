@@ -435,7 +435,9 @@ Blockly.WorkspaceCommentSvg.prototype.setFocus = function() {
     if (comment.disposed_) {
       return;
     }
-    comment.textarea_.focus();
+    comment.textarea_.focus({
+      preventScroll: true
+    });
     comment.addFocus();
     Blockly.utils.dom.addClass(
         comment.svgRectTarget_, 'blocklyCommentTargetFocused');

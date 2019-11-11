@@ -217,7 +217,9 @@ Blockly.Toolbox.prototype.init = function() {
  * Focus the toolbox.
  */
 Blockly.Toolbox.prototype.focus = function() {
-  this.tree_.getElement().focus();
+  this.tree_.getElement().focus({
+    preventScroll: true
+  });
 };
 
 /**

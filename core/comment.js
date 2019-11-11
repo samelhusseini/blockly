@@ -290,7 +290,9 @@ Blockly.Comment.prototype.startEdit_ = function(_e) {
   if (this.bubble_.promote()) {
     // Since the act of moving this node within the DOM causes a loss of focus,
     // we need to reapply the focus.
-    this.textarea_.focus();
+    this.textarea_.focus({
+      preventScroll: true
+    });
   }
 
   this.cachedText_ = this.model_.text;

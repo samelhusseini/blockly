@@ -269,7 +269,9 @@ Blockly.FieldTextInput.prototype.showInlineEditor_ = function(quietInput) {
   this.isBeingEdited_ = true;
 
   if (!quietInput) {
-    this.htmlInput_.focus();
+    this.htmlInput_.focus({
+      preventScroll: true
+    });
     this.htmlInput_.select();
   }
 };
