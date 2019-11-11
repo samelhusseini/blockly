@@ -63,7 +63,6 @@ Blockly.WidgetDiv = function() {
    * @private
    */
   this.boundsElement_ = null;
-
 };
 
 /**
@@ -230,21 +229,30 @@ Blockly.WidgetDiv.show = function(newOwner, rtl, dispose) {
 /**
  * Destroy the widget and hide the div.
  */
+Blockly.WidgetDiv.prototype.hide = function() {
+  if (this.owner_) {
+    if (this.owner_ instanceof Blockly.Field) {
+      this.owner_.getSourceBlock().workspace.markFocused();
+    }
+    this.owner_ = null;
+    this.DIV.style.display = 'none';
+    this.DIV.style.left = '';
+    this.DIV.style.top = '';
+    this.dispose_ && this.dispose_();
+    this.dispose_ = null;
+    this.DIV.innerHTML = '';
+  }
+};
+
+/**
+ * Destroy the widget and hide the div.
+ */
 Blockly.WidgetDiv.hide = function() {
   var workspace = Blockly.getMainWorkspace();
   if (!workspace) {
     return;
   }
-  var widget = workspace.widget;
-  if (widget && widget.owner_) {
-    widget.owner_ = null;
-    widget.DIV.style.display = 'none';
-    widget.DIV.style.left = '';
-    widget.DIV.style.top = '';
-    widget.dispose_ && widget.dispose_();
-    widget.dispose_ = null;
-    widget.DIV.innerHTML = '';
-  }
+  workspace.widget && workspace.widget.hide();
 };
 
 /**

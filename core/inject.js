@@ -73,8 +73,8 @@ Blockly.inject = function(container, opt_options) {
   var blockDragSurface = new Blockly.BlockDragSurfaceSvg(subContainer);
   var workspaceDragSurface = new Blockly.WorkspaceDragSurfaceSvg(subContainer);
 
-  var workspace = Blockly.createMainWorkspace_(svg, options, blockDragSurface,
-      workspaceDragSurface);
+  var workspace = Blockly.createMainWorkspace_(subContainer, svg, options,
+      blockDragSurface, workspaceDragSurface);
   Blockly.user.keyMap.setKeyMap(options.keyMap);
 
   Blockly.init_(workspace);
@@ -212,6 +212,7 @@ Blockly.createDom_ = function(container, options) {
 
 /**
  * Create a main workspace and add it to the SVG.
+ * @param {!Element} injectionDiv Injection div.
  * @param {!Element} svg SVG element with pattern defined.
  * @param {!Blockly.Options} options Dictionary of options.
  * @param {!Blockly.BlockDragSurfaceSvg} blockDragSurface Drag surface SVG
@@ -221,13 +222,14 @@ Blockly.createDom_ = function(container, options) {
  * @return {!Blockly.WorkspaceSvg} Newly created main workspace.
  * @private
  */
-Blockly.createMainWorkspace_ = function(svg, options, blockDragSurface,
-    workspaceDragSurface) {
+Blockly.createMainWorkspace_ = function(injectionDiv, svg, options,
+    blockDragSurface, workspaceDragSurface) {
   options.parentWorkspace = null;
   var mainWorkspace =
       new Blockly.WorkspaceSvg(options, blockDragSurface, workspaceDragSurface);
   mainWorkspace.scale = options.zoomOptions.startScale;
-  svg.appendChild(mainWorkspace.createDom('blocklyMainBackground'));
+  svg.appendChild(
+      mainWorkspace.createDom('blocklyMainBackground', injectionDiv));
 
   if (!options.hasCategories && options.languageTree) {
     // Add flyout as an <svg> that is a sibling of the workspace svg.
@@ -392,11 +394,6 @@ Blockly.createMainWorkspace_ = function(svg, options, blockDragSurface,
 
   // The SVG is now fully assembled.
   Blockly.svgResize(mainWorkspace);
-  mainWorkspace.widget = new Blockly.WidgetDiv();
-  mainWorkspace.widget.createDom(/** @type {!Element} */ (svg.parentNode));
-
-  mainWorkspace.dropdown = new Blockly.DropDownDiv();
-  mainWorkspace.dropdown.createDom(/** @type {!Element} */ (svg.parentNode));
   Blockly.Tooltip.createDom();
   return mainWorkspace;
 };
@@ -408,24 +405,6 @@ Blockly.createMainWorkspace_ = function(svg, options, blockDragSurface,
  */
 Blockly.init_ = function(mainWorkspace) {
   var options = mainWorkspace.options;
-  var svg = mainWorkspace.getParentSvg();
-
-  // Suppress the browser's context menu.
-  Blockly.bindEventWithChecks_(
-      /** @type {!Element} */ (svg.parentNode), 'contextmenu', null,
-      function(e) {
-        if (!Blockly.utils.isTargetInput(e)) {
-          e.preventDefault();
-        }
-      });
-
-  var workspaceResizeHandler = Blockly.bindEventWithChecks_(window, 'resize',
-      null,
-      function() {
-        Blockly.hideChaff(true);
-        Blockly.svgResize(mainWorkspace);
-      });
-  mainWorkspace.setResizeHandlerWrapper(workspaceResizeHandler);
 
   Blockly.inject.bindDocumentEvents_();
 
@@ -484,7 +463,6 @@ Blockly.inject.bindDocumentEvents_ = function() {
         }
       }
     });
-    Blockly.bindEventWithChecks_(document, 'keydown', null, Blockly.onKeyDown);
     // longStop needs to run to stop the context menu from showing up.  It
     // should run regardless of what other touch event handlers have run.
     Blockly.bindEvent_(document, 'touchend', null, Blockly.longStop_);

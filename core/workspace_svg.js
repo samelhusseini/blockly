@@ -27,6 +27,7 @@ goog.require('Blockly.BlockSvg');
 goog.require('Blockly.blockRendering');
 goog.require('Blockly.ConnectionDB');
 goog.require('Blockly.constants');
+goog.require('Blockly.DropDownDiv');
 goog.require('Blockly.Events');
 goog.require('Blockly.Events.BlockCreate');
 goog.require('Blockly.Gesture');
@@ -37,8 +38,10 @@ goog.require('Blockly.TouchGesture');
 goog.require('Blockly.utils');
 goog.require('Blockly.utils.Coordinate');
 goog.require('Blockly.utils.dom');
+goog.require('Blockly.utils.KeyCodes');
 goog.require('Blockly.utils.object');
 goog.require('Blockly.utils.Rect');
+goog.require('Blockly.WidgetDiv');
 goog.require('Blockly.Workspace');
 goog.require('Blockly.WorkspaceAudio');
 goog.require('Blockly.WorkspaceDragSurfaceSvg');
@@ -153,7 +156,6 @@ Blockly.WorkspaceSvg = function(options,
    * @type {Blockly.DropDownDiv}
    */
   this.dropdown = null;
-
 
   /**
    * The widget div for this workspace.
@@ -623,9 +625,11 @@ Blockly.WorkspaceSvg.prototype.setResizeHandlerWrapper = function(handler) {
  * Create the workspace DOM elements.
  * @param {string=} opt_backgroundClass Either 'blocklyMainBackground' or
  *     'blocklyMutatorBackground'.
+ * @param {!Element=} opt_injectionDiv Injection div.
  * @return {!Element} The workspace's SVG group.
  */
-Blockly.WorkspaceSvg.prototype.createDom = function(opt_backgroundClass) {
+Blockly.WorkspaceSvg.prototype.createDom = function(opt_backgroundClass,
+    opt_injectionDiv) {
   /**
    * <g class="blocklyWorkspace">
    *   <rect class="blocklyMainBackground" height="100%" width="100%"></rect>
@@ -666,6 +670,34 @@ Blockly.WorkspaceSvg.prototype.createDom = function(opt_backgroundClass) {
         this.onMouseDown_, false, true);
     Blockly.bindEventWithChecks_(this.svgGroup_, 'wheel', this,
         this.onMouseWheel_);
+  }
+
+  if (opt_injectionDiv) {
+    this.injectionDiv_ = opt_injectionDiv;
+    // Suppress the browser's context menu.
+    Blockly.bindEventWithChecks_(this.injectionDiv_, 'contextmenu', null,
+        function(e) {
+          if (!Blockly.utils.isTargetInput(e)) {
+            e.preventDefault();
+          }
+        });
+
+    var workspaceResizeHandler = Blockly.bindEventWithChecks_(window, 'resize',
+        this,
+        function() {
+          Blockly.hideChaff(true);
+          Blockly.svgResize(this);
+        });
+    this.setResizeHandlerWrapper(workspaceResizeHandler);
+
+    Blockly.bindEventWithChecks_(this.injectionDiv_, 'keydown', this,
+        this.onKeyDown_);
+
+    this.widget = new Blockly.WidgetDiv();
+    this.widget.createDom(this.injectionDiv_);
+
+    this.dropdown = new Blockly.DropDownDiv();
+    this.dropdown.createDom(this.injectionDiv_);
   }
 
   // Determine if there needs to be a category tree, or a simple list of
@@ -1179,6 +1211,103 @@ Blockly.WorkspaceSvg.prototype.highlightBlock = function(id, opt_state) {
       this.highlightedBlocks_.push(block);
     }
     block.setHighlighted(state);
+  }
+};
+
+/**
+ * Handle a key-down on SVG drawing surface.
+ * @param {!Event} e Key down event.
+ * @private
+ */
+Blockly.WorkspaceSvg.prototype.onKeyDown_ = function(e) {
+  if (Blockly.utils.isTargetInput(e) ||
+      (this.rendered && !this.isVisible())) {
+    // When focused on an HTML text input widget, don't trap any keys.
+    // Ignore keypresses on rendered workspaces that have been explicitly
+    // hidden.
+    return;
+  }
+
+  if (this.options.readOnly) {
+    // When in read only mode handle key actions for keyboard navigation.
+    Blockly.navigation.onKeyPress(e);
+    return;
+  }
+
+  var deleteBlock = false;
+  if (e.keyCode == Blockly.utils.KeyCodes.ESC) {
+    // Pressing esc closes the context menu.
+    Blockly.hideChaff();
+    Blockly.navigation.onBlocklyAction(Blockly.navigation.ACTION_EXIT);
+  } else if (Blockly.navigation.onKeyPress(e)) {
+    // If the keyboard or field handled the key press return.
+    return;
+  } else if (e.keyCode == Blockly.utils.KeyCodes.BACKSPACE ||
+      e.keyCode == Blockly.utils.KeyCodes.DELETE) {
+    // Delete or backspace.
+    // Stop the browser from going back to the previous page.
+    // Do this first to prevent an error in the delete code from resulting in
+    // data loss.
+    e.preventDefault();
+    // Don't delete while dragging.  Jeez.
+    if (Blockly.Gesture.inProgress()) {
+      return;
+    }
+    if (Blockly.selected && Blockly.selected.isDeletable()) {
+      deleteBlock = true;
+    }
+  } else if (e.altKey || e.ctrlKey || e.metaKey) {
+    // Don't use meta keys during drags.
+    if (Blockly.Gesture.inProgress()) {
+      return;
+    }
+    if (Blockly.selected &&
+        Blockly.selected.isDeletable() && Blockly.selected.isMovable()) {
+      // Don't allow copying immovable or undeletable blocks. The next step
+      // would be to paste, which would create additional undeletable/immovable
+      // blocks on the workspace.
+      if (e.keyCode == Blockly.utils.KeyCodes.C) {
+        // 'c' for copy.
+        Blockly.hideChaff();
+        Blockly.copy(Blockly.selected);
+      } else if (e.keyCode == Blockly.utils.KeyCodes.X &&
+          !Blockly.selected.workspace.isFlyout) {
+        // 'x' for cut, but not in a flyout.
+        // Don't even copy the selected item in the flyout.
+        Blockly.copy(Blockly.selected);
+        deleteBlock = true;
+      }
+    }
+    if (e.keyCode == Blockly.utils.KeyCodes.V) {
+      // 'v' for paste.
+      if (Blockly.clipboardXml_) {
+        // Pasting always pastes to the main workspace, even if the copy
+        // started in a flyout workspace.
+        var workspace = Blockly.clipboardSource_;
+        if (workspace.isFlyout) {
+          workspace = workspace.targetWorkspace;
+        }
+        if (Blockly.clipboardTypeCounts_ &&
+            workspace.isCapacityAvailable(Blockly.clipboardTypeCounts_)) {
+          Blockly.Events.setGroup(true);
+          workspace.paste(Blockly.clipboardXml_);
+          Blockly.Events.setGroup(false);
+        }
+      }
+    } else if (e.keyCode == Blockly.utils.KeyCodes.Z) {
+      // 'z' for undo 'Z' is for redo.
+      Blockly.hideChaff();
+      this.undo(e.shiftKey);
+    }
+  }
+  // Common code for delete and cut.
+  // Don't delete in the flyout.
+  if (deleteBlock && !Blockly.selected.workspace.isFlyout) {
+    Blockly.Events.setGroup(true);
+    Blockly.hideChaff();
+    var selected = /** @type {!Blockly.BlockSvg} */ (Blockly.selected);
+    selected.dispose(/* heal */ true, true);
+    Blockly.Events.setGroup(false);
   }
 };
 
@@ -1776,6 +1905,10 @@ Blockly.WorkspaceSvg.prototype.markFocused = function() {
   if (this.options.parentWorkspace) {
     this.options.parentWorkspace.markFocused();
   } else {
+    if (Blockly.mainWorkspace && Blockly.mainWorkspace !== this) {
+      Blockly.mainWorkspace.widget.hide();
+      Blockly.mainWorkspace.dropdown.hideWithoutAnimation();
+    }
     Blockly.mainWorkspace = this;
     // We call e.preventDefault in many event handlers which means we
     // need to explicitly grab focus (e.g from a textarea) because

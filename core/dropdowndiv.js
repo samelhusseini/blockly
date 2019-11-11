@@ -570,7 +570,7 @@ Blockly.DropDownDiv.getContentDiv = function() {
 /**
 * Clear the content of the drop-down.
 */
-Blockly.DropDownDiv.clearContent = function() {
+Blockly.DropDownDiv.prototype.clearContent = function() {
   var dropdown = Blockly.getMainWorkspace().dropdown;
   dropdown.content_.innerHTML = '';
   dropdown.content_.style.width = '';
@@ -629,13 +629,31 @@ Blockly.DropDownDiv.showPositionedByField = function(field,
       field, opt_onHide, opt_secondaryYOffset);
 };
 
-
 /**
  * Is the container visible?
  * @return {boolean} True if visible.
  */
-Blockly.DropDownDiv.isVisible = function() {
-  return !!Blockly.getMainWorkspace().dropdown.owner_;
+Blockly.DropDownDiv.prototype.isVisible = function() {
+  return !!this.owner_;
+};
+
+/**
+ * Hide the menu only if it is owned by the provided object.
+ * @param {Object} owner Object which must be owning the drop-down to hide.
+ * @param {boolean=} opt_withoutAnimation True if we should hide the dropdown
+ *     without animating.
+ * @return {boolean} True if hidden.
+ */
+Blockly.DropDownDiv.prototype.hideIfOwner = function(owner, opt_withoutAnimation) {
+  if (this.owner_ === owner) {
+    if (opt_withoutAnimation) {
+      this.hideWithoutAnimation();
+    } else {
+      this.hide();
+    }
+    return true;
+  }
+  return false;
 };
 
 /**
@@ -647,77 +665,83 @@ Blockly.DropDownDiv.isVisible = function() {
  */
 Blockly.DropDownDiv.hideIfOwner = function(owner, opt_withoutAnimation) {
   var dropdown = Blockly.getMainWorkspace().dropdown;
-  if (dropdown.owner_ === owner) {
-    if (opt_withoutAnimation) {
-      Blockly.DropDownDiv.hideWithoutAnimation();
-    } else {
-      Blockly.DropDownDiv.hide();
-    }
-    return true;
-  }
-  return false;
+  return !!dropdown && dropdown.hideIfOwner(owner, opt_withoutAnimation);
 };
 
 /**
  * Hide the menu, triggering animation.
  */
-Blockly.DropDownDiv.hide = function() {
-  var dropdown = Blockly.getMainWorkspace().dropdown;
+Blockly.DropDownDiv.prototype.hide = function() {
   // Start the animation by setting the translation and fading out.
-  var div = dropdown.DIV_;
+  var div = this.DIV_;
   // Reset to (initialX, initialY) - i.e., no translation.
   div.style.transform = 'translate(0, 0)';
   div.style.opacity = 0;
   // Finish animation - reset all values to default.
-  dropdown.animateOutTimer_ =
-      setTimeout(function() {
-        Blockly.DropDownDiv.hideWithoutAnimation();
-      }, Blockly.DropDownDiv.ANIMATION_TIME * 1000);
-  if (dropdown.onHide_) {
-    dropdown.onHide_();
-    dropdown.onHide_ = null;
+  this.animateOutTimer_ =
+      setTimeout(this.hideWithoutAnimation.bind(this),
+          Blockly.DropDownDiv.ANIMATION_TIME * 1000);
+  if (this.onHide_) {
+    this.onHide_();
+    this.onHide_ = null;
   }
 };
 
 /**
  * Hide the menu, without animation.
  */
-Blockly.DropDownDiv.hideWithoutAnimation = function() {
-  if (!Blockly.getMainWorkspace()) {
+Blockly.DropDownDiv.prototype.hideWithoutAnimation = function() {
+  if (!this.isVisible()) {
     return;
   }
-  var dropdown = Blockly.getMainWorkspace().dropdown;
-  if (!Blockly.DropDownDiv.isVisible()) {
-    return;
-  }
-  if (dropdown.animateOutTimer_) {
-    clearTimeout(dropdown.animateOutTimer_);
+  if (this.animateOutTimer_) {
+    clearTimeout(this.animateOutTimer_);
   }
 
   // Reset style properties in case this gets called directly
   // instead of hide() - see discussion on #2551.
-  var div = dropdown.DIV_;
+  var div = this.DIV_;
   div.style.transform = '';
   div.style.left = '';
   div.style.top = '';
   div.style.opacity = 0;
   div.style.display = 'none';
-  div.style.backgroundColor = Blockly.DropDownDiv.DEFAULT_DROPDOWN_COLOUR;
-  div.style.borderColor = Blockly.DropDownDiv.DEFAULT_DROPDOWN_BORDER_COLOUR;
+  div.style.backgroundColor = this.DEFAULT_DROPDOWN_COLOUR;
+  div.style.borderColor = this.DEFAULT_DROPDOWN_BORDER_COLOUR;
 
-  if (dropdown.onHide_) {
-    dropdown.onHide_();
-    dropdown.onHide_ = null;
+  if (this.onHide_) {
+    this.onHide_();
+    this.onHide_ = null;
   }
-  Blockly.DropDownDiv.clearContent();
-  if (dropdown.owner_) {
-    dropdown.owner_.getSourceBlock().workspace.markFocused();
+  this.clearContent();
+  if (this.owner_) {
+    this.owner_.getSourceBlock().workspace.markFocused();
   }
-  dropdown.owner_ = null;
+  this.owner_ = null;
+};
 
+/**
+ * Hide the menu, triggering animation.
+ */
+Blockly.DropDownDiv.hide = function() {
+  var workspace = Blockly.getMainWorkspace();
+  if (!workspace) {
+    return;
+  }
+  workspace.dropdown && workspace.dropdown.hide();
 };
 
 
+/**
+ * Hide the menu, without animation.
+ */
+Blockly.DropDownDiv.hideWithoutAnimation = function() {
+  var workspace = Blockly.getMainWorkspace();
+  if (!workspace) {
+    return;
+  }
+  workspace.dropdown && workspace.dropdown.hideWithoutAnimation();
+};
 
 /**
  * Repositions the dropdownDiv on window resize. If it doesn't know how to

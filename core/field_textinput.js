@@ -349,6 +349,10 @@ Blockly.FieldTextInput.prototype.bindInputEvents_ = function(htmlInput) {
   this.onKeyInputWrapper_ =
       Blockly.bindEventWithChecks_(
           htmlInput, 'input', this, this.onHtmlInputChange_);
+  // Close the editor when we lose focus.
+  this.onBlurWrapper_ =
+      Blockly.bindEventWithChecks_(
+          htmlInput, 'blur', this, this.onHtmlInputBlur_);
 };
 
 /**
@@ -362,6 +366,9 @@ Blockly.FieldTextInput.prototype.unbindInputEvents_ = function() {
   if (this.onKeyInputWrapper_) {
     Blockly.unbindEvent_(this.onKeyInputWrapper_);
   }
+  if (this.onBlurWrapper_) {
+    Blockly.unbindEvent_(this.onBlurWrapper_);
+  }
 };
 
 /**
@@ -371,18 +378,28 @@ Blockly.FieldTextInput.prototype.unbindInputEvents_ = function() {
  */
 Blockly.FieldTextInput.prototype.onHtmlInputKeyDown_ = function(e) {
   if (e.keyCode == Blockly.utils.KeyCodes.ENTER) {
-    Blockly.WidgetDiv.hide();
-    Blockly.DropDownDiv.hideWithoutAnimation();
+    this.getSourceBlock().workspace.widget.hide();
+    this.getSourceBlock().workspace.dropdown.hideWithoutAnimation();
   } else if (e.keyCode == Blockly.utils.KeyCodes.ESC) {
     this.htmlInput_.value = this.htmlInput_.defaultValue;
-    Blockly.WidgetDiv.hide();
-    Blockly.DropDownDiv.hideWithoutAnimation();
+    this.getSourceBlock().workspace.widget.hide();
+    this.getSourceBlock().workspace.dropdown.hideWithoutAnimation();
   } else if (e.keyCode == Blockly.utils.KeyCodes.TAB) {
-    Blockly.WidgetDiv.hide();
-    Blockly.DropDownDiv.hideWithoutAnimation();
+    this.getSourceBlock().workspace.widget.hide();
+    this.getSourceBlock().workspace.dropdown.hideWithoutAnimation();
     this.sourceBlock_.tab(this, !e.shiftKey);
     e.preventDefault();
   }
+};
+
+/**
+ * Handle a blur event to the editor.
+ * @param {!Event} _e Blur event.
+ * @protected
+ */
+Blockly.FieldTextInput.prototype.onHtmlInputBlur_ = function(_e) {
+  this.getSourceBlock().workspace.widget.hide();
+  this.getSourceBlock().workspace.dropdown.hideWithoutAnimation();
 };
 
 /**

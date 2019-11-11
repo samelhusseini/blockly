@@ -100,6 +100,7 @@ Blockly.navigation.focusToolbox_ = function() {
   var workspace = Blockly.getMainWorkspace();
   var toolbox = workspace.getToolbox();
   if (toolbox) {
+    toolbox.focus();
     Blockly.navigation.currentState_ = Blockly.navigation.STATE_TOOLBOX;
     Blockly.navigation.resetFlyout_(false /* shouldHide */);
 
@@ -147,6 +148,7 @@ Blockly.navigation.focusWorkspace_ = function() {
   var reset = !!workspace.getToolbox();
   var topBlocks = workspace.getTopBlocks(true);
 
+  workspace.markFocused();
   Blockly.navigation.resetFlyout_(reset);
   Blockly.navigation.currentState_ = Blockly.navigation.STATE_WS;
   if (topBlocks.length > 0) {

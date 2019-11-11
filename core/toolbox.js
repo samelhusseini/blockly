@@ -214,6 +214,13 @@ Blockly.Toolbox.prototype.init = function() {
 };
 
 /**
+ * Focus the toolbox.
+ */
+Blockly.Toolbox.prototype.focus = function() {
+  this.tree_.getElement().focus();
+};
+
+/**
  * Fill the toolbox with categories and blocks.
  * @param {Node} languageTree DOM tree of blocks.
  * @package

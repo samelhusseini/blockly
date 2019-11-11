@@ -281,6 +281,10 @@ Blockly.Workspace.prototype.dispose = function() {
       this.themeManager_ = null;
     }
   }
+
+  if (Blockly.mainWorkspace === this) {
+    Blockly.mainWorkspace = null;
+  }
 };
 
 /**
