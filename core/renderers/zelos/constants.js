@@ -94,6 +94,16 @@ Blockly.zelos.ConstantProvider = function() {
   /**
    * @override
    */
+  this.TOP_ROW_MIN_HEIGHT = this.SMALL_PADDING;
+
+  /**
+   * @override
+   */
+  this.BOTTOM_ROW_MIN_HEIGHT = this.SMALL_PADDING;
+
+  /**
+   * @override
+   */
   this.STATEMENT_BOTTOM_SPACER = -this.NOTCH_HEIGHT;
 
   /**

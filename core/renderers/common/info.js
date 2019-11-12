@@ -288,7 +288,7 @@ Blockly.blockRendering.RenderInfo.prototype.populateTopRow_ = function() {
   if (precedesStatement && !this.block_.isCollapsed()) {
     this.topRow.minHeight = this.constants_.LARGE_PADDING;
   } else {
-    this.topRow.minHeight = this.constants_.MEDIUM_PADDING;
+    this.topRow.minHeight = this.constants_.TOP_ROW_MIN_HEIGHT;
   }
 
   var rightSquareCorner = this.topRow.hasRightSquareCorner(this.block_);
@@ -320,7 +320,7 @@ Blockly.blockRendering.RenderInfo.prototype.populateBottomRow_ = function() {
     this.bottomRow.minHeight =
       this.constants_.AFTER_STATEMENT_BOTTOM_ROW_MIN_HEIGHT;
   } else {
-    this.bottomRow.minHeight = this.constants_.MEDIUM_PADDING;
+    this.bottomRow.minHeight = this.constants_.BOTTOM_ROW_MIN_HEIGHT;
   }
 
   var leftSquareCorner = this.bottomRow.hasLeftSquareCorner(this.block_);

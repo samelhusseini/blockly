@@ -55,6 +55,9 @@ Blockly.blockRendering.ConstantProvider = function() {
   this.NOTCH_WIDTH = 15;
   this.NOTCH_HEIGHT = 4;
 
+  this.TOP_ROW_MIN_HEIGHT = this.MEDIUM_PADDING;
+  this.BOTTOM_ROW_MIN_HEIGHT = this.MEDIUM_PADDING;
+
   // This is the minimum width of a block measuring from the end of a rounded
   // corner
   this.MIN_BLOCK_WIDTH = 12;
