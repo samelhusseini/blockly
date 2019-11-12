@@ -63,6 +63,10 @@ Blockly.WidgetDiv.createDom = function() {
   Blockly.WidgetDiv.DIV = document.createElement('div');
   Blockly.WidgetDiv.DIV.className = 'blocklyWidgetDiv';
   document.body.appendChild(Blockly.WidgetDiv.DIV);
+
+  Blockly.WidgetDiv.DIV.addEventListener('keydown', function(e) {
+    Blockly.getMainWorkspace().onKeyDown(e);
+  });
 };
 
 /**
@@ -97,6 +101,7 @@ Blockly.WidgetDiv.hide = function() {
     Blockly.WidgetDiv.dispose_ = null;
     Blockly.WidgetDiv.DIV.innerHTML = '';
   }
+  Blockly.getMainWorkspace().markFocused();
 };
 
 /**

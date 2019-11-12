@@ -175,6 +175,9 @@ Blockly.DropDownDiv.createDom = function() {
   div.addEventListener('focusout', function() {
     Blockly.utils.dom.removeClass(div, 'focused');
   });
+  div.addEventListener('keydown', function(e) {
+    Blockly.getMainWorkspace().onKeyDown(e);
+  });
 };
 
 /**
@@ -636,6 +639,7 @@ Blockly.DropDownDiv.hideWithoutAnimation = function() {
   }
   Blockly.DropDownDiv.clearContent();
   Blockly.DropDownDiv.owner_ = null;
+  Blockly.getMainWorkspace().markFocused();
 };
 
 /**
