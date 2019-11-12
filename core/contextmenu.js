@@ -35,6 +35,7 @@ goog.require('Blockly.Msg');
 goog.require('Blockly.utils');
 goog.require('Blockly.utils.Coordinate');
 goog.require('Blockly.utils.dom');
+goog.require('Blockly.utils.style');
 goog.require('Blockly.utils.uiMenu');
 goog.require('Blockly.utils.userAgent');
 goog.require('Blockly.Xml');
@@ -117,6 +118,11 @@ Blockly.ContextMenu.populate_ = function(options, rtl) {
 Blockly.ContextMenu.position_ = function(menu, e, rtl) {
   // Record windowSize and scrollOffset before adding menu.
   var viewportBBox = Blockly.utils.getViewportBBox();
+  var workspaceOffset = Blockly.utils.style.getPageOffset(
+      Blockly.getMainWorkspace().getInjectionDiv());
+  viewportBBox.top -= workspaceOffset.y;
+  viewportBBox.left -= workspaceOffset.x;
+
   // This one is just a point, but we'll pretend that it's a rect so we can use
   // some helper functions.
   var anchorBBox = {
@@ -146,7 +152,7 @@ Blockly.ContextMenu.position_ = function(menu, e, rtl) {
  * @private
  */
 Blockly.ContextMenu.createWidget_ = function(menu) {
-  var div = Blockly.WidgetDiv.getDiv();
+  var div = Blockly.WidgetDiv.DIV;
   menu.render(div);
   var menuDom = menu.getElement();
   Blockly.utils.dom.addClass(

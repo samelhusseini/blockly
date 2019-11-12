@@ -144,40 +144,20 @@ Blockly.DropDownDiv.setBoundsElement = function(boundsElement) {
   Blockly.DropDownDiv.boundsElement_ = boundsElement;
 };
 
-Blockly.DropDownDiv.getDiv = function() {
-  var workspace = Blockly.getMainWorkspace();
-  if (workspace) {
-    return workspace.dropdownDom;
-  }
-  return null;
-};
-
-Blockly.DropDownDiv.getArrow = function() {
-  var workspace = Blockly.getMainWorkspace();
-  if (workspace) {
-    return workspace.dropdownArrowDom;
-  }
-  return null;
-};
-
 /**
  * Provide the div for inserting content into the drop-down.
  * @return {Element} Div to populate with content
  */
 Blockly.DropDownDiv.getContentDiv = function() {
-  var workspace = Blockly.getMainWorkspace();
-  if (workspace) {
-    return workspace.dropdownContentDom;
-  }
-  return null;
+  return Blockly.DropDownDiv.content_;
 };
 
 /**
  * Clear the content of the drop-down.
  */
 Blockly.DropDownDiv.clearContent = function() {
-  Blockly.DropDownDiv.getContentDiv().innerHTML = '';
-  Blockly.DropDownDiv.getContentDiv().style.width = '';
+  Blockly.DropDownDiv.content_.innerHTML = '';
+  Blockly.DropDownDiv.content_.style.width = '';
 };
 
 /**
@@ -186,8 +166,8 @@ Blockly.DropDownDiv.clearContent = function() {
  * @param {string} borderColour Any CSS colour for the border.
  */
 Blockly.DropDownDiv.setColour = function(backgroundColour, borderColour) {
-  Blockly.DropDownDiv.getDiv().style.backgroundColor = backgroundColour;
-  Blockly.DropDownDiv.getDiv().style.borderColor = borderColour;
+  Blockly.DropDownDiv.DIV_.style.backgroundColor = backgroundColour;
+  Blockly.DropDownDiv.DIV_.style.borderColor = borderColour;
 };
 
 /**
@@ -242,16 +222,9 @@ Blockly.DropDownDiv.getScaledBboxOfBlock_ = function(block) {
   var scale = block.workspace.scale;
   var scaledHeight = bBox.height * scale;
   var scaledWidth = bBox.width * scale;
-  var xy = Blockly.utils.style.getPageOffset(/** @type {!Element} */(blockSvg));
-  var containerOffset = Blockly.utils.style.getPageOffset(
-      /** @type {!Element} */ (this.boundsElement_));
-
+  var xy = Blockly.utils.style.getPageOffset(blockSvg);
   return new Blockly.utils.Rect(
-      xy.y - containerOffset.y,
-      xy.y + scaledHeight - containerOffset.y,
-      xy.x - containerOffset.x,
-      xy.x + scaledWidth - containerOffset.x);
-
+      xy.y, xy.y + scaledHeight, xy.x, xy.x + scaledWidth);
 };
 
 /**
@@ -262,15 +235,8 @@ Blockly.DropDownDiv.getScaledBboxOfBlock_ = function(block) {
  */
 Blockly.DropDownDiv.getScaledBboxOfField_ = function(field) {
   var bBox = field.getScaledBBox();
-  var containerOffset = Blockly.utils.style.getPageOffset(
-      /** @type {!Element} */ (this.boundsElement_));
-
   return new Blockly.utils.Rect(
-      bBox.top - containerOffset.y,
-      bBox.bottom - containerOffset.y,
-      bBox.left - containerOffset.x,
-      bBox.right - containerOffset.x
-  );
+      bBox.top, bBox.bottom, bBox.left, bBox.right);
 };
 
 /**
@@ -333,7 +299,7 @@ Blockly.DropDownDiv.show = function(owner, rtl, primaryX, primaryY,
   Blockly.DropDownDiv.owner_ = owner;
   Blockly.DropDownDiv.onHide_ = opt_onHide || null;
   // Set direction.
-  Blockly.DropDownDiv.getDiv().style.direction = rtl ? 'rtl' : 'ltr';
+  Blockly.DropDownDiv.DIV_.style.direction = rtl ? 'rtl' : 'ltr';
 
   // When we change `translate` multiple times in close succession,
   // Chrome may choose to wait and apply them all at once.
@@ -355,14 +321,16 @@ Blockly.DropDownDiv.show = function(owner, rtl, primaryX, primaryY,
  * @private
  */
 Blockly.DropDownDiv.getBoundsInfo_ = function() {
+  var boundPosition = Blockly.DropDownDiv.boundsElement_
+      .getBoundingClientRect();
   var boundSize = Blockly.utils.style.getSize(
       Blockly.DropDownDiv.boundsElement_);
 
   return {
-    left: 0,
-    right: boundSize.width,
-    top: 0,
-    bottom: boundSize.height,
+    left: boundPosition.left,
+    right: boundPosition.left + boundSize.width,
+    top: boundPosition.top,
+    bottom: boundPosition.top + boundSize.height,
     width: boundSize.width,
     height: boundSize.height
   };
@@ -385,7 +353,7 @@ Blockly.DropDownDiv.getPositionMetrics_ = function(primaryX, primaryY,
     secondaryX, secondaryY) {
   var boundsInfo = Blockly.DropDownDiv.getBoundsInfo_();
   var divSize = Blockly.utils.style.getSize(
-      /** @type {!Element} */ (Blockly.DropDownDiv.getDiv()));
+      /** @type {!Element} */ (Blockly.DropDownDiv.DIV_));
 
   // Can we fit in-bounds below the target?
   if (primaryY + divSize.height < boundsInfo.bottom) {
@@ -583,7 +551,7 @@ Blockly.DropDownDiv.hideIfOwner = function(owner, opt_withoutAnimation) {
  */
 Blockly.DropDownDiv.hide = function() {
   // Start the animation by setting the translation and fading out.
-  var div = Blockly.DropDownDiv.getDiv();
+  var div = Blockly.DropDownDiv.DIV_;
   // Reset to (initialX, initialY) - i.e., no translation.
   div.style.transform = 'translate(0, 0)';
   div.style.opacity = 0;
@@ -611,7 +579,7 @@ Blockly.DropDownDiv.hideWithoutAnimation = function() {
 
   // Reset style properties in case this gets called directly
   // instead of hide() - see discussion on #2551.
-  var div = Blockly.DropDownDiv.getDiv();
+  var div = Blockly.DropDownDiv.DIV_;
   div.style.transform = '';
   div.style.left = '';
   div.style.top = '';
@@ -645,15 +613,14 @@ Blockly.DropDownDiv.positionInternal_ = function(
       secondaryX, secondaryY);
 
   // Update arrow CSS.
-  var arrow = Blockly.DropDownDiv.getArrow();
   if (metrics.arrowVisible) {
-    arrow.style.display = '';
-    arrow.style.transform = 'translate(' +
+    Blockly.DropDownDiv.arrow_.style.display = '';
+    Blockly.DropDownDiv.arrow_.style.transform = 'translate(' +
         metrics.arrowX + 'px,' + metrics.arrowY + 'px) rotate(45deg)';
-    arrow.setAttribute('class', metrics.arrowAtTop ?
+    Blockly.DropDownDiv.arrow_.setAttribute('class', metrics.arrowAtTop ?
         'blocklyDropDownArrow arrowTop' : 'blocklyDropDownArrow arrowBottom');
   } else {
-    arrow.style.display = 'none';
+    Blockly.DropDownDiv.arrow_.style.display = 'none';
   }
 
   var initialX = Math.floor(metrics.initialX);
@@ -661,7 +628,7 @@ Blockly.DropDownDiv.positionInternal_ = function(
   var finalX = Math.floor(metrics.finalX);
   var finalY = Math.floor(metrics.finalY);
 
-  var div = Blockly.DropDownDiv.getDiv();
+  var div = Blockly.DropDownDiv.DIV_;
   // First apply initial translation.
   div.style.left = initialX + 'px';
   div.style.top = initialY + 'px';

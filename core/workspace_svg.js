@@ -1926,6 +1926,10 @@ Blockly.WorkspaceSvg.prototype.markFocused = function() {
     this.options.parentWorkspace.markFocused();
   } else {
     Blockly.mainWorkspace = this;
+    Blockly.WidgetDiv.DIV = this.widgetDom;
+    Blockly.DropDownDiv.DIV_ = this.dropdownDom;
+    Blockly.DropDownDiv.arrow_ = this.dropdownArrowDom;
+    Blockly.DropDownDiv.content_ = this.dropdownContentDom;
     // We call e.preventDefault in many event handlers which means we
     // need to explicitly grab focus (e.g from a textarea) because
     // the browser will not do it for us.  How to do this is browser dependent.

@@ -33,6 +33,13 @@ goog.require('Blockly.utils.style');
 
 
 /**
+ * The HTML container.  Updated when a workspace is focused to reference that
+ * specific workspace's widget div DOM element.
+ * @type {Element}
+ */
+Blockly.WidgetDiv.DIV = null;
+
+/**
  * The object currently using this container.
  * @type {Object}
  * @private
@@ -45,17 +52,6 @@ Blockly.WidgetDiv.owner_ = null;
  * @private
  */
 Blockly.WidgetDiv.dispose_ = null;
-
-/**
- * Create the widget div and inject it onto the page.
- */
-Blockly.WidgetDiv.getDiv = function() {
-  var workspace = Blockly.getMainWorkspace();
-  if (workspace) {
-    return workspace.widgetDom;
-  }
-  return null;
-};
 
 /**
  * Initialize and display the widget div.  Close the old one if needed.
@@ -71,7 +67,7 @@ Blockly.WidgetDiv.show = function(newOwner, rtl, dispose) {
   // Temporarily move the widget to the top of the screen so that it does not
   // cause a scrollbar jump in Firefox when displayed.
   var xy = Blockly.utils.style.getViewportPageOffset();
-  var div = Blockly.WidgetDiv.getDiv();
+  var div = Blockly.WidgetDiv.DIV;
   div.style.top = xy.y + 'px';
   div.style.direction = rtl ? 'rtl' : 'ltr';
   div.style.display = 'block';
@@ -82,7 +78,7 @@ Blockly.WidgetDiv.show = function(newOwner, rtl, dispose) {
  */
 Blockly.WidgetDiv.hide = function() {
   if (Blockly.WidgetDiv.owner_) {
-    var div = Blockly.WidgetDiv.getDiv();
+    var div = Blockly.WidgetDiv.DIV;
     Blockly.WidgetDiv.owner_ = null;
     div.style.display = 'none';
     div.style.left = '';
@@ -121,7 +117,7 @@ Blockly.WidgetDiv.hideIfOwner = function(oldOwner) {
  * @private
  */
 Blockly.WidgetDiv.positionInternal_ = function(x, y, height) {
-  var div = Blockly.WidgetDiv.getDiv();
+  var div = Blockly.WidgetDiv.DIV;
   div.style.left = x + 'px';
   div.style.top = y + 'px';
   div.style.height = height + 'px';
