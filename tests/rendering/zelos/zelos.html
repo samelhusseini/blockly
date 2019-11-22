@@ -45,6 +45,7 @@
         if (workspace) {
           workspace.dispose();
           blocklyDiv.innerHTML = '';
+          window.parent.focus();
         }
       } catch { }
 
@@ -60,10 +61,6 @@
           startScale: 2,
         }
       });
-      var constants = workspace.getRenderer().getConstants();
-      constants.FIELD_TEXT_FONTSIZE = 12;
-      constants.FIELD_TEXT_FONTWEIGHT = 'bold';
-      constants.FIELD_TEXT_FONTFAMILY = 'Helvetica Neue';
 
       try {
         Blockly.Xml.domToWorkspace(Blockly.Xml.textToDom(xml), workspace);
