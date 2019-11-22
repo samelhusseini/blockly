@@ -117,6 +117,26 @@ Blockly.zelos.RenderInfo.prototype.getInRowSpacing_ = function(prev, next) {
     // No need for padding at the beginning or end of the row if the
     // output shape is dynamic.
     if (this.outputConnection && this.outputConnection.isDynamicShape) {
+      if (this.outputConnection.shape.name == 'round') {
+        if (prev && Blockly.blockRendering.Types.isField(prev)) {
+          return this.constants_.MEDIUM_LARGE_PADDING -
+              Math.min(this.constants_.MEDIUM_LARGE_PADDING, prev.width / 2) -
+              this.constants_.MEDIUM_PADDING;
+        } else if (next && Blockly.blockRendering.Types.isField(next)) {
+          return this.constants_.MEDIUM_LARGE_PADDING -
+              Math.min(this.constants_.MEDIUM_LARGE_PADDING, next.width / 2) -
+              this.constants_.MEDIUM_PADDING;
+        }
+      }
+      if ((prev && Blockly.blockRendering.Types.isInlineInput(prev) &&
+          this.outputConnection.shape.name == prev.shape.name) ||
+          (next && Blockly.blockRendering.Types.isInlineInput(next) &&
+          this.outputConnection.shape.name == next.shape.name)) {
+        switch (this.outputConnection.shape.name) {
+          case 'round': return -this.constants_.LARGE_PADDING;
+          case 'hexagon': return -this.constants_.MEDIUM_LARGE_PADDING;
+        }
+      }
       return this.constants_.NO_PADDING;
     }
   }

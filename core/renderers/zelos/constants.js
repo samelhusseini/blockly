@@ -300,6 +300,7 @@ Blockly.zelos.ConstantProvider.prototype.makeHexagonal = function() {
   }
 
   return {
+    name: 'hexagon',
     isDynamic: true,
     width: function(height) {
       return height / 2;
@@ -338,6 +339,7 @@ Blockly.zelos.ConstantProvider.prototype.makeRounded = function() {
   }
 
   return {
+    name: 'round',
     isDynamic: true,
     width: function(height) {
       return height / 2;
@@ -451,6 +453,7 @@ Blockly.zelos.ConstantProvider.prototype.makeNotch = function() {
   var pathRight = makeMainPath(-1);
 
   return {
+    name: 'notch',
     width: width,
     height: height,
     pathLeft: pathLeft,

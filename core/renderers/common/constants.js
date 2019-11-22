@@ -499,6 +499,7 @@ Blockly.blockRendering.ConstantProvider.prototype.makePuzzleTab = function() {
   var pathDown = makeMainPath(false);
 
   return {
+    name: 'puzzle',
     width: width,
     height: height,
     pathDown: pathDown,
@@ -528,6 +529,7 @@ Blockly.blockRendering.ConstantProvider.prototype.makeNotch = function() {
   var pathRight = makeMainPath(-1);
 
   return {
+    name: 'notch',
     width: width,
     height: height,
     pathLeft: pathLeft,
