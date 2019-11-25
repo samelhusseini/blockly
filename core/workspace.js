@@ -24,8 +24,9 @@
 goog.provide('Blockly.Workspace');
 
 goog.require('Blockly.Cursor');
-goog.require('Blockly.MarkerCursor');
 goog.require('Blockly.Events');
+goog.require('Blockly.MarkerCursor');
+goog.require('Blockly.Options');
 goog.require('Blockly.utils');
 goog.require('Blockly.utils.math');
 goog.require('Blockly.VariableMap');
@@ -34,7 +35,8 @@ goog.require('Blockly.VariableMap');
 /**
  * Class for a workspace.  This is a data structure that contains blocks.
  * There is no UI, and can be created headlessly.
- * @param {!Blockly.Options=} opt_options Dictionary of options.
+ * @param {!(Blockly.Options|Blockly.BlocklyOptions)=} opt_options Either a dictionary
+ *     of options or a `Blockly.Options` object.
  * @constructor
  */
 Blockly.Workspace = function(opt_options) {
@@ -42,7 +44,9 @@ Blockly.Workspace = function(opt_options) {
   this.id = Blockly.utils.genUid();
   Blockly.Workspace.WorkspaceDB_[this.id] = this;
   /** @type {!Blockly.Options} */
-  this.options = opt_options || /** @type {!Blockly.Options} */ ({});
+  this.options = opt_options instanceof Blockly.Options ? opt_options :
+      new Blockly.Options(opt_options ||
+        (/** @type {!Blockly.BlocklyOptions} */ ({})));
   /** @type {boolean} */
   this.RTL = !!this.options.RTL;
   /** @type {boolean} */
