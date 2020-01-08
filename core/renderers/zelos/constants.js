@@ -397,6 +397,13 @@ Blockly.zelos.ConstantProvider = function() {
    * @private
    */
   this.replacementGlowFilter_ = null;
+
+  /**
+   * The ID of the dropdown arrow svg image <def> asset.
+   * @type {string}
+   * @package
+   */
+  this.dropdownArrowSVGId = '';
 };
 Blockly.utils.object.inherits(Blockly.zelos.ConstantProvider,
     Blockly.blockRendering.ConstantProvider);
@@ -833,6 +840,17 @@ Blockly.zelos.ConstantProvider.prototype.createDom = function(svg) {
       replacementGlowFilter);
   this.replacementGlowFilterId = replacementGlowFilter.id;
   this.replacementGlowFilter_ = replacementGlowFilter;
+
+  // Add dropdown image definition.
+  var dropdownArrowSVG = Blockly.utils.dom.createSvgElement('image',
+      {
+        'id': 'blocklyDropdownArrowSvg' + this.randomIdentifier_,
+        'height': this.FIELD_DROPDOWN_SVG_ARROW_SIZE + 'px',
+        'width': this.FIELD_DROPDOWN_SVG_ARROW_SIZE + 'px'
+      }, defs);
+  dropdownArrowSVG.setAttributeNS('http://www.w3.org/1999/xlink',
+      'xlink:href', this.FIELD_DROPDOWN_SVG_ARROW_DATAURI);
+  this.dropdownArrowSVGId = dropdownArrowSVG.id;
 };
 
 /**

@@ -257,12 +257,21 @@ Blockly.FieldDropdown.prototype.createTextArrow_ = function() {
  * @protected
  */
 Blockly.FieldDropdown.prototype.createSVGArrow_ = function() {
-  this.svgArrow_ = Blockly.utils.dom.createSvgElement('image', {
+  // IE / iOS have issues with the <use> element, instead show the image inline.
+  // https://developer.mozilla.org/en-US/docs/Web/SVG/Element/use#Browser_compatibility
+  var placeImageInline =
+      Blockly.utils.userAgent.IE || Blockly.utils.userAgent.IOS;
+  var arrowElement = placeImageInline ? 'image' : 'use';
+  var arrowHref = placeImageInline ?
+      this.constants_.FIELD_DROPDOWN_SVG_ARROW_DATAURI :
+      '#' + this.constants_.dropdownArrowSVGId;
+
+  this.svgArrow_ = Blockly.utils.dom.createSvgElement(arrowElement, {
     'height': this.constants_.FIELD_DROPDOWN_SVG_ARROW_SIZE + 'px',
     'width': this.constants_.FIELD_DROPDOWN_SVG_ARROW_SIZE + 'px'
   }, this.fieldGroup_);
   this.svgArrow_.setAttributeNS(Blockly.utils.dom.XLINK_NS, 'xlink:href',
-      this.constants_.FIELD_DROPDOWN_SVG_ARROW_DATAURI);
+      arrowHref);
 };
 
 /**
