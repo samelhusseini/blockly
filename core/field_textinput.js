@@ -296,13 +296,12 @@ Blockly.FieldTextInput.prototype.setSpellcheck = function(check) {
 Blockly.FieldTextInput.prototype.showEditor_ = function(_opt_e,
     opt_quietInput, opt_readOnly) {
   this.workspace_ = this.sourceBlock_.workspace;
-  var readOnly = opt_readOnly || false;
   if (opt_quietInput == null && (Blockly.utils.userAgent.MOBILE ||
                                  Blockly.utils.userAgent.ANDROID ||
                                  Blockly.utils.userAgent.IPAD)) {
     this.showPromptEditor_();
   } else {
-    this.showInlineEditor_(opt_quietInput || false, readOnly);
+    this.showInlineEditor_(opt_quietInput || false, opt_readOnly || false);
   }
 };
 
