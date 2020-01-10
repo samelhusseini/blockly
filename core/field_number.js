@@ -372,7 +372,7 @@ Blockly.FieldNumber.prototype.showEditor_ = function(opt_e, _opt_quietInput,
 
   // Show a numeric keypad in the drop-down on touch.
   if (showNumPad) {
-    this.showNumPad_();
+    this.numPadShow_();
   }
 };
 
@@ -380,7 +380,7 @@ Blockly.FieldNumber.prototype.showEditor_ = function(opt_e, _opt_quietInput,
  * Show the number pad.
  * @private
  */
-Blockly.FieldNumber.prototype.showNumPad_ = function() {
+Blockly.FieldNumber.prototype.numPadShow_ = function() {
   // If there is an existing drop-down someone else owns, hide it immediately
   // and clear it.
   Blockly.DropDownDiv.hideWithoutAnimation();
@@ -395,7 +395,7 @@ Blockly.FieldNumber.prototype.showNumPad_ = function() {
   var style = this.sourceBlock_.isShadow() ?
       this.sourceBlock_.getParent().style : this.sourceBlock_.style;
 
-  this.addButtons_(contentDiv, style);
+  this.numpadAddButtons_(contentDiv, style);
 
   Blockly.DropDownDiv.setColour(style.colourPrimary, style.colourTertiary);
   contentDiv.style.width = Blockly.FieldNumber.NUMPAD_WIDTH + 'px';
@@ -411,7 +411,7 @@ Blockly.FieldNumber.prototype.showNumPad_ = function() {
  * @param {!Blockly.Theme.BlockStyle} style The block style to use.
  * @private
  */
-Blockly.FieldNumber.prototype.addButtons_ = function(contentDiv, style) {
+Blockly.FieldNumber.prototype.numpadAddButtons_ = function(contentDiv, style) {
   var buttonColour = style.colourPrimary;
   var buttonBorderColour = style.colourTertiary;
 
@@ -483,7 +483,7 @@ Blockly.FieldNumber.prototype.numPadButtonTouch_ = function(e) {
     newValue = oldValue + spliceValue;
   }
 
-  this.updateDisplay_(newValue);
+  this.numPadUpdateDisplay_(newValue);
 
   // This is just a click.
   Blockly.Touch.clearTouchIdentifier();
@@ -512,7 +512,7 @@ Blockly.FieldNumber.prototype.numPadEraseButtonTouch_ = function(e) {
       oldValue.slice(0, selectionStart - 1) + oldValue.slice(selectionStart);
   }
   
-  this.updateDisplay_(newValue);
+  this.numPadUpdateDisplay_(newValue);
 
   // This is just a click.
   Blockly.Touch.clearTouchIdentifier();
@@ -526,7 +526,7 @@ Blockly.FieldNumber.prototype.numPadEraseButtonTouch_ = function(e) {
  * @param {string} newValue The new text to display.
  * @private.
  */
-Blockly.FieldNumber.prototype.updateDisplay_ = function(newValue) {
+Blockly.FieldNumber.prototype.numPadUpdateDisplay_ = function(newValue) {
   // Updates the display. The actual setValue occurs when editing ends.
   this.setEditorValue_(newValue);
   // Resize and scroll the text field appropriately.
