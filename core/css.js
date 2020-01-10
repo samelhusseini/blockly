@@ -681,5 +681,36 @@ Blockly.Css.CONTENT = [
   '.blocklyNoPointerEvents {',
     'pointer-events: none;',
   '}',
+
+  // Field number's num pad:
+  '.blocklyNumPadButton {',
+    'display: inline-block;',
+    'float: left;',
+    'padding: 0;',
+    'width: 48px;',
+    'height: 48px;',
+    'margin: 4px;',
+    'border-radius: 4px;',
+    'background: #5B68A5;',
+    'color: #fff;',
+    'outline: none;',
+    'border: 1px solid #444d7c;',
+    'cursor: pointer;',
+    'font-weight: 600;',
+    'font-family: "Helvetica Neue", "Segoe UI", Helvetica, sans-serif;',
+    'font-size: 12pt;',
+    '-webkit-tap-highlight-color: rgba(0,0,0,0);',
+  '}',
+
+  '.blocklyNumPadButton > img {',
+    'margin-top: 10%;',
+    'width: 80%;',
+    'height: 80%;',
+  '}',
+
+  '.blocklyNumPadButton:active {',
+    'background: #435F91;',
+    '-webkit-tap-highlight-color: rgba(0,0,0,0);',
+  '}',
   /* eslint-enable indent */
 ];

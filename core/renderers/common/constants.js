@@ -324,6 +324,12 @@ Blockly.blockRendering.ConstantProvider = function() {
       !Blockly.utils.userAgent.IE && !Blockly.utils.userAgent.EDGE;
 
   /**
+   * Whether or not a number field should show a num pad.
+   * @type {boolean}
+   */
+  this.FIELD_NUMBER_SHOW_NUMPAD = false;
+
+  /**
    * A dropdown field's border rect height.
    * @type {number}
    */

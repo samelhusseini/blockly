@@ -287,20 +287,22 @@ Blockly.FieldTextInput.prototype.setSpellcheck = function(check) {
  * Show the inline free-text editor on top of the text.
  * @param {Event=} _opt_e Optional mouse event that triggered the field to open,
  *     or undefined if triggered programatically.
- * @param {boolean=} opt_quietInput True if editor should be created without
- *     focus.  Defaults to false.
+ * @param {?boolean=} opt_quietInput True if editor should be created without
+ *     focus. null if we should show a prompt editor on mobile.
+ * @param {boolean=} opt_readOnly True if editor should be created with HTML
+ *     input set to read-only, to prevent virtual keyboards.
  * @protected
  */
 Blockly.FieldTextInput.prototype.showEditor_ = function(_opt_e,
-    opt_quietInput) {
+    opt_quietInput, opt_readOnly) {
   this.workspace_ = this.sourceBlock_.workspace;
-  var quietInput = opt_quietInput || false;
-  if (!quietInput && (Blockly.utils.userAgent.MOBILE ||
-                      Blockly.utils.userAgent.ANDROID ||
-                      Blockly.utils.userAgent.IPAD)) {
+  var readOnly = opt_readOnly || false;
+  if (opt_quietInput == null && (Blockly.utils.userAgent.MOBILE ||
+                                 Blockly.utils.userAgent.ANDROID ||
+                                 Blockly.utils.userAgent.IPAD)) {
     this.showPromptEditor_();
   } else {
-    this.showInlineEditor_(quietInput);
+    this.showInlineEditor_(opt_quietInput || false, readOnly);
   }
 };
 
@@ -321,17 +323,26 @@ Blockly.FieldTextInput.prototype.showPromptEditor_ = function() {
  * Create and show a text input editor that sits directly over the text input.
  * @param {boolean} quietInput True if editor should be created without
  *     focus.
+ * @param {boolean} readOnly True if editor should be created with HTML input
+ *     set to read-only, to prevent virtual keyboards.
  * @private
  */
-Blockly.FieldTextInput.prototype.showInlineEditor_ = function(quietInput) {
+Blockly.FieldTextInput.prototype.showInlineEditor_ = function(quietInput,
+    readOnly) {
   Blockly.WidgetDiv.show(
       this, this.sourceBlock_.RTL, this.widgetDispose_.bind(this));
   this.htmlInput_ = this.widgetCreate_();
+  if (readOnly) {
+    this.htmlInput_.setAttribute('readonly', 'true');
+  }
+
   this.isBeingEdited_ = true;
 
   if (!quietInput) {
     this.htmlInput_.focus({preventScroll:true});
     this.htmlInput_.select();
+    // iOS only
+    this.htmlInput_.setSelectionRange(0, 99999);
   }
 };
 
@@ -391,7 +402,7 @@ Blockly.FieldTextInput.prototype.widgetCreate_ = function() {
 /**
  * Closes the editor, saves the results, and disposes of any events or
  * dom-references belonging to the editor.
- * @private
+ * @protected
  */
 Blockly.FieldTextInput.prototype.widgetDispose_ = function() {
   // Non-disposal related things that we do when the editor closes.
