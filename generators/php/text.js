@@ -1,9 +1,6 @@
 /**
  * @license
- * Visual Blocks Language
- *
- * Copyright 2015 Google Inc.
- * https://developers.google.com/blockly/
+ * Copyright 2015 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,6 +29,12 @@ goog.require('Blockly.PHP');
 Blockly.PHP['text'] = function(block) {
   // Text value.
   var code = Blockly.PHP.quote_(block.getFieldValue('TEXT'));
+  return [code, Blockly.PHP.ORDER_ATOMIC];
+};
+
+Blockly.PHP['text_multiline'] = function(block) {
+  // Text value.
+  var code = Blockly.PHP.multiline_quote_(block.getFieldValue('TEXT'));
   return [code, Blockly.PHP.ORDER_ATOMIC];
 };
 
@@ -65,7 +68,7 @@ Blockly.PHP['text_join'] = function(block) {
 Blockly.PHP['text_append'] = function(block) {
   // Append to a variable in place.
   var varName = Blockly.PHP.variableDB_.getName(
-      block.getFieldValue('VAR'), Blockly.Variables.NAME_TYPE);
+      block.getFieldValue('VAR'), Blockly.VARIABLE_CATEGORY_NAME);
   var value = Blockly.PHP.valueToCode(block, 'TEXT',
       Blockly.PHP.ORDER_ASSIGNMENT) || '\'\'';
   return varName + ' .= ' + value + ';\n';

@@ -1,9 +1,6 @@
 /**
  * @license
- * Visual Blocks Language
- *
- * Copyright 2016 Google Inc.
- * https://developers.google.com/blockly/
+ * Copyright 2016 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -211,7 +208,7 @@ Blockly.Lua['math_change'] = function(block) {
   var argument0 = Blockly.Lua.valueToCode(block, 'DELTA',
       Blockly.Lua.ORDER_ADDITIVE) || '0';
   var varName = Blockly.Lua.variableDB_.getName(
-      block.getFieldValue('VAR'), Blockly.Variables.NAME_TYPE);
+      block.getFieldValue('VAR'), Blockly.VARIABLE_CATEGORY_NAME);
   return varName + ' = ' + varName + ' + ' + argument0 + '\n';
 };
 

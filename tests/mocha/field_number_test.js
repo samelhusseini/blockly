@@ -1,9 +1,6 @@
 /**
  * @license
- * Visual Blocks Editor
- *
- * Copyright 2019 Google Inc.
- * https://developers.google.com/blockly/
+ * Copyright 2019 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,9 +30,9 @@ suite('Number Fields', function() {
   function assertNumberField(numberField, expectedMin, expectedMax,
       expectedPrecision, expectedValue) {
     assertValue(numberField, expectedValue);
-    assertEquals(numberField.min_, expectedMin);
-    assertEquals(numberField.max_, expectedMax);
-    assertEquals(numberField.precision_, expectedPrecision);
+    chai.assert.equal(numberField.getMin(), expectedMin);
+    chai.assert.equal(numberField.getMax(), expectedMax);
+    chai.assert.equal(numberField.getPrecision(), expectedPrecision);
   }
   function assertNumberFieldDefault(numberField) {
     assertNumberField(numberField, -Infinity, Infinity, 0, 0);
@@ -57,10 +54,6 @@ suite('Number Fields', function() {
     });
     test('Undefined', function() {
       var numberField = createNumberFieldSameValuesConstructor(undefined);
-      assertNumberFieldDefault(numberField);
-    });
-    test('Non-Parsable String', function() {
-      var numberField = createNumberFieldSameValuesConstructor('bad');
       assertNumberFieldDefault(numberField);
     });
     test('NaN', function() {
@@ -99,10 +92,6 @@ suite('Number Fields', function() {
     });
     test('Undefined', function() {
       var numberField = createNumberFieldSameValuesJson(undefined);
-      assertNumberFieldDefault(numberField);
-    });
-    test('Non-Parsable String', function() {
-      var numberField = createNumberFieldSameValuesJson('bad');
       assertNumberFieldDefault(numberField);
     });
     test('NaN', function() {
@@ -258,6 +247,11 @@ suite('Number Fields', function() {
           numberField.setValue(123.456);
           assertValue(numberField, 123);
         });
+        test('Null', function() {
+          var numberField = new Blockly.FieldNumber
+              .fromJson({ precision: null});
+          assertEquals(numberField.getPrecision(), 0);
+        });
       });
       suite('Min', function() {
         test('-10', function() {
@@ -286,6 +280,11 @@ suite('Number Fields', function() {
           assertValue(numberField, 10);
           numberField.setValue(20);
           assertValue(numberField, 20);
+        });
+        test('Null', function() {
+          var numberField = new Blockly.FieldNumber
+              .fromJson({ min: null});
+          assertEquals(numberField.getMin(), -Infinity);
         });
       });
       suite('Max', function() {
@@ -316,6 +315,11 @@ suite('Number Fields', function() {
           numberField.setValue(20);
           assertValue(numberField, 10);
         });
+        test('null', function() {
+          var numberField = new Blockly.FieldNumber
+              .fromJson({ max: null});
+          assertEquals(numberField.getMax(), Infinity);
+        });
       });
     });
   });
@@ -325,10 +329,14 @@ suite('Number Fields', function() {
       this.numberField.htmlInput_ = Object.create(null);
       this.numberField.htmlInput_.oldValue_ = '1';
       this.numberField.htmlInput_.untypedDefaultValue_ = 1;
+      this.stub = sinon.stub(this.numberField, 'resizeEditor_');
     });
     teardown(function() {
       this.numberField.setValidator(null);
       this.numberField.htmlInput_ = null;
+      if (this.stub) {
+        this.stub.restore();
+      }
     });
     suite('Null Validator', function() {
       setup(function() {
@@ -380,6 +388,116 @@ suite('Number Fields', function() {
       test('When Not Editing', function() {
         this.numberField.setValue(2);
         assertValue(this.numberField, 2);
+      });
+    });
+  });
+  suite('Customizations', function() {
+    suite('Min', function() {
+      test('JS Constructor', function() {
+        var field = new Blockly.FieldNumber(0, -10);
+        assertNumberField(field, -10, Infinity, 0, 0);
+      });
+      test('JSON Definition', function() {
+        var field = Blockly.FieldNumber.fromJson({
+          min: -10,
+        });
+        assertNumberField(field, -10, Infinity, 0, 0);
+      });
+      test('Set Constraints', function() {
+        var field = new Blockly.FieldNumber();
+        field.setConstraints(-10);
+        assertNumberField(field, -10, Infinity, 0, 0);
+      });
+      test('Set Min', function() {
+        var field = new Blockly.FieldNumber();
+        field.setMin(-10);
+        assertNumberField(field, -10, Infinity, 0, 0);
+      });
+      test('JS Configuration - Simple', function() {
+        var field = new Blockly.FieldNumber(
+            undefined, undefined, undefined, undefined, undefined, {
+              min: -10
+            });
+        assertNumberField(field, -10, Infinity, 0, 0);
+      });
+      test('JS Configuration - Ignore', function() {
+        var field = new Blockly.FieldNumber(
+            undefined, -1, undefined, undefined, undefined, {
+              min: -10
+            });
+        assertNumberField(field, -10, Infinity, 0, 0);
+      });
+    });
+    suite('Max', function() {
+      test('JS Constructor', function() {
+        var field = new Blockly.FieldNumber(0, undefined, 10);
+        assertNumberField(field, -Infinity, 10, 0, 0);
+      });
+      test('JSON Definition', function() {
+        var field = Blockly.FieldNumber.fromJson({
+          max: 10,
+        });
+        assertNumberField(field, -Infinity, 10, 0, 0);
+      });
+      test('Set Constraints', function() {
+        var field = new Blockly.FieldNumber();
+        field.setConstraints(undefined, 10);
+        assertNumberField(field, -Infinity, 10, 0, 0);
+      });
+      test('Set Max', function() {
+        var field = new Blockly.FieldNumber();
+        field.setMax(10);
+        assertNumberField(field, -Infinity, 10, 0, 0);
+      });
+      test('JS Configuration - Simple', function() {
+        var field = new Blockly.FieldNumber(
+            undefined, undefined, undefined, undefined, undefined, {
+              max: 10
+            });
+        assertNumberField(field, -Infinity, 10, 0, 0);
+      });
+      test('JS Configuration - Ignore', function() {
+        var field = new Blockly.FieldNumber(
+            undefined, undefined, 1, undefined, undefined, {
+              max: 10
+            });
+        assertNumberField(field, -Infinity, 10, 0, 0);
+      });
+    });
+    suite('Precision', function() {
+      test('JS Constructor', function() {
+        var field = new Blockly.FieldNumber(0, undefined, undefined, 1);
+        assertNumberField(field, -Infinity, Infinity, 1, 0);
+      });
+      test('JSON Definition', function() {
+        var field = Blockly.FieldNumber.fromJson({
+          precision: 1,
+        });
+        assertNumberField(field, -Infinity, Infinity, 1, 0);
+      });
+      test('Set Constraints', function() {
+        var field = new Blockly.FieldNumber();
+        field.setConstraints(undefined, undefined, 1);
+        assertNumberField(field, -Infinity, Infinity, 1, 0);
+      });
+      test('Set Precision', function() {
+        var field = new Blockly.FieldNumber();
+        field.setPrecision(1);
+        assertNumberField(field, -Infinity, Infinity, 1, 0);
+      });
+      test('JS Configuration - Simple', function() {
+        var field = new Blockly.FieldNumber(
+            undefined, undefined, undefined, undefined, undefined, {
+              precision: 1
+            });
+        assertNumberField(field, -Infinity, Infinity, 1, 0);
+      });
+      test('JS Configuration - Ignore', function() {
+        var field = new Blockly.FieldNumber(
+            undefined, undefined, undefined, .5, undefined, {
+              precision: 1
+            });
+        assertNumberField(field, -Infinity, Infinity, 1, 0);
       });
     });
   });

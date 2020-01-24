@@ -1,9 +1,6 @@
 /**
  * @license
- * Blockly Demos: Block Factory
- *
- * Copyright 2016 Google Inc.
- * https://developers.google.com/blockly/
+ * Copyright 2016 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -74,7 +71,7 @@ BlockFactory.updateBlocksFlag = false;
 // TODO: Replace global state with parameter passed to functions.
 BlockFactory.updateBlocksFlagDelayed = false;
 
-/*
+/**
  * The starting XML for the Block Factory main workspace. Contains the
  * unmovable, undeletable factory_base block.
  */

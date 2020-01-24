@@ -1,9 +1,6 @@
 /**
  * @license
- * Visual Blocks Editor
- *
- * Copyright 2019 Google Inc.
- * https://developers.google.com/blockly/
+ * Copyright 2019 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -208,6 +205,43 @@ suite('Variable Fields', function() {
       test('New Value', function() {
         this.variableField.setValue('id2');
         assertValue(this.variableField, 'name2', 'id2');
+      });
+    });
+  });
+  suite('Customizations', function() {
+    suite('Types and Default Types', function() {
+      test('JS Constructor', function() {
+        var field = new Blockly.FieldVariable(
+            'test', undefined, ['Type1'], 'Type1');
+        chai.assert.deepEqual(field.variableTypes, ['Type1']);
+        chai.assert.equal(field.defaultType_, 'Type1');
+      });
+      test('JSON Definition', function() {
+        var field = Blockly.FieldVariable.fromJson({
+          variable: 'test',
+          variableTypes: ['Type1'],
+          defaultType: 'Type1'
+        });
+        chai.assert.deepEqual(field.variableTypes, ['Type1']);
+        chai.assert.equal(field.defaultType_, 'Type1');
+      });
+      test('JS Configuration - Simple', function() {
+        var field = new Blockly.FieldVariable(
+            'test', undefined, undefined, undefined, {
+              variableTypes: ['Type1'],
+              defaultType: 'Type1'
+            });
+        chai.assert.deepEqual(field.variableTypes, ['Type1']);
+        chai.assert.equal(field.defaultType_, 'Type1');
+      });
+      test('JS Configuration - Ignore', function() {
+        var field = new Blockly.FieldVariable(
+            'test', undefined, ['Type2'], 'Type2', {
+              variableTypes: ['Type1'],
+              defaultType: 'Type1'
+            });
+        chai.assert.deepEqual(field.variableTypes, ['Type1']);
+        chai.assert.equal(field.defaultType_, 'Type1');
       });
     });
   });

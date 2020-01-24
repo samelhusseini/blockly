@@ -2,10 +2,6 @@
 
 'use strict';
 
-goog.provide('Blockly.Msg.br');
-
-goog.require('Blockly.Msg');
-
 Blockly.Msg["ADD_COMMENT"] = "Ouzhpennañ un evezhiadenn";
 Blockly.Msg["CANNOT_DELETE_VARIABLE_PROCEDURE"] = "Ne ch'aller ket dilemel an argemmenn \"%1\" dre m'eo lod eus dielfennadur an arc'hwel \"%2\"";
 Blockly.Msg["CHANGE_VALUE_TITLE"] = "Kemmañ an dalvoudenn :";
@@ -393,6 +389,7 @@ Blockly.Msg["TEXT_TRIM_OPERATOR_RIGHT"] = "Lemel an esaouennoù eus an tu dehou"
 Blockly.Msg["TEXT_TRIM_TOOLTIP"] = "Distreiñ un eilenn eus an destenn gant an esaouennoù lamet eus un tu pe eus an daou du";
 Blockly.Msg["TODAY"] = "Hiziv";
 Blockly.Msg["UNDO"] = "Dizober";
+Blockly.Msg["UNNAMED_KEY"] = "unnamed";  // untranslated
 Blockly.Msg["VARIABLES_DEFAULT_NAME"] = "elfenn";
 Blockly.Msg["VARIABLES_GET_CREATE_SET"] = "Krouiñ 'termenañ %1'";
 Blockly.Msg["VARIABLES_GET_HELPURL"] = "https://github.com/google/blockly/wiki/Variables#get";  // untranslated
@@ -403,6 +400,7 @@ Blockly.Msg["VARIABLES_SET_HELPURL"] = "https://github.com/google/blockly/wiki/V
 Blockly.Msg["VARIABLES_SET_TOOLTIP"] = "Termenañ a ra argemm-mañ evit ma vo par da dalvoudenn ar moned.";
 Blockly.Msg["VARIABLE_ALREADY_EXISTS"] = "Un argemmenn anvet '%1' zo anezhi dija.";
 Blockly.Msg["VARIABLE_ALREADY_EXISTS_FOR_ANOTHER_TYPE"] = "Un argemenn anvet '%1' zo c'hoazh evit un argemenn all eus ar seurt : '%2'.";
+Blockly.Msg["WORKSPACE_ARIA_LABEL"] = "Blockly Workspace";  // untranslated
 Blockly.Msg["WORKSPACE_COMMENT_DEFAULT_TEXT"] = "Lavaret un dra bennak...";
 Blockly.Msg["CONTROLS_FOREACH_INPUT_DO"] = Blockly.Msg["CONTROLS_REPEAT_INPUT_DO"];
 Blockly.Msg["CONTROLS_FOR_INPUT_DO"] = Blockly.Msg["CONTROLS_REPEAT_INPUT_DO"];

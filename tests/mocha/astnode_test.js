@@ -1,3 +1,20 @@
+/**
+ * @license
+ * Copyright 2019 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 suite('ASTNode', function() {
   setup(function() {
     Blockly.defineBlocksWithJsonArray([{
@@ -93,23 +110,6 @@ suite('ASTNode', function() {
   });
 
   suite('HelperFunctions', function() {
-    test('findPreviousEditableField_', function() {
-      var input = this.blocks.statementInput1.inputList[0];
-      var field = input.fieldRow[1];
-      var prevField = input.fieldRow[0];
-      var node = Blockly.ASTNode.createFieldNode(prevField);
-      var editableField = node.findPreviousEditableField_(field, input);
-      assertEquals(editableField.getLocation(), prevField);
-    });
-
-    test('findPreviousEditableFieldLast_', function() {
-      var input = this.blocks.statementInput1.inputList[0];
-      var field = input.fieldRow[0];
-      var node = Blockly.ASTNode.createFieldNode(field);
-      var editableField = node.findPreviousEditableField_(field, input, true);
-      assertEquals(editableField.getLocation(), input.fieldRow[1]);
-    });
-
     test('findNextForInput_', function() {
       var input = this.blocks.statementInput1.inputList[0];
       var input2 = this.blocks.statementInput1.inputList[1];
@@ -156,12 +156,6 @@ suite('ASTNode', function() {
           Blockly.ASTNode.types.BLOCK, this.blocks.statementInput4);
       var newASTNode = node.navigateBetweenStacks_(false);
       assertEquals(newASTNode.getLocation(), this.blocks.statementInput1);
-    });
-    test('findTopOfSubStack_', function() {
-      var node = new Blockly.ASTNode(
-          Blockly.ASTNode.types.BLOCK, this.blocks.statementInput4);
-      var block = node.findTopOfSubStack_(this.blocks.statementInput4);
-      assertEquals(block, this.blocks.statementInput4);
     });
     test('getOutAstNodeForBlock_', function() {
       var node = new Blockly.ASTNode(
@@ -388,14 +382,6 @@ suite('ASTNode', function() {
         var nextNode = node.next();
         assertEquals(nextNode, null);
       });
-      test('moveCursorToRight', function() {
-        var coordinate = new Blockly.utils.Coordinate(100, 100);
-        var node = Blockly.ASTNode.createWorkspaceNode(this.workspace, coordinate);
-        var nextNode = node.next();
-        assertEquals(nextNode.wsCoordinate_.x, 110);
-        assertEquals(nextNode.getLocation(), this.workspace);
-        assertEquals(nextNode.getType(), Blockly.ASTNode.types.WORKSPACE);
-      });
     });
 
     suite('Previous', function() {
@@ -496,10 +482,9 @@ suite('ASTNode', function() {
       });
       test('fromPreviousToInput', function() {
         var prevConnection = this.blocks.statementInput3.previousConnection;
-        var inputConnection = this.blocks.statementInput2.inputList[1].connection;
         var node = Blockly.ASTNode.createConnectionNode(prevConnection);
         var prevNode = node.prev();
-        assertEquals(prevNode.getLocation(), inputConnection);
+        assertEquals(prevNode, null);
       });
       test('fromBlockToPrevious', function() {
         var node = Blockly.ASTNode.createBlockNode(this.blocks.statementInput1);
@@ -574,14 +559,6 @@ suite('ASTNode', function() {
         var prevNode = node.prev();
         assertEquals(prevNode.getLocation(), this.blocks.statementInput1);
         assertEquals(prevNode.getType(), Blockly.ASTNode.types.STACK);
-      });
-      test('moveCursorToLeft', function() {
-        var coordinate = new Blockly.utils.Coordinate(100, 100);
-        var node = Blockly.ASTNode.createWorkspaceNode(this.workspace, coordinate);
-        var nextNode = node.prev();
-        assertEquals(nextNode.wsCoordinate_.x, 90);
-        assertEquals(nextNode.getLocation(), this.workspace);
-        assertEquals(nextNode.getType(), Blockly.ASTNode.types.WORKSPACE);
       });
     });
 

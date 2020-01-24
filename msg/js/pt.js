@@ -2,10 +2,6 @@
 
 'use strict';
 
-goog.provide('Blockly.Msg.pt');
-
-goog.require('Blockly.Msg');
-
 Blockly.Msg["ADD_COMMENT"] = "Adicionar Comentário";
 Blockly.Msg["CANNOT_DELETE_VARIABLE_PROCEDURE"] = "Não se pode eliminar a variável '%1' porque faz parte da definição da função '%2'";
 Blockly.Msg["CHANGE_VALUE_TITLE"] = "Alterar valor:";
@@ -393,6 +389,7 @@ Blockly.Msg["TEXT_TRIM_OPERATOR_RIGHT"] = "remover espaços à direita";
 Blockly.Msg["TEXT_TRIM_TOOLTIP"] = "Retorna uma cópia do texto com os espaços removidos de uma ou ambas as extremidades.";
 Blockly.Msg["TODAY"] = "Hoje";
 Blockly.Msg["UNDO"] = "Desfazer";
+Blockly.Msg["UNNAMED_KEY"] = "sem nome";
 Blockly.Msg["VARIABLES_DEFAULT_NAME"] = "item";
 Blockly.Msg["VARIABLES_GET_CREATE_SET"] = "Criar \"definir %1\"";
 Blockly.Msg["VARIABLES_GET_HELPURL"] = "https://github.com/google/blockly/wiki/Variables#get";  // untranslated
@@ -403,6 +400,7 @@ Blockly.Msg["VARIABLES_SET_HELPURL"] = "https://github.com/google/blockly/wiki/V
 Blockly.Msg["VARIABLES_SET_TOOLTIP"] = "Define esta variável para o valor inserido.";
 Blockly.Msg["VARIABLE_ALREADY_EXISTS"] = "Já existe uma variável com o nome de '%1'.";
 Blockly.Msg["VARIABLE_ALREADY_EXISTS_FOR_ANOTHER_TYPE"] = "Já existe uma variável chamada '%1' para outra do tipo: '%2'.";
+Blockly.Msg["WORKSPACE_ARIA_LABEL"] = "Espaço de trabalho de Blockly";
 Blockly.Msg["WORKSPACE_COMMENT_DEFAULT_TEXT"] = "Diz algo...";
 Blockly.Msg["CONTROLS_FOREACH_INPUT_DO"] = Blockly.Msg["CONTROLS_REPEAT_INPUT_DO"];
 Blockly.Msg["CONTROLS_FOR_INPUT_DO"] = Blockly.Msg["CONTROLS_REPEAT_INPUT_DO"];

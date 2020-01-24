@@ -1,9 +1,6 @@
 /**
  * @license
- * Visual Blocks Language
- *
- * Copyright 2014 Google Inc.
- * https://developers.google.com/blockly/
+ * Copyright 2014 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -37,6 +34,12 @@ Blockly.Dart['text'] = function(block) {
   return [code, Blockly.Dart.ORDER_ATOMIC];
 };
 
+Blockly.Dart['text_multiline'] = function(block) {
+  // Text value.
+  var code = Blockly.Dart.multiline_quote_(block.getFieldValue('TEXT'));
+  return [code, Blockly.Dart.ORDER_ATOMIC];
+};
+
 Blockly.Dart['text_join'] = function(block) {
   // Create a string made up of any number of elements of any type.
   switch (block.itemCount_) {
@@ -61,7 +64,7 @@ Blockly.Dart['text_join'] = function(block) {
 Blockly.Dart['text_append'] = function(block) {
   // Append to a variable in place.
   var varName = Blockly.Dart.variableDB_.getName(block.getFieldValue('VAR'),
-      Blockly.Variables.NAME_TYPE);
+      Blockly.VARIABLE_CATEGORY_NAME);
   var value = Blockly.Dart.valueToCode(block, 'TEXT',
       Blockly.Dart.ORDER_NONE) || '\'\'';
   return varName + ' = [' + varName + ', ' + value + '].join();\n';

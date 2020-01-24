@@ -2,10 +2,6 @@
 
 'use strict';
 
-goog.provide('Blockly.Msg.de');
-
-goog.require('Blockly.Msg');
-
 Blockly.Msg["ADD_COMMENT"] = "Kommentar hinzufügen";
 Blockly.Msg["CANNOT_DELETE_VARIABLE_PROCEDURE"] = "Die Variable „%1“ kann nicht gelöscht werden, da sie Teil der Definition der Funktion „%2“ ist.";
 Blockly.Msg["CHANGE_VALUE_TITLE"] = "Wert ändern:";
@@ -393,6 +389,7 @@ Blockly.Msg["TEXT_TRIM_OPERATOR_RIGHT"] = "entferne Leerzeichen vom Ende (rechts
 Blockly.Msg["TEXT_TRIM_TOOLTIP"] = "Entfernt Leerzeichen vom Anfang und / oder Ende eines Textes.";
 Blockly.Msg["TODAY"] = "Heute";
 Blockly.Msg["UNDO"] = "Rückgängig";
+Blockly.Msg["UNNAMED_KEY"] = "unnamed";  // untranslated
 Blockly.Msg["VARIABLES_DEFAULT_NAME"] = "Element";
 Blockly.Msg["VARIABLES_GET_CREATE_SET"] = "Erzeuge \"Schreibe %1\"";
 Blockly.Msg["VARIABLES_GET_HELPURL"] = "https://de.wikipedia.org/wiki/Variable_%28Programmierung%29";
@@ -403,6 +400,7 @@ Blockly.Msg["VARIABLES_SET_HELPURL"] = "https://de.wikipedia.org/wiki/Variable_%
 Blockly.Msg["VARIABLES_SET_TOOLTIP"] = "Setzt den Wert einer Variable.";
 Blockly.Msg["VARIABLE_ALREADY_EXISTS"] = "Eine Variable namens „%1“ ist bereits vorhanden.";
 Blockly.Msg["VARIABLE_ALREADY_EXISTS_FOR_ANOTHER_TYPE"] = "Eine Variable namens „%1“ ist bereits für einen anderen Typ vorhanden: „%2“.";
+Blockly.Msg["WORKSPACE_ARIA_LABEL"] = "Blockly Workspace";  // untranslated
 Blockly.Msg["WORKSPACE_COMMENT_DEFAULT_TEXT"] = "Teile etwas mit…";
 Blockly.Msg["CONTROLS_FOREACH_INPUT_DO"] = Blockly.Msg["CONTROLS_REPEAT_INPUT_DO"];
 Blockly.Msg["CONTROLS_FOR_INPUT_DO"] = Blockly.Msg["CONTROLS_REPEAT_INPUT_DO"];

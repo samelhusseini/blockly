@@ -2,10 +2,6 @@
 
 'use strict';
 
-goog.provide('Blockly.Msg.nl');
-
-goog.require('Blockly.Msg');
-
 Blockly.Msg["ADD_COMMENT"] = "Opmerking toevoegen";
 Blockly.Msg["CANNOT_DELETE_VARIABLE_PROCEDURE"] = "De variabele \"%1\" kan niet verwijderd worden omdat die onderdeel uitmaakt van de definitie van de functie \"%2\"";
 Blockly.Msg["CHANGE_VALUE_TITLE"] = "Waarde wijzigen:";
@@ -393,6 +389,7 @@ Blockly.Msg["TEXT_TRIM_OPERATOR_RIGHT"] = "spaties van de rechterkant verwijdere
 Blockly.Msg["TEXT_TRIM_TOOLTIP"] = "Geeft een kopie van de tekst met verwijderde spaties van één of beide kanten.";
 Blockly.Msg["TODAY"] = "Vandaag";
 Blockly.Msg["UNDO"] = "Ongedaan maken";
+Blockly.Msg["UNNAMED_KEY"] = "zonder naam";
 Blockly.Msg["VARIABLES_DEFAULT_NAME"] = "item";
 Blockly.Msg["VARIABLES_GET_CREATE_SET"] = "Maak \"verander %1\"";
 Blockly.Msg["VARIABLES_GET_HELPURL"] = "https://github.com/google/blockly/wiki/Variables#get";
@@ -403,6 +400,7 @@ Blockly.Msg["VARIABLES_SET_HELPURL"] = "https://github.com/google/blockly/wiki/V
 Blockly.Msg["VARIABLES_SET_TOOLTIP"] = "Verandert de waarde van de variabele naar de waarde van de invoer.";
 Blockly.Msg["VARIABLE_ALREADY_EXISTS"] = "Er bestaat al een variabele met de naam \"%1\".";
 Blockly.Msg["VARIABLE_ALREADY_EXISTS_FOR_ANOTHER_TYPE"] = "Een variabele met de naam '%1' bestaat al voor een ander soort variabele: '%2'.";
+Blockly.Msg["WORKSPACE_ARIA_LABEL"] = "Blockly werkruimte";
 Blockly.Msg["WORKSPACE_COMMENT_DEFAULT_TEXT"] = "Zeg iets...";
 Blockly.Msg["CONTROLS_FOREACH_INPUT_DO"] = Blockly.Msg["CONTROLS_REPEAT_INPUT_DO"];
 Blockly.Msg["CONTROLS_FOR_INPUT_DO"] = Blockly.Msg["CONTROLS_REPEAT_INPUT_DO"];

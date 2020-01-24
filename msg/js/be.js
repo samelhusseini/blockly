@@ -2,10 +2,6 @@
 
 'use strict';
 
-goog.provide('Blockly.Msg.be');
-
-goog.require('Blockly.Msg');
-
 Blockly.Msg["ADD_COMMENT"] = "Дадаць каментарый";
 Blockly.Msg["CANNOT_DELETE_VARIABLE_PROCEDURE"] = "Немагчыма выдаліць пераменную '%1', паколькі яна з'яўляецца часткай вызначэння функцыі '%2'";
 Blockly.Msg["CHANGE_VALUE_TITLE"] = "Змяніць значэння:";
@@ -393,6 +389,7 @@ Blockly.Msg["TEXT_TRIM_OPERATOR_RIGHT"] = "абрэзаць прагалы сп�
 Blockly.Msg["TEXT_TRIM_TOOLTIP"] = "Вяртае копію тэксту з прагаламі, выдаленымі з аднаго або абодвух канцоў.";
 Blockly.Msg["TODAY"] = "Сёння";
 Blockly.Msg["UNDO"] = "Адкаціць";
+Blockly.Msg["UNNAMED_KEY"] = "unnamed";  // untranslated
 Blockly.Msg["VARIABLES_DEFAULT_NAME"] = "элемент";
 Blockly.Msg["VARIABLES_GET_CREATE_SET"] = "Стварыць блок \"прысабечыць\" для %1";
 Blockly.Msg["VARIABLES_GET_HELPURL"] = "https://github.com/google/blockly/wiki/Variables#get";  // untranslated
@@ -403,6 +400,7 @@ Blockly.Msg["VARIABLES_SET_HELPURL"] = "https://github.com/google/blockly/wiki/V
 Blockly.Msg["VARIABLES_SET_TOOLTIP"] = "Прысабечвае пераменнай значэнне ўстаўкі.";
 Blockly.Msg["VARIABLE_ALREADY_EXISTS"] = "Пераменная з назвай '%1' ужо існуе.";
 Blockly.Msg["VARIABLE_ALREADY_EXISTS_FOR_ANOTHER_TYPE"] = "Назва пераменнай '%1' ужо выкарыстоўваецца іншай пераменнай тыпу '%2'.";
+Blockly.Msg["WORKSPACE_ARIA_LABEL"] = "Blockly Workspace";  // untranslated
 Blockly.Msg["WORKSPACE_COMMENT_DEFAULT_TEXT"] = "Say something...";  // untranslated
 Blockly.Msg["CONTROLS_FOREACH_INPUT_DO"] = Blockly.Msg["CONTROLS_REPEAT_INPUT_DO"];
 Blockly.Msg["CONTROLS_FOR_INPUT_DO"] = Blockly.Msg["CONTROLS_REPEAT_INPUT_DO"];

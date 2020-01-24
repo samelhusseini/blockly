@@ -1,9 +1,6 @@
 /**
  * @license
- * Visual Blocks Language
- *
- * Copyright 2012 Google Inc.
- * https://developers.google.com/blockly/
+ * Copyright 2012 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,10 +28,6 @@
  * ../i18n/create_messages.py json/*.json
  */
 'use strict';
-
-goog.provide('Blockly.Msg.en');
-
-goog.require('Blockly.Msg');
 
 
 /**
@@ -1635,6 +1628,11 @@ Blockly.Msg.PROCEDURES_IFRETURN_WARNING = 'Warning: This block may be used only 
 /// comment text - This text appears in a new workspace comment, to hint that
 /// the user can type here.
 Blockly.Msg.WORKSPACE_COMMENT_DEFAULT_TEXT = 'Say something...';
+
+/** @type {string} */
+/// workspace - This text is read out when a user navigates to the workspace while
+/// using a screen reader.
+Blockly.Msg.WORKSPACE_ARIA_LABEL = 'Blockly Workspace';
 
 /** @type {string} */
 /// warning - This appears if the user collapses a block, and blocks inside

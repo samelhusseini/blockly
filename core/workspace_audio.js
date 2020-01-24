@@ -1,9 +1,6 @@
 /**
  * @license
- * Visual Blocks Editor
- *
- * Copyright 2017 Google Inc.
- * https://developers.google.com/blockly/
+ * Copyright 2017 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,6 +25,7 @@
 goog.provide('Blockly.WorkspaceAudio');
 
 goog.require('Blockly.utils');
+goog.require('Blockly.utils.global');
 goog.require('Blockly.utils.userAgent');
 
 
@@ -50,7 +48,6 @@ Blockly.WorkspaceAudio = function(parentWorkspace) {
   /**
    * Database of pre-loaded sounds.
    * @private
-   * @const
    */
   this.SOUNDS_ = Object.create(null);
 };

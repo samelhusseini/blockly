@@ -1,9 +1,6 @@
 /**
  * @license
- * Visual Blocks Language
- *
- * Copyright 2012 Google Inc.
- * https://developers.google.com/blockly/
+ * Copyright 2012 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,6 +29,15 @@ goog.require('Blockly.JavaScript');
 Blockly.JavaScript['text'] = function(block) {
   // Text value.
   var code = Blockly.JavaScript.quote_(block.getFieldValue('TEXT'));
+  return [code, Blockly.JavaScript.ORDER_ATOMIC];
+};
+
+Blockly.JavaScript['text_multiline'] = function(block) {
+  // Text value.
+  var code = Blockly.JavaScript.multiline_quote_(block.getFieldValue('TEXT'));
+  if (code.includes('\n')) {
+      code = '(' + code + ')'
+  }
   return [code, Blockly.JavaScript.ORDER_ATOMIC];
 };
 
@@ -86,7 +92,7 @@ Blockly.JavaScript['text_join'] = function(block) {
 Blockly.JavaScript['text_append'] = function(block) {
   // Append to a variable in place.
   var varName = Blockly.JavaScript.variableDB_.getName(
-      block.getFieldValue('VAR'), Blockly.Variables.NAME_TYPE);
+      block.getFieldValue('VAR'), Blockly.VARIABLE_CATEGORY_NAME);
   var value = Blockly.JavaScript.valueToCode(block, 'TEXT',
       Blockly.JavaScript.ORDER_NONE) || '\'\'';
   return varName + ' += ' + Blockly.JavaScript.text.forceString_(value) + ';\n';
@@ -165,7 +171,7 @@ Blockly.JavaScript['text_charAt'] = function(block) {
  * @param {string} stringName Name of the string, used to calculate length.
  * @param {string} where The method of indexing, selected by dropdown in Blockly
  * @param {string=} opt_at The optional offset when indexing from start/end.
- * @return {string} Index expression.
+ * @return {string|undefined} Index expression.
  * @private
  */
 Blockly.JavaScript.text.getIndex_ = function(stringName, where, opt_at) {

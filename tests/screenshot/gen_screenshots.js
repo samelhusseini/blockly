@@ -1,9 +1,6 @@
 /**
  * @license
- * Visual Blocks Editor
- *
- * Copyright 2019 Google Inc.
- * https://developers.google.com/blockly/
+ * Copyright 2019 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -113,6 +110,12 @@ async function buildBrowser(url, isRtl) {
     },
     logLevel: 'warn'
   };
+  // Run in headless mode on Travis.
+  if (process.env.TRAVIS_CI) {
+    options.capabilities['goog:chromeOptions'] = {
+      args: ['--headless', '--no-sandbox', '--disable-dev-shm-usage']
+    };
+  }
   console.log('Starting webdriverio...');
   const browser = await webdriverio.remote(options);
   var injectBlockly = function(isRtl) {
@@ -164,7 +167,7 @@ async function genSingleScreenshot(browser, dir, test_name, isCollapsed, isInser
     var xml = Blockly.Xml.textToDom(xml_text);
     Blockly.Xml.domToWorkspace(xml, workspace);
     if (isCollapsed || isInsertionMarker || inlineInputs || externalInputs) {
-      var blocks = workspace.getAllBlocks();
+      var blocks = workspace.getAllBlocks(false);
       for (var i = 0, block; block = blocks[i]; i++) {
         block.setCollapsed(isCollapsed);
         block.setInsertionMarker(isInsertionMarker);

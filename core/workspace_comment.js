@@ -1,9 +1,6 @@
 /**
  * @license
- * Visual Blocks Editor
- *
- * Copyright 2017 Google Inc.
- * https://developers.google.com/blockly/
+ * Copyright 2017 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -97,6 +94,12 @@ Blockly.WorkspaceComment = function(workspace, content, height, width, opt_id) {
    * @private
    */
   this.movable_ = true;
+
+  /**
+   * @type {boolean}
+   * @private
+   */
+  this.editable_ = true;
 
   /**
    * @protected
@@ -230,6 +233,23 @@ Blockly.WorkspaceComment.prototype.isMovable = function() {
  */
 Blockly.WorkspaceComment.prototype.setMovable = function(movable) {
   this.movable_ = movable;
+};
+
+/**
+ * Get whether this comment is editable or not.
+ * @return {boolean} True if editable.
+ */
+Blockly.WorkspaceComment.prototype.isEditable = function() {
+  return this.editable_ &&
+      !(this.workspace && this.workspace.options.readOnly);
+};
+
+/**
+ * Set whether this comment is editable or not.
+ * @param {boolean} editable True if editable.
+ */
+Blockly.WorkspaceComment.prototype.setEditable = function(editable) {
+  this.editable_ = editable;
 };
 
 /**

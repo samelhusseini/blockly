@@ -1,9 +1,6 @@
 /**
  * @license
- * Visual Blocks Editor
- *
- * Copyright 2019 Google Inc.
- * https://developers.google.com/blockly/
+ * Copyright 2019 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,6 +26,7 @@ goog.provide('Blockly.tree.BaseNode');
 
 goog.require('Blockly.Component');
 goog.require('Blockly.utils.aria');
+goog.require('Blockly.utils.object');
 goog.require('Blockly.utils.KeyCodes');
 goog.require('Blockly.utils.style');
 
@@ -39,7 +37,7 @@ goog.require('Blockly.utils.style');
  *
  * @param {string} content The content of the node label treated as
  *     plain-text and will be HTML escaped.
- * @param {Blockly.tree.BaseNode.Config} config The configuration for the tree.
+ * @param {!Blockly.tree.BaseNode.Config} config The configuration for the tree.
  * @constructor
  * @extends {Blockly.Component}
  */
@@ -48,7 +46,7 @@ Blockly.tree.BaseNode = function(content, config) {
 
   /**
    * The configuration for the tree.
-   * @type {Blockly.tree.BaseNode.Config}
+   * @type {!Blockly.tree.BaseNode.Config}
    * @private
    */
   this.config_ = config;
@@ -60,59 +58,85 @@ Blockly.tree.BaseNode = function(content, config) {
    */
   this.content_ = content;
 
-  /** @private {string} */
+  /**
+   * @type {string}
+   * @private
+   */
   this.iconClass_;
 
-  /** @private {string} */
+  /**
+   * @type {string}
+   * @private
+   */
   this.expandedIconClass_;
 
-  /** @protected {Blockly.tree.TreeControl} */
+  /**
+   * @type {Blockly.tree.TreeControl}
+   * @protected
+   */
   this.tree;
 
-  /** @private {Blockly.tree.BaseNode} */
+  /**
+   * @type {Blockly.tree.BaseNode}
+   * @private
+   */
   this.previousSibling_;
 
-  /** @private {Blockly.tree.BaseNode} */
+  /**
+   * @type {Blockly.tree.BaseNode}
+   * @private
+   */
   this.nextSibling_;
 
-  /** @private {Blockly.tree.BaseNode} */
+  /**
+   * @type {Blockly.tree.BaseNode}
+   * @private
+   */
   this.firstChild_;
 
-  /** @private {Blockly.tree.BaseNode} */
+  /**
+   * @type {Blockly.tree.BaseNode}
+   * @private
+   */
   this.lastChild_;
 
   /**
    * Whether the tree item is selected.
-   * @private {boolean}
+   * @type {boolean}
+   * @private
    */
   this.selected_ = false;
 
   /**
    * Whether the tree node is expanded.
-   * @private {boolean}
+   * @type {boolean}
+   * @private
    */
   this.expanded_ = false;
 
   /**
    * Tooltip for the tree item
-   * @private {?string}
+   * @type {?string}
+   * @private
    */
   this.toolTip_ = null;
 
   /**
    * Whether to allow user to collapse this node.
-   * @private {boolean}
+   * @type {boolean}
+   * @private
    */
   this.isUserCollapsible_ = true;
 
   /**
    * Nesting depth of this node; cached result of computeDepth_.
    * -1 if value has not been cached.
-   * @private {number}
+   * @type {number}
+   * @private
    */
   this.depth_ = -1;
 };
-goog.inherits(Blockly.tree.BaseNode, Blockly.Component);
+Blockly.utils.object.inherits(Blockly.tree.BaseNode, Blockly.Component);
 
 
 /**
@@ -121,27 +145,12 @@ goog.inherits(Blockly.tree.BaseNode, Blockly.Component);
  *            indentWidth:number,
  *            cssRoot:string,
  *            cssHideRoot:string,
- *            cssItem:string,
- *            cssChildren:string,
- *            cssChildrenNoLines:string,
  *            cssTreeRow:string,
  *            cssItemLabel:string,
  *            cssTreeIcon:string,
- *            cssExpandTreeIcon:string,
- *            cssExpandTreeIconPlus:string,
- *            cssExpandTreeIconMinus:string,
- *            cssExpandTreeIconTPlus:string,
- *            cssExpandTreeIconTMinus:string,
- *            cssExpandTreeIconLPlus:string,
- *            cssExpandTreeIconLMinus:string,
- *            cssExpandTreeIconT:string,
- *            cssExpandTreeIconL:string,
- *            cssExpandTreeIconBlank:string,
  *            cssExpandedFolderIcon:string,
  *            cssCollapsedFolderIcon:string,
  *            cssFileIcon:string,
- *            cssExpandedRootIcon:string,
- *            cssCollapsedRootIcon:string,
  *            cssSelectedRow:string
  *          }}
  */
@@ -179,10 +188,8 @@ Blockly.tree.BaseNode.prototype.initAccessibility = function() {
       label.id = this.getId() + '.label';
     }
 
-    Blockly.utils.aria.setRole(el,
-        Blockly.utils.aria.Role.TREEITEM);
-    Blockly.utils.aria.setState(el,
-        Blockly.utils.aria.State.SELECTED, false);
+    Blockly.utils.aria.setRole(el, Blockly.utils.aria.Role.TREEITEM);
+    Blockly.utils.aria.setState(el, Blockly.utils.aria.State.SELECTED, false);
     Blockly.utils.aria.setState(el,
         Blockly.utils.aria.State.LEVEL, this.getDepth());
     if (label) {
@@ -192,13 +199,7 @@ Blockly.tree.BaseNode.prototype.initAccessibility = function() {
 
     var img = this.getIconElement();
     if (img) {
-      Blockly.utils.aria.setRole(img,
-          Blockly.utils.aria.Role.PRESENTATION);
-    }
-    var ei = this.getExpandIconElement();
-    if (ei) {
-      Blockly.utils.aria.setRole(ei,
-          Blockly.utils.aria.Role.PRESENTATION);
+      Blockly.utils.aria.setRole(img, Blockly.utils.aria.Role.PRESENTATION);
     }
 
     var ce = this.getChildrenElement();
@@ -253,8 +254,7 @@ Blockly.tree.BaseNode.prototype.exitDocument = function() {
  * The method assumes that the child doesn't have parent node yet.
  * @override
  */
-Blockly.tree.BaseNode.prototype.addChildAt = function(
-    child, index) {
+Blockly.tree.BaseNode.prototype.addChildAt = function(child, index) {
   child = /** @type {Blockly.tree.BaseNode} */ (child);
   var prevNode = this.getChildAt(index - 1);
   var nextNode = this.getChildAt(index);
@@ -313,21 +313,15 @@ Blockly.tree.BaseNode.prototype.addChildAt = function(
 };
 
 /**
- * Adds a node as a child to the current node.
+ * Appends a node as a child to the current node.
  * @param {Blockly.tree.BaseNode} child The child to add.
- * @param {Blockly.tree.BaseNode=} opt_before If specified, the new child is
- *    added as a child before this one. If not specified, it's appended to the
- *    end.
- * @return {!Blockly.tree.BaseNode} The added child.
  * @package
  */
-Blockly.tree.BaseNode.prototype.add = function(child, opt_before) {
+Blockly.tree.BaseNode.prototype.add = function(child) {
   if (child.getParent()) {
-    child.getParent().removeChild(child);
+    throw Error(Blockly.Component.Error.PARENT_UNABLE_TO_BE_SET);
   }
-  this.addChildAt(
-      child, opt_before ? this.indexOfChild(opt_before) : this.getChildCount());
-  return child;
+  this.addChildAt(child, this.getChildCount());
 };
 
 /**
@@ -487,6 +481,17 @@ Blockly.tree.BaseNode.prototype.select = function() {
 };
 
 /**
+ * Selects the first node.
+ * @protected
+ */
+Blockly.tree.BaseNode.prototype.selectFirst = function() {
+  var tree = this.getTree();
+  if (tree && this.firstChild_) {
+    tree.setSelectedItem(this.firstChild_);
+  }
+};
+
+/**
  * Called from the tree to instruct the node change its selection state.
  * @param {boolean} selected The new selection state.
  * @protected
@@ -606,82 +611,6 @@ Blockly.tree.BaseNode.prototype.toggle = function() {
 };
 
 /**
- * Expands the node.
- * @protected
- */
-Blockly.tree.BaseNode.prototype.expand = function() {
-  this.setExpanded(true);
-};
-/**
- * Collapses the node.
- * @protected
- */
-Blockly.tree.BaseNode.prototype.collapse = function() {
-  this.setExpanded(false);
-};
-
-/**
- * Collapses the children of the node.
- * @protected
- */
-Blockly.tree.BaseNode.prototype.collapseChildren = function() {
-  this.forEachChild(function(child) { child.collapseAll(); });
-};
-
-/**
- * Collapses the children and the node.
- * @protected
- */
-Blockly.tree.BaseNode.prototype.collapseAll = function() {
-  this.collapseChildren();
-  this.collapse();
-};
-
-/**
- * Expands the children of the node.
- * @protected
- */
-Blockly.tree.BaseNode.prototype.expandChildren = function() {
-  this.forEachChild(function(child) { child.expandAll(); });
-};
-
-/**
- * Expands the children and the node.
- * @protected
- */
-Blockly.tree.BaseNode.prototype.expandAll = function() {
-  this.expandChildren();
-  this.expand();
-};
-
-/**
- * Expands the parent chain of this node so that it is visible.
- * @protected
- */
-Blockly.tree.BaseNode.prototype.reveal = function() {
-  var parent = this.getParent();
-  if (parent) {
-    parent.setExpanded(true);
-    parent.reveal();
-  }
-};
-
-/**
- * Sets whether the node will allow the user to collapse it.
- * @param {boolean} isCollapsible Whether to allow node collapse.
- * @protected
- */
-Blockly.tree.BaseNode.prototype.setIsUserCollapsible = function(isCollapsible) {
-  this.isUserCollapsible_ = isCollapsible;
-  if (!this.isUserCollapsible_) {
-    this.expand();
-  }
-  if (this.getElement()) {
-    this.updateExpandIcon();
-  }
-};
-
-/**
  * @return {boolean} Whether the node is collapsible by user actions.
  * @protected
  */
@@ -691,17 +620,17 @@ Blockly.tree.BaseNode.prototype.isUserCollapsible = function() {
 
 /**
  * Creates HTML Element for the node.
- * @return {!Element} html element
+ * @return {!Element} HTML element
  * @protected
  */
 Blockly.tree.BaseNode.prototype.toDom = function() {
-  var childClass = this.config_.cssChildrenNoLines;
-
   var nonEmptyAndExpanded = this.getExpanded() && this.hasChildren();
 
   var children = document.createElement('div');
-  children.setAttribute('class', childClass || '');
-  children.setAttribute('style', this.getLineStyle());
+  children.style.backgroundPosition = this.getBackgroundPosition();
+  if (!nonEmptyAndExpanded) {
+    children.style.display = 'none';
+  }
 
   if (nonEmptyAndExpanded) {
     // children
@@ -709,8 +638,7 @@ Blockly.tree.BaseNode.prototype.toDom = function() {
   }
 
   var node = document.createElement('div');
-  node.setAttribute('class', this.config_.cssItem || '');
-  node.setAttribute('id', this.getId());
+  node.id = this.getId();
 
   node.appendChild(this.getRowDom());
   node.appendChild(children);
@@ -727,18 +655,15 @@ Blockly.tree.BaseNode.prototype.getPixelIndent_ = function() {
 };
 
 /**
- * @return {!Element} The html element for the row.
+ * @return {!Element} The HTML element for the row.
  * @protected
  */
 Blockly.tree.BaseNode.prototype.getRowDom = function() {
-  var style = 'padding-' + (this.isRightToLeft() ? 'right' : 'left') + ':' +
+  var row = document.createElement('div');
+  row.className = this.getRowClassName();
+  row.style['padding-' + (this.isRightToLeft() ? 'right' : 'left')] =
       this.getPixelIndent_() + 'px';
 
-  var row = document.createElement('div');
-  row.setAttribute('class', this.getRowClassName());
-  row.setAttribute('style', style);
-
-  row.appendChild(this.getExpandIconDom());
   row.appendChild(this.getIconDom());
   row.appendChild(this.getLabelDom());
 
@@ -758,25 +683,24 @@ Blockly.tree.BaseNode.prototype.getRowClassName = function() {
 };
 
 /**
- * @return {!Element} The html element for the label.
+ * @return {!Element} The HTML element for the label.
  * @protected
  */
 Blockly.tree.BaseNode.prototype.getLabelDom = function() {
   var label = document.createElement('span');
-  label.setAttribute('class', this.config_.cssItemLabel || '');
-  label.setAttribute('title', this.getToolTip() || '');
+  label.className = this.config_.cssItemLabel || '';
   label.textContent = this.getText();
   return label;
 };
 
 /**
- * @return {!Element} The html for the icon.
+ * @return {!Element} The HTML for the icon.
  * @protected
  */
 Blockly.tree.BaseNode.prototype.getIconDom = function() {
   var icon = document.createElement('span');
-  icon.setAttribute('style', 'display: inline-block;');
-  icon.setAttribute('class', this.getCalculatedIconClass());
+  icon.style.display = 'inline-block';
+  icon.className = this.getCalculatedIconClass();
   return icon;
 };
 
@@ -785,78 +709,7 @@ Blockly.tree.BaseNode.prototype.getIconDom = function() {
  * @protected
  */
 Blockly.tree.BaseNode.prototype.getCalculatedIconClass = function() {
-  throw new Error('unimplemented abstract method');
-};
-
-/**
- * @return {!Element} The source for the icon.
- * @protected
- */
-Blockly.tree.BaseNode.prototype.getExpandIconDom = function() {
-  return document.createElement('span');
-};
-
-/**
- * @return {string} The class names of the icon used for expanding the node.
- * @protected
- */
-Blockly.tree.BaseNode.prototype.getExpandIconClass = function() {
-  var config = this.config_;
-  var sb = '';
-  sb += config.cssTreeIcon + ' ' + config.cssExpandTreeIcon + ' ';
-
-  if (this.hasChildren()) {
-    var bits = 0;
-    /*
-      Bitmap used to determine which icon to use
-      1  Plus
-      2  Minus
-      4  T Line
-      8  L Line
-    */
-
-    switch (bits) {
-      case 1:
-        sb += config.cssExpandTreeIconPlus;
-        break;
-      case 2:
-        sb += config.cssExpandTreeIconMinus;
-        break;
-      case 4:
-        sb += config.cssExpandTreeIconL;
-        break;
-      case 5:
-        sb += config.cssExpandTreeIconLPlus;
-        break;
-      case 6:
-        sb += config.cssExpandTreeIconLMinus;
-        break;
-      case 8:
-        sb += config.cssExpandTreeIconT;
-        break;
-      case 9:
-        sb += config.cssExpandTreeIconTPlus;
-        break;
-      case 10:
-        sb += config.cssExpandTreeIconTMinus;
-        break;
-      default:  // 0
-        sb += config.cssExpandTreeIconBlank;
-    }
-  } else {
-    sb += config.cssExpandTreeIconBlank;
-  }
-  return sb;
-};
-
-/**
- * @return {string} The line style.
- * @protected
- */
-Blockly.tree.BaseNode.prototype.getLineStyle = function() {
-  var nonEmptyAndExpanded = this.getExpanded() && this.hasChildren();
-  return 'background-position: ' + this.getBackgroundPosition() + '; ' +
-      (nonEmptyAndExpanded ? '' : 'display: none');
+  throw Error('unimplemented abstract method');
 };
 
 /**
@@ -865,7 +718,7 @@ Blockly.tree.BaseNode.prototype.getLineStyle = function() {
  */
 Blockly.tree.BaseNode.prototype.getBackgroundPosition = function() {
   return (this.isLastSibling() ? '-100' : (this.getDepth() - 1) *
-                  this.config_.indentWidth) + 'px 0';
+      this.config_.indentWidth) + 'px 0';
 };
 
 /**
@@ -884,19 +737,10 @@ Blockly.tree.BaseNode.prototype.getElement = function() {
 /**
  * @return {Element} The row is the div that is used to draw the node without
  *     the children.
- * @protected
+ * @package
  */
 Blockly.tree.BaseNode.prototype.getRowElement = function() {
   var el = this.getElement();
-  return el ? /** @type {Element} */ (el.firstChild) : null;
-};
-
-/**
- * @return {Element} The expanded icon element.
- * @protected
- */
-Blockly.tree.BaseNode.prototype.getExpandIconElement = function() {
-  var el = this.getRowElement();
   return el ? /** @type {Element} */ (el.firstChild) : null;
 };
 
@@ -906,7 +750,7 @@ Blockly.tree.BaseNode.prototype.getExpandIconElement = function() {
  */
 Blockly.tree.BaseNode.prototype.getIconElement = function() {
   var el = this.getRowElement();
-  return el ? /** @type {Element} */ (el.childNodes[1]) : null;
+  return el ? /** @type {Element} */ (el.firstChild) : null;
 };
 
 /**
@@ -921,15 +765,6 @@ Blockly.tree.BaseNode.prototype.getLabelElement = function() {
 };
 
 /**
- * @return {Element} The element after the label.
- * @protected
- */
-Blockly.tree.BaseNode.prototype.getAfterLabelElement = function() {
-  var el = this.getRowElement();
-  return el ? /** @type {Element} */ (el.lastChild) : null;
-};
-
-/**
  * @return {Element} The div containing the children.
  * @protected
  */
@@ -939,36 +774,12 @@ Blockly.tree.BaseNode.prototype.getChildrenElement = function() {
 };
 
 /**
- * Sets the icon class for the node.
- * @param {string} s The icon class.
- * @protected
- */
-Blockly.tree.BaseNode.prototype.setIconClass = function(s) {
-  this.iconClass_ = s;
-  if (this.isInDocument()) {
-    this.updateIcon_();
-  }
-};
-
-/**
  * Gets the icon class for the node.
  * @return {string} s The icon source.
  * @protected
  */
 Blockly.tree.BaseNode.prototype.getIconClass = function() {
   return this.iconClass_;
-};
-
-/**
- * Sets the icon class for when the node is expanded.
- * @param {string} s The expanded icon class.
- * @protected
- */
-Blockly.tree.BaseNode.prototype.setExpandedIconClass = function(s) {
-  this.expandedIconClass_ = s;
-  if (this.isInDocument()) {
-    this.updateIcon_();
-  }
 };
 
 /**
@@ -1000,28 +811,6 @@ Blockly.tree.BaseNode.prototype.getText = function() {
 };
 
 /**
- * Sets the text of the tooltip.
- * @param {string} s The tooltip text to set.
- * @protected
- */
-Blockly.tree.BaseNode.prototype.setToolTip = function(s) {
-  this.toolTip_ = s;
-  var el = this.getLabelElement();
-  if (el) {
-    el.title = s;
-  }
-};
-
-/**
- * Returns the text of the tooltip.
- * @return {?string} The tooltip text.
- * @protected
- */
-Blockly.tree.BaseNode.prototype.getToolTip = function() {
-  return this.toolTip_;
-};
-
-/**
  * Updates the row styles.
  * @protected
  */
@@ -1037,10 +826,6 @@ Blockly.tree.BaseNode.prototype.updateRow = function() {
  * @protected
  */
 Blockly.tree.BaseNode.prototype.updateExpandIcon = function() {
-  var img = this.getExpandIconElement();
-  if (img) {
-    img.className = this.getExpandIconClass();
-  }
   var cel = this.getChildrenElement();
   if (cel) {
     cel.style.backgroundPosition = this.getBackgroundPosition();
@@ -1085,24 +870,6 @@ Blockly.tree.BaseNode.prototype.onClick_ = function(e) {
 };
 
 /**
- * Handles a double click event.
- * @param {!Event} e The browser event.
- * @protected
- */
-Blockly.tree.BaseNode.prototype.onDoubleClick_ = function(e) {
-  var el = e.target;
-  // expand icon
-  var type = el.getAttribute('type');
-  if (type == 'expand' && this.hasChildren()) {
-    return;
-  }
-
-  if (this.isUserCollapsible_) {
-    this.toggle();
-  }
-};
-
-/**
  * Handles a key down event.
  * @param {!Event} e The browser event.
  * @return {boolean} The handled value.
@@ -1115,43 +882,22 @@ Blockly.tree.BaseNode.prototype.onKeyDown = function(e) {
       if (e.altKey) {
         break;
       }
-      if (this.hasChildren()) {
-        if (!this.getExpanded()) {
-          this.setExpanded(true);
-        } else {
-          this.getFirstChild().select();
-        }
-      }
+      handled = this.selectChild();
       break;
 
     case Blockly.utils.KeyCodes.LEFT:
       if (e.altKey) {
         break;
       }
-      if (this.hasChildren() && this.getExpanded() && this.isUserCollapsible_) {
-        this.setExpanded(false);
-      } else {
-        var parent = this.getParent();
-        var tree = this.getTree();
-        // don't go to root if hidden
-        if (parent && (parent != tree)) {
-          parent.select();
-        }
-      }
+      handled = this.selectParent();
       break;
 
     case Blockly.utils.KeyCodes.DOWN:
-      var nextNode = this.getNextShownNode();
-      if (nextNode) {
-        nextNode.select();
-      }
+      handled = this.selectNext();
       break;
 
     case Blockly.utils.KeyCodes.UP:
-      var previousNode = this.getPreviousShownNode();
-      if (previousNode) {
-        previousNode.select();
-      }
+      handled = this.selectPrevious();
       break;
 
     default:
@@ -1163,6 +909,70 @@ Blockly.tree.BaseNode.prototype.onKeyDown = function(e) {
   }
 
   return handled;
+};
+
+
+/**
+ * Select the next node.
+ * @return {boolean} True if the action has been handled, false otherwise.
+ * @package
+ */
+Blockly.tree.BaseNode.prototype.selectNext = function() {
+  var nextNode = this.getNextShownNode();
+  if (nextNode) {
+    nextNode.select();
+  }
+  return true;
+};
+
+/**
+ * Select the previous node.
+ * @return {boolean} True if the action has been handled, false otherwise.
+ * @package
+ */
+Blockly.tree.BaseNode.prototype.selectPrevious = function() {
+  var previousNode = this.getPreviousShownNode();
+  if (previousNode) {
+    previousNode.select();
+  }
+  return true;
+};
+
+/**
+ * Select the parent node or collapse the current node.
+ * @return {boolean} True if the action has been handled, false otherwise.
+ * @package
+ */
+Blockly.tree.BaseNode.prototype.selectParent = function() {
+  if (this.hasChildren() && this.getExpanded() && this.isUserCollapsible_) {
+    this.setExpanded(false);
+  } else {
+    var parent = this.getParent();
+    var tree = this.getTree();
+    // don't go to root if hidden
+    if (parent && (parent != tree)) {
+      parent.select();
+    }
+  }
+  return true;
+};
+
+/**
+ * Expand the current node if it's not already expanded, or select the
+ * child node.
+ * @return {boolean} True if the action has been handled, false otherwise.
+ * @package
+ */
+Blockly.tree.BaseNode.prototype.selectChild = function() {
+  if (this.hasChildren()) {
+    if (!this.getExpanded()) {
+      this.setExpanded(true);
+    } else {
+      this.getFirstChild().select();
+    }
+    return true;
+  }
+  return false;
 };
 
 /**
@@ -1221,7 +1031,7 @@ Blockly.tree.BaseNode.prototype.getPreviousShownNode = function() {
 };
 
 /**
- * @return {Blockly.tree.BaseNode.Config} The configuration for the tree.
+ * @return {!Blockly.tree.BaseNode.Config} The configuration for the tree.
  * @protected
  */
 Blockly.tree.BaseNode.prototype.getConfig = function() {

@@ -1,9 +1,6 @@
 /**
  * @license
- * Visual Blocks Editor
- *
- * Copyright 2017 Google Inc.
- * https://developers.google.com/blockly/
+ * Copyright 2017 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -36,13 +33,13 @@ goog.require('Blockly.utils.style');
 
 /**
  * Get the size of a rendered goog.ui.Menu.
- * @param {!goog.ui.Menu} menu The menu to measure.
+ * @param {!Blockly.Menu} menu The menu to measure.
  * @return {!Blockly.utils.Size} Object with width and height properties.
  * @package
  */
 Blockly.utils.uiMenu.getSize = function(menu) {
   var menuDom = menu.getElement();
-  var menuSize = Blockly.utils.style.getSize(menuDom);
+  var menuSize = Blockly.utils.style.getSize(/** @type {!Element} */ (menuDom));
   // Recalculate height for the total content, not only box height.
   menuSize.height = menuDom.scrollHeight;
   return menuSize;

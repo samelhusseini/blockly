@@ -1,9 +1,6 @@
 /**
  * @license
- * Visual Blocks Editor
- *
- * Copyright 2019 Google Inc.
- * https://developers.google.com/blockly/
+ * Copyright 2019 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,6 +25,7 @@
 goog.provide('Blockly.tree.TreeNode');
 
 goog.require('Blockly.tree.BaseNode');
+goog.require('Blockly.utils.object');
 goog.require('Blockly.utils.KeyCodes');
 
 
@@ -38,7 +36,7 @@ goog.require('Blockly.utils.KeyCodes');
  * @param {Blockly.Toolbox} toolbox The parent toolbox for this tree.
  * @param {string} content The content of the node label treated as
  *     plain-text and will be HTML escaped.
- * @param {Blockly.tree.BaseNode.Config} config The configuration for the tree.
+ * @param {!Blockly.tree.BaseNode.Config} config The configuration for the tree.
  * @constructor
  * @extends {Blockly.tree.BaseNode}
  */
@@ -46,7 +44,7 @@ Blockly.tree.TreeNode = function(toolbox, content, config) {
   this.toolbox_ = toolbox;
   Blockly.tree.BaseNode.call(this, content, config);
 };
-goog.inherits(Blockly.tree.TreeNode, Blockly.tree.BaseNode);
+Blockly.utils.object.inherits(Blockly.tree.TreeNode, Blockly.tree.BaseNode);
 
 /**
  * Returns the tree.

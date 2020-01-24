@@ -65,14 +65,22 @@
 <script src="../blocks/variables_dynamic.js"></script>
 <script src="../blocks/procedures.js"></script>
 <script src="blocks/test_blocks.js"></script>
+<script src="./playgrounds/screenshot.js"></script>
 
+<script>
+// Custom requires for the playground.
+goog.require('Blockly.blockRendering.Debug');
+goog.require('Blockly.minimalist.Renderer');
+goog.require('Blockly.Themes.Modern');
+goog.require('Blockly.Themes.Zelos');
+goog.require('Blockly.thrasos.Renderer');
+goog.require('Blockly.zelos.Renderer');
+</script>
 <script>
 'use strict';
 var workspace = null;
 
 function start() {
-  // TODO (#2702): Choose an API for picking the renderer.
-  Blockly.renderMode = 'compatibility';
   setBackgroundColour();
 
   // Parse the URL arguments.
@@ -91,6 +99,10 @@ function start() {
   match = location.search.match(/side=([^&]+)/);
   var side = match ? match[1] : 'start';
   document.forms.options.elements.side.value = side;
+  var autoimport = !!location.search.match(/autoimport=([^&]+)/);
+  match = location.search.match(/renderer=([^&]+)/);
+  var renderer = match ? match[1] : 'geras';
+  document.forms.options.elements.renderer.value = renderer;
   // Create main workspace.
   workspace = Blockly.inject('blocklyDiv',
       {
@@ -107,6 +119,7 @@ function start() {
         horizontalLayout: side == 'top' || side == 'bottom',
         maxBlocks: Infinity,
         maxInstances: {'test_basic_limit_instances': 3},
+        maxTrashcanContents: 256,
         media: '../media/',
         oneBasedIndex: true,
         readOnly: false,
@@ -118,6 +131,7 @@ function start() {
         },
         toolbox: toolbox,
         toolboxPosition: side == 'top' || side == 'start' ? 'start' : 'end',
+        renderer: renderer,
         zoom:
           {
             controls: true,
@@ -128,7 +142,9 @@ function start() {
             scaleSpeed: 1.1
           }
       });
+  workspace.configureContextMenu = configureContextMenu;
   addToolboxButtonCallbacks();
+  addRenderDebugOptionsCheckboxes();
   // Restore previously displayed text.
   if (sessionStorage) {
     var text = sessionStorage.getItem('textarea');
@@ -141,11 +157,18 @@ function start() {
     // Restore render debug state.
     var renderDebugState = sessionStorage.getItem('blockRenderDebug');
     toggleRenderingDebug(Boolean(Number(renderDebugState)));
+    // Restore render debug options state.
+    var renderDebugOptionsState =
+        JSON.parse(sessionStorage.getItem('blockRenderDebugOptions'));
+    setRenderDebugOptionCheckboxState(renderDebugOptionsState);
   } else {
     // MSIE 11 does not support sessionStorage on file:// URLs.
     logEvents(false);
   }
   taChange();
+  if (autoimport) {
+    fromXml();
+  }
 }
 
 function addToolboxButtonCallbacks() {
@@ -171,8 +194,9 @@ function addToolboxButtonCallbacks() {
     }
   };
   var setRandomStyle = function(button) {
-    var blocks = button.workspace_.getAllBlocks();
-    var styles = Object.keys(Blockly.getTheme().getAllBlockStyles());
+    var blocks = button.workspace_.getAllBlocks(false);
+    var styles =
+        Object.keys(workspace.getRenderer().getConstants().blockStyles);
     styles.splice(styles.indexOf(blocks[0].getStyleName()), 1);
     var style = styles[Math.floor(Math.random() * styles.length)];
     for(var i = 0, block; block = blocks[i]; i++) {
@@ -180,26 +204,26 @@ function addToolboxButtonCallbacks() {
     }
   };
   var toggleEnabled = function(button) {
-    var blocks = button.workspace_.getAllBlocks();
+    var blocks = button.workspace_.getAllBlocks(false);
     for(var i = 0, block; block = blocks[i]; i++) {
       block.setEnabled(!block.isEnabled());
     }
   };
   var toggleShadow = function(button) {
-    var blocks = button.workspace_.getAllBlocks();
+    var blocks = button.workspace_.getAllBlocks(false);
     for(var i = 0, block; block = blocks[i]; i++) {
       block.setShadow(!block.isShadow());
     }
   };
   var toggleCollapsed = function(button) {
-    var blocks = button.workspace_.getAllBlocks();
+    var blocks = button.workspace_.getAllBlocks(false);
     for(var i = 0, block; block = blocks[i]; i++) {
       block.setCollapsed(!block.isCollapsed());
     }
   };
   var setInput = function(button) {
     Blockly.prompt('Input text to set.', 'ab', function(input) {
-      var blocks = button.getTargetWorkspace().getAllBlocks();
+      var blocks = button.getTargetWorkspace().getAllBlocks(false);
       for(var i = 0, block; block = blocks[i]; i++) {
         if (block.getField('INPUT')) {
           block.setFieldValue(input, 'INPUT');
@@ -216,11 +240,9 @@ function addToolboxButtonCallbacks() {
     for (var i = 0, block; block = blocks[i]; i++) {
       var imageField = block.getField('IMAGE');
       imageField.setValue(src);
-      imageField.setText(image);
     }
   };
   var addVariables = function(button) {
-    workspace.createVariable('1a', '', '1A');
     workspace.createVariable('1b', '', '1B');
     workspace.createVariable('1c', '', '1C');
     workspace.createVariable('2a', '', '2A');
@@ -229,13 +251,13 @@ function addToolboxButtonCallbacks() {
   };
 
   workspace.registerButtonCallback(
-    'addVariables', addVariables);
+      'addVariables', addVariables);
   workspace.registerButtonCallback(
-    'changeImage', changeImage);
+      'changeImage', changeImage);
   workspace.registerButtonCallback(
-    'addAllBlocksToWorkspace', addAllBlocksToWorkspace);
+      'addAllBlocksToWorkspace', addAllBlocksToWorkspace);
   workspace.registerButtonCallback(
-    'setInput', setInput);
+      'setInput', setInput);
   workspace.registerButtonCallback(
       'setRandomStyle', setRandomStyle);
   workspace.registerButtonCallback(
@@ -247,19 +269,81 @@ function addToolboxButtonCallbacks() {
   workspace.registerButtonCallback(
       'randomizeLabelText', randomizeLabelText);
   workspace.registerButtonCallback(
-      'addDynamicOption', Blockly.TestBlocks.addDynamicDropdownOption_);
+      'addDynamicOption', Blockly.TestBlocks.addDynamicDropdownOption);
   workspace.registerButtonCallback(
-      'removeDynamicOption', Blockly.TestBlocks.removeDynamicDropdownOption_);
+      'removeDynamicOption', Blockly.TestBlocks.removeDynamicDropdownOption);
+  workspace.registerButtonCallback(
+      'insertConnectionRows', Blockly.TestBlocks.insertConnectionRows);
+  workspace.registerButtonCallback(
+      'insertConnectionStacks', Blockly.TestBlocks.insertConnectionStacks);
+  workspace.registerButtonCallback(
+      'insertConnectionStatements',
+          Blockly.TestBlocks.insertConnectionStatements);
+}
+
+function setRenderDebugOptionCheckboxState(overrideOptions) {
+  Blockly.blockRendering.Debug.config = overrideOptions || {};
+  if (!overrideOptions) {
+    return;
+  }
+  var renderDebugOptionsListEl = document.getElementById('renderDebugOptions');
+  var renderDebugOptionInputs =
+      renderDebugOptionsListEl.getElementsByTagName('input');
+  for (var i = 0, optionInput;
+      (optionInput = renderDebugOptionInputs[i]); i++) {
+    var optionName = optionInput.getAttribute('data-optionName');
+    optionInput.checked = !!overrideOptions[optionName];
+  }
+}
+
+function updateRenderDebugOptions(e) {
+  var target = e.target;
+  var optionName = target.getAttribute('data-optionName');
+  var config = Blockly.blockRendering.Debug.config;
+  config[optionName] = !!target.checked;
+  sessionStorage.setItem(
+      'blockRenderDebugOptions', JSON.stringify(config));
+  workspace.render();
+}
+
+function addRenderDebugOptionsCheckboxes() {
+  var renderDebugConfig = Blockly.blockRendering.Debug.config;
+  var renderDebugOptionsListEl = document.getElementById('renderDebugOptions');
+  var optionNames = Object.keys(renderDebugConfig);
+  for (var i = 0, optionName; (optionName = optionNames[i]); i++) {
+    var optionCheckId = 'RenderDebug' + optionName + 'Check';
+    var optionLabel = document.createElement('label');
+    optionLabel.setAttribute('for', optionCheckId);
+    optionLabel.textContent = optionName;
+    var optionCheck = document.createElement('input');
+    optionCheck.setAttribute('type', 'checkbox');
+    optionCheck.setAttribute('id', optionCheckId);
+    optionCheck.setAttribute('data-optionName', optionName);
+    optionCheck.onclick = updateRenderDebugOptions;
+    var optionLi = document.createElement('li');
+    optionLi.appendChild(optionLabel);
+    optionLi.appendChild(optionCheck);
+    renderDebugOptionsListEl.appendChild(optionLi);
+  }
 }
 
 function changeTheme() {
   var theme = document.getElementById('themeChanger');
-  if (theme.value === "modern") {
-    Blockly.setTheme(Blockly.Themes.Modern);
+
+  if (theme.value === "dark") {
+    Blockly.getMainWorkspace().setTheme(Blockly.Themes.Dark);
   } else if (theme.value === "high_contrast") {
-    Blockly.setTheme(Blockly.Themes.HighContrast);
+    Blockly.getMainWorkspace().setTheme(Blockly.Themes.HighContrast);
+  } else if (theme.value === "deuteranopia") {
+    Blockly.getMainWorkspace().setTheme(Blockly.Themes.Deuteranopia);
+  } else if (theme.value === "tritanopia") {
+    Blockly.getMainWorkspace().setTheme(Blockly.Themes.Tritanopia);
+  } else if (theme.value === "modern") {
+    Blockly.getMainWorkspace().setTheme(Blockly.Themes.Modern);
+  } else if (theme.value === "zelos") {
+    Blockly.getMainWorkspace().setTheme(Blockly.Themes.Zelos);
   } else {
-    Blockly.setTheme(Blockly.Themes.Classic);
+    Blockly.getMainWorkspace().setTheme(Blockly.Themes.Classic);
   }
 }
 
@@ -292,6 +376,9 @@ function toXml() {
 
 function fromXml() {
   var input = document.getElementById('importExport');
+  if (!input.value) {
+    return;
+  }
   var xml = Blockly.Xml.textToDom(input.value);
   Blockly.Xml.domToWorkspace(xml, workspace);
   taChange();
@@ -340,9 +427,32 @@ function toggleRenderingDebug(state) {
   }
   if (state) {
     document.getElementById('blocklyDiv').className = 'renderingDebug';
+    Blockly.blockRendering.startDebugger();
+    document.getElementById('renderDebugOptions').style.display = 'block';
   } else {
     document.getElementById('blocklyDiv').className = '';
+    Blockly.blockRendering.stopDebugger();
+    document.getElementById('renderDebugOptions').style.display = 'none';
   }
+}
+
+function toggleAccessibilityMode(state) {
+  if (state) {
+    Blockly.navigation.enableKeyboardAccessibility();
+  } else {
+    Blockly.navigation.disableKeyboardAccessibility();
+  }
+}
+
+function configureContextMenu(menuOptions) {
+  var screenshotOption = {
+    text: 'Download Screenshot',
+    enabled: workspace.getTopBlocks().length,
+    callback: function() {
+      Blockly.downloadScreenshot(workspace);
+    }
+  };
+  menuOptions.push(screenshotOption);
 }
 
 function logger(e) {
@@ -413,72 +523,46 @@ var spaghettiXml = [
 </script>
 
 <style>
-html, body {
-  height: 100%;
-}
-body {
-  background-color: #fff;
-  font-family: sans-serif;
-  overflow: hidden;
-}
-h1 {
-  font-weight: normal;
-  font-size: 140%;
-}
-#blocklyDiv {
-  float: right;
-  height: 95%;
-  width: 70%;
-}
-#importExport {
-  font-family: monospace;
-}
+  html, body {
+    height: 100%;
+  }
+  body {
+    background-color: #fff;
+    font-family: sans-serif;
+    overflow: hidden;
+  }
+  h1 {
+    font-weight: normal;
+    font-size: 140%;
+  }
+  #blocklyDiv {
+    float: right;
+    height: 95%;
+    width: 70%;
+  }
+  #importExport {
+    font-family: monospace;
+  }
 
-.ioLabel>.blocklyFlyoutLabelText {
-  font-style: italic;
-}
+  .ioLabel>.blocklyFlyoutLabelText {
+    font-style: italic;
+  }
 
-#blocklyDiv.renderingDebug .blockRenderDebug {
-  display: block;
-}
+  #blocklyDiv.renderingDebug .blockRenderDebug {
+    display: block;
+  }
 
-.blockRenderDebug {
-  display: none;
-}
+  .playgroundToggleOptions {
+    list-style: none;
+    padding: 0;
+  }
+  .playgroundToggleOptions li {
+    margin-top: 1em;
+  }
 
-.rowRenderingRect {
-  stroke: black;
-  fill: none;
-  stroke-width: 1px;
-}
-
-.elemRenderingRect {
-  stroke: red;
-  fill: none;
-  stroke-width: 1px;
-}
-
-.rowSpacerRect {
-  stroke: blue;
-  fill-opacity: 0.5;
-  fill: blue;
-  stroke-width: 1px;
-}
-
-.elemSpacerRect {
-  stroke: pink;
-  fill-opacity: 0.5;
-  fill: pink;
-  stroke-width: 1px;
-}
-
-.blockBoundingBox {
-  stroke: black;
-  stroke-dasharray: 5,5;
-  fill: none;
-  stroke-width: 1px;
-}
-
+  .blockRenderDebug {
+    display: none;
+  }
 </style>
 </head>
 <body onload="start()">
@@ -507,11 +591,21 @@ h1 {
       <option value="top">Top</option>
       <option value="bottom">Bottom</option>
     </select>
+    <select name="renderer" onchange="document.forms.options.submit()">
+      <option value="geras">Geras</option>
+      <option value="thrasos">Thrasos</option>
+      <option value="zelos">Zelos</option>
+      <option value="minimalist">Minimalist</option>
+    </select>
   </form>
   <select id="themeChanger" name="theme" onchange="changeTheme()">
     <option value="classic">Classic</option>
     <option value="modern">Modern</option>
+    <option value="dark">Dark</option>
     <option value="high_contrast">High Contrast</option>
+    <option value="deuteranopia">Deuteranopia/Protanopia</option>
+    <option value="tritanopia">Tritanopia</option>
+    <option value="zelos">Zelos</option>
   </select>
   <p>
     <input type="button" value="Export to XML" onclick="toXml()">
@@ -537,15 +631,22 @@ h1 {
     <input type="button" value="Airstrike!" onclick="airstrike(100)">
     <input type="button" value="Spaghetti!" onclick="spaghetti(8)">
   </p>
-  <p>
-    Log events: &nbsp;
-    <input type="checkbox" onclick="logEvents(this.checked)" id="logCheck">
-  </p>
+  <ul class="playgroundToggleOptions">
+    <li>
+      <label for="logCheck">Log events:</label>
+      <input type="checkbox" onclick="logEvents(this.checked)" id="logCheck">
+    </li>
+    <li>
+      <label for="blockRenderDebugCheck">Enable block rendering debug:</label>
+      <input type="checkbox" onclick="toggleRenderingDebug(this.checked)" id="blockRenderDebugCheck">
+      <ul id="renderDebugOptions"></ul>
+    </li>
+    <li>
+      <label for="accessibilityModeCheck">Enable Accessibility Mode:</label>
+      <input type="checkbox" onclick="toggleAccessibilityMode(this.checked)" id="accessibilityModeCheck">
+    </li>
+  </ul>
 
-  <p>
-    Block rendering debug: &nbsp;
-    <input type="checkbox" onclick="toggleRenderingDebug(this.checked)" id="blockRenderDebugCheck">
-  </p>
 
   <!-- The next three blocks of XML are sample toolboxes for testing basic
   configurations.  For more information on building toolboxes, see https://developers.google.com/blockly/guides/configure/web/toolbox -->
@@ -724,6 +825,7 @@ h1 {
     </category>
     <category name="Text" categorystyle="text_category">
       <block type="text"></block>
+      <block type="text_multiline"></block>
       <block type="text_join"></block>
       <block type="text_append">
         <value name="TEXT">
@@ -1065,6 +1167,7 @@ h1 {
     </category>
     <category name="Text" categorystyle="text_category">
       <block type="text"></block>
+      <block type="text_multiline"></block>
       <block type="text_join"></block>
       <block type="text_append">
         <value name="TEXT">
@@ -1265,15 +1368,91 @@ h1 {
   the standard predefined blocks, and so test alternative block rendering
   code paths. -->
   <xml xmlns="https://developers.google.com/blockly/xml" id="toolbox-test-blocks" style="display: none">
+    <category name="Align">
+      <block type="test_align_dummy_right"></block>
+      <block type="test_align_all"></block>
+      <block type="test_align_with_external_input"></block>
+    </category>
     <category name="Basic">
       <block type="test_basic_empty"></block>
       <block type="test_basic_empty_with_mutator"></block>
+      <block type="test_basic_dummy"></block>
+      <block type="test_basic_multiple_dummy"></block>
       <block type="test_basic_stack"></block>
       <block type="test_basic_row"></block>
       <block type="test_basic_value_to_stack"></block>
       <block type="test_basic_value_to_statement"></block>
       <block type="test_basic_limit_instances"></block>
       <block type="test_basic_tooltips"></block>
+      <block type="test_basic_javascript"></block>
+    </category>
+    <category name="Connections" expanded="true">
+      <category name="Row">
+        <label text="blocks have"></label>
+        <sep gap="-1"></sep>
+        <label text="tooltips"></label>
+
+        <button text="insert" callbackkey="insertConnectionRows"></button>
+        <sep gap="7"></sep>
+        <block type="test_connections_row_input"></block>
+        <sep gap="7"></sep>
+        <block type="test_connections_row_blue"></block>
+        <sep gap="7"></sep>
+        <block type="test_connections_row_yellow"></block>
+        <sep gap="7"></sep>
+        <block type="test_connections_row_red"></block>
+        <sep gap="7"></sep>
+        <block type="test_connections_row_output"></block>
+        <block type="test_connections_row_yellow">
+          <value name="NAME">
+            <block type="test_connections_row_yellow" movable="false"></block>
+          </value>
+        </block>
+        <sep gap="7"></sep>
+        <block type="test_connections_multivalue_1valid"></block>
+        <sep gap="7"></sep>
+        <block type="test_connections_multivalue_2valid"></block>
+      </category>
+      <category name="Stack">
+        <label text="blocks have"></label>
+        <sep gap="-1"></sep>
+        <label text="tooltips"></label>
+
+        <button text="insert" callbackkey="insertConnectionStacks"></button>
+        <sep gap="7"></sep>
+        <block type="test_connections_stack_next"></block>
+        <sep gap="7"></sep>
+        <block type="test_connections_stack_blue"></block>
+        <sep gap="7"></sep>
+        <block type="test_connections_stack_yellow"></block>
+        <sep gap="7"></sep>
+        <block type="test_connections_stack_red"></block>
+        <sep gap="7"></sep>
+        <block type="test_connections_stack_prev"></block>
+        <block type="test_connections_stack_yellow">
+          <next>
+            <block type="test_connections_stack_yellow" movable="false"></block>
+          </next>
+        </block>
+      </category>
+      <category name="Statement">
+        <label text="blocks have"></label>
+        <sep gap="-1"></sep>
+        <label text="tooltips"></label>
+
+        <button text="insert" callbackkey="insertConnectionStatements"></button>
+        <sep gap="7"></sep>
+        <block type="test_connections_statement_blue"></block>
+        <sep gap="7"></sep>
+        <block type="test_connections_statement_yellow"></block>
+        <sep gap="7"></sep>
+        <block type="test_connections_statement_red"></block>
+        <block type="test_connections_statement_nonext"></block>
+        <sep gap="7"></sep>
+        <block type="test_connections_multistatement_1valid"></block>
+        <sep gap="7"></sep>
+        <block type="test_connections_multistatement_2valid"></block>
+      </category>
     </category>
     <category name="Drag">
       <label text="Drag each to the workspace"></label>
@@ -1368,11 +1547,12 @@ h1 {
         <sep gap="8"></sep>
         <button text="toggle collapsed" callbackKey="toggleCollapsed"></button>
         <block type="test_fields_angle"></block>
-        <block type="test_fields_date"></block>
         <block type="test_fields_checkbox"></block>
         <block type="test_fields_colour"></block>
         <block type="test_fields_colour_options"></block>
         <block type="test_fields_text_input"></block>
+        <block type="test_fields_only_text_input"></block>
+        <block type="test_fields_multilinetext"></block>
         <block type="test_fields_variable"></block>
         <button text="randomize label text" callbackKey="randomizeLabelText"></button>
         <sep gap="12"></sep>
@@ -1401,11 +1581,21 @@ h1 {
           <field name="NOTE">60</field>
         </block>
       </category>
+      <category name="Angles">
+        <block type="test_angles_clockwise"></block>
+        <block type="test_angles_offset"></block>
+        <block type="test_angles_wrap"></block>
+        <block type="test_angles_round_30"></block>
+        <block type="test_angles_round_0"></block>
+        <block type="test_angles_protractor"></block>
+        <block type="test_angles_compass"></block>
+      </category>
       <category name="Drop-downs">
         <label text="Dynamic"></label>
         <block type="test_dropdowns_dynamic"></block>
         <button text="Add option" callbackKey="addDynamicOption"></button>
         <button text="Remove option" callbackKey="removeDynamicOption"></button>
+        <block type="test_dropdowns_dynamic_random"></block>
         <label text="Other"></label>
         <block type="test_dropdowns_long"></block>
         <block type="test_dropdowns_images"></block>
@@ -1454,13 +1644,6 @@ h1 {
         <block type="test_validators_colour_force_red"></block>
         <sep gap="12"></sep>
         <block type="test_validators_colour_red_null"></block>
-        <label text="Dates"></label>
-        <sep gap="12"></sep>
-        <block type="test_validators_date_null"></block>
-        <sep gap="12"></sep>
-        <block type="test_validators_date_force_20s"></block>
-        <sep gap="12"></sep>
-        <block type="test_validators_date_20s_null"></block>
         <label text="Dropdowns"></label>
         <sep gap="12"></sep>
         <block type="test_validators_dropdown_null"></block>

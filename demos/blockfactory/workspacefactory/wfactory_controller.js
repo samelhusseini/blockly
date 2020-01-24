@@ -1,9 +1,6 @@
 /**
  * @license
- * Blockly Demos: Block Factory
- *
- * Copyright 2016 Google Inc.
- * https://developers.google.com/blockly/
+ * Copyright 2016 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -340,8 +337,12 @@ WorkspaceFactoryController.prototype.exportXmlFile = function(exportMode) {
     // Unknown mode. Throw error.
     var msg = 'Unknown export mode: ' + exportMode;
     BlocklyDevTools.Analytics.onError(msg);
-    throw new Error(msg);
+    throw Error(msg);
   }
+
+  // Unpack self-closing tags.  These tags fail when embedded in HTML.
+  // <block name="foo"/> -> <block name="foo"></block>
+  configXml = configXml.replace(/<(\w+)([^<]*)\/>/g, '<$1$2></$1>');
 
   // Download file.
   var data = new Blob([configXml], {type: 'text/xml'});
@@ -391,8 +392,7 @@ WorkspaceFactoryController.prototype.printConfig = function() {
   // Capture any changes made by user before generating XML.
   this.saveStateFromWorkspace();
   // Print XML.
-  window.console.log(Blockly.Xml.domToPrettyText
-      (this.generator.generateToolboxXml()));
+  console.log(Blockly.Xml.domToPrettyText(this.generator.generateToolboxXml()));
 };
 
 /**
@@ -757,7 +757,7 @@ WorkspaceFactoryController.prototype.importFile = function(file, importMode) {
         BlocklyDevTools.Analytics.onImport('WorkspaceContents.xml');
       } else {
         // Throw error if invalid mode.
-        throw new Error('Unknown import mode: ' + importMode);
+        throw Error('Unknown import mode: ' + importMode);
       }
     } catch(e) {
       var msg = 'Cannot load XML from file.';
@@ -917,7 +917,7 @@ WorkspaceFactoryController.prototype.clearAll = function() {
   this.updatePreview();
 };
 
-/*
+/**
  * Makes the currently selected block a user-generated shadow block. These
  * blocks are not made into real shadow blocks, but recorded in the model
  * and visually marked as shadow blocks, allowing the user to move and edit
@@ -1262,7 +1262,7 @@ WorkspaceFactoryController.prototype.importBlocks = function(file, format) {
   reader.readAsText(file);
 };
 
-/*
+/**
  * Updates the block library category in the toolbox workspace toolbox.
  * @param {!Element} categoryXml XML for the block library category.
  * @param {!Array.<string>} libBlockTypes Array of block types from the block
@@ -1323,7 +1323,7 @@ WorkspaceFactoryController.prototype.warnForUndefinedBlocks_ = function() {
   }
 };
 
-/*
+/**
  * Determines if a standard variable category is in the custom toolbox.
  * @return {boolean} True if a variables category is in use, false otherwise.
  */

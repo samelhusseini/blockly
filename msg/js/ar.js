@@ -2,10 +2,6 @@
 
 'use strict';
 
-goog.provide('Blockly.Msg.ar');
-
-goog.require('Blockly.Msg');
-
 Blockly.Msg["ADD_COMMENT"] = "أضف تعليقًا";
 Blockly.Msg["CANNOT_DELETE_VARIABLE_PROCEDURE"] = "لايمكن حذف متغير \"%1\" بسبب انه جزء من الدالة \"%2\"";
 Blockly.Msg["CHANGE_VALUE_TITLE"] = "تغيير قيمة:";
@@ -393,6 +389,7 @@ Blockly.Msg["TEXT_TRIM_OPERATOR_RIGHT"] = "إزالة الفراغات من ال
 Blockly.Msg["TEXT_TRIM_TOOLTIP"] = "يرجع نسخة من النص مع حذف من أحد أو كلا الفراغات من أطرافه.";
 Blockly.Msg["TODAY"] = "اليوم";
 Blockly.Msg["UNDO"] = "رجوع";
+Blockly.Msg["UNNAMED_KEY"] = "غير مسمى";
 Blockly.Msg["VARIABLES_DEFAULT_NAME"] = "البند";
 Blockly.Msg["VARIABLES_GET_CREATE_SET"] = "انشئ 'التعيين %1'";
 Blockly.Msg["VARIABLES_GET_HELPURL"] = "https://github.com/google/blockly/wiki/Variables#get";  // untranslated
@@ -403,6 +400,7 @@ Blockly.Msg["VARIABLES_SET_HELPURL"] = "https://github.com/google/blockly/wiki/V
 Blockly.Msg["VARIABLES_SET_TOOLTIP"] = "تعيين هذا المتغير لتكون مساوية للقيمة المدخلة.";
 Blockly.Msg["VARIABLE_ALREADY_EXISTS"] = "المتغير '%1' موجود بالفعل";
 Blockly.Msg["VARIABLE_ALREADY_EXISTS_FOR_ANOTHER_TYPE"] = "متغير بأسم '%1' معرف من نوع اخر : '%2'.";
+Blockly.Msg["WORKSPACE_ARIA_LABEL"] = "مساحة عمل بلوكلي";
 Blockly.Msg["WORKSPACE_COMMENT_DEFAULT_TEXT"] = "قل شيئا...";
 Blockly.Msg["CONTROLS_FOREACH_INPUT_DO"] = Blockly.Msg["CONTROLS_REPEAT_INPUT_DO"];
 Blockly.Msg["CONTROLS_FOR_INPUT_DO"] = Blockly.Msg["CONTROLS_REPEAT_INPUT_DO"];

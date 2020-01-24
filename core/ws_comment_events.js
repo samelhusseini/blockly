@@ -1,9 +1,6 @@
 /**
  * @license
- * Visual Blocks Editor
- *
- * Copyright 2018 Google Inc.
- * https://developers.google.com/blockly/
+ * Copyright 2018 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,8 +30,10 @@ goog.provide('Blockly.Events.CommentMove');
 goog.require('Blockly.Events');
 goog.require('Blockly.Events.Abstract');
 goog.require('Blockly.utils.Coordinate');
+goog.require('Blockly.utils.object');
 goog.require('Blockly.utils.xml');
-goog.require('Blockly.Xml');
+// TODO: Fix recursive dependency.
+// goog.require('Blockly.Xml');
 
 
 /**
@@ -63,7 +62,7 @@ Blockly.Events.CommentBase = function(comment) {
    * perspective, and should be undone together.
    * @type {string}
    */
-  this.group = Blockly.Events.group_;
+  this.group = Blockly.Events.getGroup();
 
   /**
    * Sets whether the event should be added to the undo stack.
@@ -71,7 +70,8 @@ Blockly.Events.CommentBase = function(comment) {
    */
   this.recordUndo = Blockly.Events.recordUndo;
 };
-goog.inherits(Blockly.Events.CommentBase, Blockly.Events.Abstract);
+Blockly.utils.object.inherits(Blockly.Events.CommentBase,
+    Blockly.Events.Abstract);
 
 /**
  * Encode the event as JSON.
@@ -111,7 +111,8 @@ Blockly.Events.CommentChange = function(comment, oldContents, newContents) {
   this.oldContents_ = oldContents;
   this.newContents_ = newContents;
 };
-goog.inherits(Blockly.Events.CommentChange, Blockly.Events.CommentBase);
+Blockly.utils.object.inherits(Blockly.Events.CommentChange,
+    Blockly.Events.CommentBase);
 
 /**
  * Type of this event.
@@ -177,7 +178,8 @@ Blockly.Events.CommentCreate = function(comment) {
 
   this.xml = comment.toXmlWithXY();
 };
-goog.inherits(Blockly.Events.CommentCreate, Blockly.Events.CommentBase);
+Blockly.utils.object.inherits(Blockly.Events.CommentCreate,
+    Blockly.Events.CommentBase);
 
 /**
  * Type of this event.
@@ -250,7 +252,8 @@ Blockly.Events.CommentDelete = function(comment) {
 
   this.xml = comment.toXmlWithXY();
 };
-goog.inherits(Blockly.Events.CommentDelete, Blockly.Events.CommentBase);
+Blockly.utils.object.inherits(Blockly.Events.CommentDelete,
+    Blockly.Events.CommentBase);
 
 /**
  * Type of this event.
@@ -312,11 +315,12 @@ Blockly.Events.CommentMove = function(comment) {
 
   /**
    * The location after the move, in workspace coordinates.
-   * @type {!Blockly.utils.Coordinate}
+   * @type {Blockly.utils.Coordinate}
    */
   this.newCoordinate_ = null;
 };
-goog.inherits(Blockly.Events.CommentMove, Blockly.Events.CommentBase);
+Blockly.utils.object.inherits(Blockly.Events.CommentMove,
+    Blockly.Events.CommentBase);
 
 /**
  * Record the comment's new location.  Called after the move.  Can only be

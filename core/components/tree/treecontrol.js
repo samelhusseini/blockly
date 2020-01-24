@@ -1,9 +1,6 @@
 /**
  * @license
- * Visual Blocks Editor
- *
- * Copyright 2019 Google Inc.
- * https://developers.google.com/blockly/
+ * Copyright 2019 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,6 +27,8 @@ goog.provide('Blockly.tree.TreeControl');
 goog.require('Blockly.tree.TreeNode');
 goog.require('Blockly.tree.BaseNode');
 goog.require('Blockly.utils.aria');
+goog.require('Blockly.utils.object');
+goog.require('Blockly.utils.style');
 
 
 /**
@@ -38,12 +37,40 @@ goog.require('Blockly.utils.aria');
  * Similar to Closure's goog.ui.tree.TreeControl
  *
  * @param {Blockly.Toolbox} toolbox The parent toolbox for this tree.
- * @param {Blockly.tree.BaseNode.Config} config The configuration for the tree.
+ * @param {!Blockly.tree.BaseNode.Config} config The configuration for the tree.
  * @constructor
  * @extends {Blockly.tree.BaseNode}
  */
 Blockly.tree.TreeControl = function(toolbox, config) {
   this.toolbox_ = toolbox;
+
+  /**
+   * Focus event data.
+   * @type {?Blockly.EventData}
+   * @private
+   */
+  this.onFocusWrapper_ = null;
+
+  /**
+   * Blur event data.
+   * @type {?Blockly.EventData}
+   * @private
+   */
+  this.onBlurWrapper_ = null;
+
+  /**
+   * Click event data.
+   * @type {?Blockly.EventData}
+   * @private
+   */
+  this.onClickWrapper_ = null;
+
+  /**
+   * Key down event data.
+   * @type {?Blockly.EventData}
+   * @private
+   */
+  this.onKeydownWrapper_ = null;
 
   Blockly.tree.BaseNode.call(this, '', config);
 
@@ -52,12 +79,13 @@ Blockly.tree.TreeControl = function(toolbox, config) {
   this.setSelectedInternal(true);
 
   /**
-   * Currenty selected item.
-   * @private {Blockly.tree.BaseNode}
+   * Currently selected item.
+   * @type {Blockly.tree.BaseNode}
+   * @private
    */
   this.selectedItem_ = this;
 };
-goog.inherits(Blockly.tree.TreeControl, Blockly.tree.BaseNode);
+Blockly.utils.object.inherits(Blockly.tree.TreeControl, Blockly.tree.BaseNode);
 
 /**
  * Returns the tree.
@@ -68,7 +96,7 @@ Blockly.tree.TreeControl.prototype.getTree = function() {
 };
 
 /**
- * Returns the assosiated toolbox.
+ * Returns the associated toolbox.
  * @return {Blockly.Toolbox} The toolbox.
  * @package
  */
@@ -82,16 +110,6 @@ Blockly.tree.TreeControl.prototype.getToolbox = function() {
  */
 Blockly.tree.TreeControl.prototype.getDepth = function() {
   return 0;
-};
-
-/**
- * Expands the parent chain of this node so that it is visible.
- * @override
- */
-Blockly.tree.TreeControl.prototype.reveal = function() {
-  // always expanded by default
-  // needs to be overriden so that we don't try to reveal our parent
-  // which is a generic component
 };
 
 /**
@@ -146,12 +164,6 @@ Blockly.tree.TreeControl.prototype.getIconElement = function() {
 };
 
 /** @override */
-Blockly.tree.TreeControl.prototype.getExpandIconElement = function() {
-  // no expand icon for root element
-  return null;
-};
-
-/** @override */
 Blockly.tree.TreeControl.prototype.updateExpandIcon = function() {
   // no expand icon
 };
@@ -182,8 +194,6 @@ Blockly.tree.TreeControl.prototype.getCalculatedIconClass = function() {
   var config = this.getConfig();
   if (expanded && config.cssExpandedRootIcon) {
     return config.cssTreeIcon + ' ' + config.cssExpandedRootIcon;
-  } else if (!expanded && config.cssCollapsedRootIcon) {
-    return config.cssTreeIcon + ' ' + config.cssCollapsedRootIcon;
   }
   return '';
 };
@@ -197,7 +207,7 @@ Blockly.tree.TreeControl.prototype.setSelectedItem = function(node) {
   if (node == this.selectedItem_) {
     return;
   }
-  
+
   if (this.onBeforeSelected_ &&
     !this.onBeforeSelected_.call(this.toolbox_, node)) {
     return;
@@ -249,38 +259,6 @@ Blockly.tree.TreeControl.prototype.getSelectedItem = function() {
 };
 
 /**
- * Updates the lines after the tree has been drawn.
- * @private
- */
-Blockly.tree.TreeControl.prototype.updateLinesAndExpandIcons_ = function() {
-  var tree = this;
-  var showLines = false;
-  var showRootLines = false;
-
-  /**
-   * Recursively walk through all nodes and update the class names of the
-   * expand icon and the children element.
-   * @param {!Blockly.tree.BaseNode} node tree node
-   */
-  function updateShowLines(node) {
-    var childrenEl = node.getChildrenElement();
-    if (childrenEl) {
-      var hideLines = !showLines || tree == node.getParent() && !showRootLines;
-      var childClass = hideLines ? node.getConfig().cssChildrenNoLines :
-                                   node.getConfig().cssChildren;
-      childrenEl.className = childClass;
-
-      var expandIconEl = node.getExpandIconElement();
-      if (expandIconEl) {
-        expandIconEl.className = node.getExpandIconClass();
-      }
-    }
-    node.forEachChild(updateShowLines);
-  }
-  updateShowLines(this);
-};
-
-/**
  * Add roles and states.
  * @protected
  * @override
@@ -322,19 +300,10 @@ Blockly.tree.TreeControl.prototype.attachEvents_ = function() {
       'focus', this, this.handleFocus_);
   this.onBlurWrapper_ = Blockly.bindEvent_(el,
       'blur', this, this.handleBlur_);
-
-  this.onMousedownWrapper_ = Blockly.bindEventWithChecks_(el,
-      'mousedown', this, this.handleMouseEvent_);
   this.onClickWrapper_ = Blockly.bindEventWithChecks_(el,
       'click', this, this.handleMouseEvent_);
-  
   this.onKeydownWrapper_ = Blockly.bindEvent_(el,
       'keydown', this, this.handleKeyEvent_);
-
-  if (Blockly.Touch.TOUCH_ENABLED) {
-    this.onTouchEndWrapper_ = Blockly.bindEventWithChecks_(el,
-        'touchend', this, this.handleTouchEvent_);
-  }
 };
 
 /**
@@ -342,13 +311,21 @@ Blockly.tree.TreeControl.prototype.attachEvents_ = function() {
  * @private
  */
 Blockly.tree.TreeControl.prototype.detachEvents_ = function() {
-  Blockly.unbindEvent_(this.onFocusWrapper_);
-  Blockly.unbindEvent_(this.onBlurWrapper_);
-  Blockly.unbindEvent_(this.onMousedownWrapper_);
-  Blockly.unbindEvent_(this.onClickWrapper_);
-  Blockly.unbindEvent_(this.onKeydownWrapper_);
-  if (this.onTouchEndWrapper_) {
-    Blockly.unbindEvent_(this.onTouchEndWrapper_);
+  if (this.onFocusWrapper_) {
+    Blockly.unbindEvent_(this.onFocusWrapper_);
+    this.onFocusWrapper_ = null;
+  }
+  if (this.onBlurWrapper_) {
+    Blockly.unbindEvent_(this.onBlurWrapper_);
+    this.onBlurWrapper_ = null;
+  }
+  if (this.onClickWrapper_) {
+    Blockly.unbindEvent_(this.onClickWrapper_);
+    this.onClickWrapper_ = null;
+  }
+  if (this.onKeydownWrapper_) {
+    Blockly.unbindEvent_(this.onKeydownWrapper_);
+    this.onKeydownWrapper_ = null;
   }
 };
 
@@ -372,22 +349,6 @@ Blockly.tree.TreeControl.prototype.handleMouseEvent_ = function(e) {
 };
 
 /**
- * Handles touch events.
- * @param {!Event} e The browser event.
- * @private
- */
-Blockly.tree.TreeControl.prototype.handleTouchEvent_ = function(e) {
-  var node = this.getNodeFromEvent_(e);
-  if (node && e.type === 'touchend') {
-    // Fire asynchronously since onMouseDown takes long enough that the browser
-    // would fire the default mouse event before this method returns.
-    setTimeout(function() {
-      node.onClick_(e);  // Same behaviour for click and touch.
-    }, 1);
-  }
-};
-
-/**
  * Handles key down on the tree.
  * @param {!Event} e The browser event.
  * @return {boolean} The handled value.
@@ -400,6 +361,9 @@ Blockly.tree.TreeControl.prototype.handleKeyEvent_ = function(e) {
   handled = (this.selectedItem_ && this.selectedItem_.onKeyDown(e)) || handled;
 
   if (handled) {
+    Blockly.utils.style.scrollIntoContainerView(
+        /** @type {!Element} */ (this.selectedItem_.getElement()),
+        /** @type {!Element} */ (this.getElement().parentNode));
     e.preventDefault();
   }
 

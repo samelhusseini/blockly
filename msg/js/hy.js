@@ -2,10 +2,6 @@
 
 'use strict';
 
-goog.provide('Blockly.Msg.hy');
-
-goog.require('Blockly.Msg');
-
 Blockly.Msg["ADD_COMMENT"] = "Ավելացնել մեկնաբանություն";
 Blockly.Msg["CANNOT_DELETE_VARIABLE_PROCEDURE"] = "Հնարավոր չի ջնջել %1 փոփոխականը, որովհետև այն '%2' ֆունկցիայի հայտարարման մասն է";
 Blockly.Msg["CHANGE_VALUE_TITLE"] = "Փոխել նշանակություն:";
@@ -393,6 +389,7 @@ Blockly.Msg["TEXT_TRIM_OPERATOR_RIGHT"] = "կտրում է բացատները ա
 Blockly.Msg["TEXT_TRIM_TOOLTIP"] = "Վերադարձնում է տեքստի կրկնօրինակը, առանց սկզբի կամ/և վերջի բացատների։";
 Blockly.Msg["TODAY"] = "Այսօր";
 Blockly.Msg["UNDO"] = "Հետ շրջել";
+Blockly.Msg["UNNAMED_KEY"] = "unnamed";  // untranslated
 Blockly.Msg["VARIABLES_DEFAULT_NAME"] = "տարր";
 Blockly.Msg["VARIABLES_GET_CREATE_SET"] = "Ստեղծել 'վերագրել %1'";
 Blockly.Msg["VARIABLES_GET_HELPURL"] = "https://github.com/google/blockly/wiki/Variables#get";  // untranslated
@@ -403,6 +400,7 @@ Blockly.Msg["VARIABLES_SET_HELPURL"] = "https://github.com/google/blockly/wiki/V
 Blockly.Msg["VARIABLES_SET_TOOLTIP"] = "Փոփոխականին վերագրում է ներմուծված արժեքը։";
 Blockly.Msg["VARIABLE_ALREADY_EXISTS"] = "'%1' անունով փոփոխական արդեն գոյություն ունի";
 Blockly.Msg["VARIABLE_ALREADY_EXISTS_FOR_ANOTHER_TYPE"] = "'%1' անունով փոփոխական արդեն գոյություն ունի այլ տիպի համար: '%2'.";
+Blockly.Msg["WORKSPACE_ARIA_LABEL"] = "Blockly Workspace";  // untranslated
 Blockly.Msg["WORKSPACE_COMMENT_DEFAULT_TEXT"] = "Մի բան ասա ․․․";
 Blockly.Msg["CONTROLS_FOREACH_INPUT_DO"] = Blockly.Msg["CONTROLS_REPEAT_INPUT_DO"];
 Blockly.Msg["CONTROLS_FOR_INPUT_DO"] = Blockly.Msg["CONTROLS_REPEAT_INPUT_DO"];

@@ -1,9 +1,6 @@
 /**
  * @license
- * Visual Blocks Editor
- *
- * Copyright 2013 Google Inc.
- * https://developers.google.com/blockly/
+ * Copyright 2013 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -34,10 +31,15 @@ goog.require('Blockly.utils.Size');
 
 /**
  * Class for an icon.
- * @param {Blockly.Block} block The block associated with this icon.
+ * @param {Blockly.BlockSvg} block The block associated with this icon.
  * @constructor
  */
 Blockly.Icon = function(block) {
+  /**
+   * The block this icon is attached to.
+   * @type {Blockly.BlockSvg}
+   * @protected
+   */
   this.block_ = block;
 };
 
@@ -108,6 +110,7 @@ Blockly.Icon.prototype.dispose = function() {
  * Add or remove the UI indicating if this icon may be clicked or not.
  */
 Blockly.Icon.prototype.updateEditable = function() {
+  // No-op on the base class.
 };
 
 /**
@@ -136,39 +139,10 @@ Blockly.Icon.prototype.iconClick_ = function(e) {
 /**
  * Change the colour of the associated bubble to match its block.
  */
-Blockly.Icon.prototype.updateColour = function() {
+Blockly.Icon.prototype.applyColour = function() {
   if (this.isVisible()) {
-    this.bubble_.setColour(this.block_.getColour());
+    this.bubble_.setColour(this.block_.style.colourPrimary);
   }
-};
-
-/**
- * Render the icon.
- * @param {number} cursorX Horizontal offset at which to position the icon.
- * @return {number} Horizontal offset for next item to draw.
- */
-Blockly.Icon.prototype.renderIcon = function(cursorX) {
-  if ((this.collapseHidden && this.block_.isCollapsed()) ||
-      this.block_.isInsertionMarker()) {
-    this.iconGroup_.setAttribute('display', 'none');
-    return cursorX;
-  }
-  this.iconGroup_.setAttribute('display', 'block');
-
-  var TOP_MARGIN = 5;
-  var width = this.SIZE;
-  if (this.block_.RTL) {
-    cursorX -= width;
-  }
-  this.iconGroup_.setAttribute('transform',
-      'translate(' + cursorX + ',' + TOP_MARGIN + ')');
-  this.computeIconLocation();
-  if (this.block_.RTL) {
-    cursorX -= Blockly.BlockSvg.SEP_SPACE_X;
-  } else {
-    cursorX += width + Blockly.BlockSvg.SEP_SPACE_X;
-  }
-  return cursorX;
 };
 
 /**
@@ -200,8 +174,8 @@ Blockly.Icon.prototype.computeIconLocation = function() {
 
 /**
  * Returns the center of the block's icon relative to the surface.
- * @return {!Blockly.utils.Coordinate} Object with x and y properties in workspace
- *     coordinates.
+ * @return {Blockly.utils.Coordinate} Object with x and y properties in
+ *     workspace coordinates.
  */
 Blockly.Icon.prototype.getIconLocation = function() {
   return this.iconXY_;
@@ -211,9 +185,9 @@ Blockly.Icon.prototype.getIconLocation = function() {
  * Get the size of the icon as used for rendering.
  * This differs from the actual size of the icon, because it bulges slightly
  * out of its row rather than increasing the height of its row.
- * TODO (#2562): Remove getCorrectedSize.
  * @return {!Blockly.utils.Size} Height and width.
  */
+// TODO (#2562): Remove getCorrectedSize.
 Blockly.Icon.prototype.getCorrectedSize = function() {
   return new Blockly.utils.Size(
       Blockly.Icon.prototype.SIZE, Blockly.Icon.prototype.SIZE - 2);

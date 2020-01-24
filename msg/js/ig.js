@@ -2,10 +2,6 @@
 
 'use strict';
 
-goog.provide('Blockly.Msg.ig');
-
-goog.require('Blockly.Msg');
-
 Blockly.Msg["ADD_COMMENT"] = "Tịnye okwu";
 Blockly.Msg["CANNOT_DELETE_VARIABLE_PROCEDURE"] = "Agaghị ekpochapụlị agbanwe '%1' maka nsonye ya na nkọwa nke ọrụ ahụ '%2'";
 Blockly.Msg["CHANGE_VALUE_TITLE"] = "Gbanwee akara:";
@@ -393,6 +389,7 @@ Blockly.Msg["TEXT_TRIM_OPERATOR_RIGHT"] = "belata oghere dị mkpụmkpụ si n'
 Blockly.Msg["TEXT_TRIM_TOOLTIP"] = "Weghachite otu ederede ya na oghere ọzọ wepụrụ site n'otu ma ọ bụ akụkụ mechị abụọ.";
 Blockly.Msg["TODAY"] = "Taa";
 Blockly.Msg["UNDO"] = "Me la àzụ";
+Blockly.Msg["UNNAMED_KEY"] = "unnamed";  // untranslated
 Blockly.Msg["VARIABLES_DEFAULT_NAME"] = "ihe";
 Blockly.Msg["VARIABLES_GET_CREATE_SET"] = "Mepụta 'dozie %1'";
 Blockly.Msg["VARIABLES_GET_HELPURL"] = "https://github.com/google/blockly/wiki/Variables#get";  // untranslated
@@ -403,6 +400,7 @@ Blockly.Msg["VARIABLES_SET_HELPURL"] = "https://github.com/google/blockly/wiki/V
 Blockly.Msg["VARIABLES_SET_TOOLTIP"] = "Debe mgbanwe a ka ọ ghata ihe ntinye.";
 Blockly.Msg["VARIABLE_ALREADY_EXISTS"] = "Agbanwe akpọrọ '%1' dị adị.";
 Blockly.Msg["VARIABLE_ALREADY_EXISTS_FOR_ANOTHER_TYPE"] = "Agbanwe akpọrọ '%1' dị adị na ụdị ozo: '%2'.";
+Blockly.Msg["WORKSPACE_ARIA_LABEL"] = "Blockly Workspace";  // untranslated
 Blockly.Msg["WORKSPACE_COMMENT_DEFAULT_TEXT"] = "Kwuo ihe ọ bụla...";
 Blockly.Msg["CONTROLS_FOREACH_INPUT_DO"] = Blockly.Msg["CONTROLS_REPEAT_INPUT_DO"];
 Blockly.Msg["CONTROLS_FOR_INPUT_DO"] = Blockly.Msg["CONTROLS_REPEAT_INPUT_DO"];

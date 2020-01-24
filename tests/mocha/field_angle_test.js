@@ -1,9 +1,6 @@
 /**
  * @license
- * Visual Blocks Editor
- *
- * Copyright 2019 Google Inc.
- * https://developers.google.com/blockly/
+ * Copyright 2019 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -39,10 +36,6 @@ suite('Angle Fields', function() {
       var angleField = new Blockly.FieldAngle(undefined);
       assertValueDefault(angleField);
     });
-    test('Non-Parsable String', function() {
-      var angleField = new Blockly.FieldAngle('bad');
-      assertValueDefault(angleField);
-    });
     test('NaN', function() {
       var angleField = new Blockly.FieldAngle(NaN);
       assertValueDefault(angleField);
@@ -67,14 +60,6 @@ suite('Angle Fields', function() {
       var angleField = new Blockly.FieldAngle(362);
       assertValue(angleField, 2);
     });
-    test('Infinity', function() {
-      var angleField = new Blockly.FieldAngle(Infinity);
-      assertValueDefault(angleField);
-    });
-    test('Negative Infinity String', function() {
-      var angleField = new Blockly.FieldAngle('-Infinity');
-      assertValueDefault(angleField);
-    });
   });
   suite('fromJson', function() {
     test('Empty', function() {
@@ -83,10 +68,6 @@ suite('Angle Fields', function() {
     });
     test('Undefined', function() {
       var angleField = Blockly.FieldAngle.fromJson({ angle:undefined });
-      assertValueDefault(angleField);
-    });
-    test('Non-Parsable String', function() {
-      var angleField = Blockly.FieldAngle.fromJson({ angle:'bad' });
       assertValueDefault(angleField);
     });
     test('NaN', function() {
@@ -112,14 +93,6 @@ suite('Angle Fields', function() {
     test('> 360°', function() {
       var angleField = Blockly.FieldAngle.fromJson({ angle:362 });
       assertValue(angleField, 2);
-    });
-    test('Infinity', function() {
-      var angleField = Blockly.FieldAngle.fromJson({ angle:Infinity });
-      assertValueDefault(angleField);
-    });
-    test('Negative Infinity String', function() {
-      var angleField = Blockly.FieldAngle.fromJson({ angle:'-Infinity' });
-      assertValueDefault(angleField);
     });
   });
   suite('setValue', function() {
@@ -228,10 +201,14 @@ suite('Angle Fields', function() {
       this.angleField.htmlInput_ = Object.create(null);
       this.angleField.htmlInput_.oldValue_ = '1';
       this.angleField.htmlInput_.untypedDefaultValue_ = 1;
+      this.stub = sinon.stub(this.angleField, 'resizeEditor_');
     });
     teardown(function() {
       this.angleField.setValidator(null);
       this.angleField.htmlInput_ = null;
+      if (this.stub) {
+        this.stub.restore();
+      }
     });
     suite('Null Validator', function() {
       setup(function() {
@@ -283,6 +260,169 @@ suite('Angle Fields', function() {
       test('When Not Editing', function() {
         this.angleField.setValue(2);
         assertValue(this.angleField, 2);
+      });
+    });
+  });
+  suite('Customizations', function() {
+    suite('Clockwise', function() {
+      test('JS Configuration', function() {
+        var field = new Blockly.FieldAngle(0, null, {
+          clockwise: true
+        });
+        chai.assert.isTrue(field.clockwise_);
+      });
+      test('JSON Definition', function() {
+        var field = Blockly.FieldAngle.fromJson({
+          value: 0,
+          clockwise: true
+        });
+        chai.assert.isTrue(field.clockwise_);
+      });
+      test('Constant', function() {
+        // Note: Generally constants should be set at compile time, not
+        // runtime (since they are constants) but for testing purposes we
+        // can do this.
+        Blockly.FieldAngle.CLOCKWISE = true;
+        var field = new Blockly.FieldAngle();
+        chai.assert.isTrue(field.clockwise_);
+      });
+    });
+    suite('Offset', function() {
+      test('JS Configuration', function() {
+        var field = new Blockly.FieldAngle(0, null, {
+          offset: 90
+        });
+        chai.assert.equal(field.offset_, 90);
+      });
+      test('JSON Definition', function() {
+        var field = Blockly.FieldAngle.fromJson({
+          value: 0,
+          offset: 90
+        });
+        chai.assert.equal(field.offset_, 90);
+      });
+      test('Constant', function() {
+        // Note: Generally constants should be set at compile time, not
+        // runtime (since they are constants) but for testing purposes we
+        // can do this.
+        Blockly.FieldAngle.OFFSET = 90;
+        var field = new Blockly.FieldAngle();
+        chai.assert.equal(field.offset_, 90);
+      });
+      test('Null', function() {
+        // Note: Generally constants should be set at compile time, not
+        // runtime (since they are constants) but for testing purposes we
+        // can do this.
+        Blockly.FieldAngle.OFFSET = 90;
+        var field = Blockly.FieldAngle.fromJson({
+          value: 0,
+          offset: null
+        });
+        chai.assert.equal(field.offset_, 90);
+      });
+    });
+    suite('Wrap', function() {
+      test('JS Configuration', function() {
+        var field = new Blockly.FieldAngle(0, null, {
+          wrap: 180
+        });
+        chai.assert.equal(field.wrap_, 180);
+      });
+      test('JSON Definition', function() {
+        var field = Blockly.FieldAngle.fromJson({
+          value: 0,
+          wrap: 180
+        });
+        chai.assert.equal(field.wrap_, 180);
+      });
+      test('Constant', function() {
+        // Note: Generally constants should be set at compile time, not
+        // runtime (since they are constants) but for testing purposes we
+        // can do this.
+        Blockly.FieldAngle.WRAP = 180;
+        var field = new Blockly.FieldAngle();
+        chai.assert.equal(field.wrap_, 180);
+      });
+      test('Null', function() {
+        // Note: Generally constants should be set at compile time, not
+        // runtime (since they are constants) but for testing purposes we
+        // can do this.
+        Blockly.FieldAngle.WRAP = 180;
+        var field = Blockly.FieldAngle.fromJson({
+          value: 0,
+          wrap: null
+        });
+        chai.assert.equal(field.wrap_, 180);
+      });
+    });
+    suite('Round', function() {
+      test('JS Configuration', function() {
+        var field = new Blockly.FieldAngle(0, null, {
+          round: 30
+        });
+        chai.assert.equal(field.round_, 30);
+      });
+      test('JSON Definition', function() {
+        var field = Blockly.FieldAngle.fromJson({
+          value: 0,
+          round: 30
+        });
+        chai.assert.equal(field.round_, 30);
+      });
+      test('Constant', function() {
+        // Note: Generally constants should be set at compile time, not
+        // runtime (since they are constants) but for testing purposes we
+        // can do this.
+        Blockly.FieldAngle.ROUND = 30;
+        var field = new Blockly.FieldAngle();
+        chai.assert.equal(field.round_, 30);
+      });
+      test('Null', function() {
+        // Note: Generally constants should be set at compile time, not
+        // runtime (since they are constants) but for testing purposes we
+        // can do this.
+        Blockly.FieldAngle.ROUND = 30;
+        var field = Blockly.FieldAngle.fromJson({
+          value: 0,
+          round: null
+        });
+        chai.assert.equal(field.round_, 30);
+      });
+    });
+    suite('Mode', function() {
+      suite('Compass', function() {
+        test('JS Configuration', function() {
+          var field = new Blockly.FieldAngle(0, null, {
+            mode: 'compass'
+          });
+          chai.assert.equal(field.offset_, 90);
+          chai.assert.isTrue(field.clockwise_);
+        });
+        test('JS Configuration', function() {
+          var field = Blockly.FieldAngle.fromJson({
+            value: 0,
+            mode: 'compass'
+          });
+          chai.assert.equal(field.offset_, 90);
+          chai.assert.isTrue(field.clockwise_);
+        });
+      });
+      suite('Protractor', function() {
+        test('JS Configuration', function() {
+          var field = new Blockly.FieldAngle(0, null, {
+            mode: 'protractor'
+          });
+          chai.assert.equal(field.offset_, 0);
+          chai.assert.isFalse(field.clockwise_);
+        });
+        test('JS Configuration', function() {
+          var field = Blockly.FieldAngle.fromJson({
+            value: 0,
+            mode: 'protractor'
+          });
+          chai.assert.equal(field.offset_, 0);
+          chai.assert.isFalse(field.clockwise_);
+        });
       });
     });
   });

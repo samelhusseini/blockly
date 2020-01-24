@@ -2,10 +2,6 @@
 
 'use strict';
 
-goog.provide('Blockly.Msg.be.tarask');
-
-goog.require('Blockly.Msg');
-
 Blockly.Msg["ADD_COMMENT"] = "Дадаць камэнтар";
 Blockly.Msg["CANNOT_DELETE_VARIABLE_PROCEDURE"] = "Немагчыма выдаліць зьменную «%1», таму што яна зьяўляецца часткай вызначэньня функцыі «%2»";
 Blockly.Msg["CHANGE_VALUE_TITLE"] = "Зьмяніць значэньне:";
@@ -393,6 +389,7 @@ Blockly.Msg["TEXT_TRIM_OPERATOR_RIGHT"] = "абрэзаць прабелы з п
 Blockly.Msg["TEXT_TRIM_TOOLTIP"] = "Вяртае копію тэксту з прабеламі, выдаленымі ад аднаго ці абодвух бакоў.";
 Blockly.Msg["TODAY"] = "Сёньня";
 Blockly.Msg["UNDO"] = "Скасаваць";
+Blockly.Msg["UNNAMED_KEY"] = "безназоўны";
 Blockly.Msg["VARIABLES_DEFAULT_NAME"] = "аб’ект";
 Blockly.Msg["VARIABLES_GET_CREATE_SET"] = "Стварыць блёк «усталяваць %1»";
 Blockly.Msg["VARIABLES_GET_HELPURL"] = "https://github.com/google/blockly/wiki/Variables#get";  // untranslated
@@ -403,6 +400,7 @@ Blockly.Msg["VARIABLES_SET_HELPURL"] = "https://github.com/google/blockly/wiki/V
 Blockly.Msg["VARIABLES_SET_TOOLTIP"] = "Надаць гэтай зьменнай значэньне ўстаўкі.";
 Blockly.Msg["VARIABLE_ALREADY_EXISTS"] = "Зьменная з назвай «%1» ужо існуе.";
 Blockly.Msg["VARIABLE_ALREADY_EXISTS_FOR_ANOTHER_TYPE"] = "Зьменная з назвай «%1» ужо існуе зь іншым тыпам: «%2».";
+Blockly.Msg["WORKSPACE_ARIA_LABEL"] = "Працоўная прастора Blockly";
 Blockly.Msg["WORKSPACE_COMMENT_DEFAULT_TEXT"] = "Напішыце што-небудзь…";
 Blockly.Msg["CONTROLS_FOREACH_INPUT_DO"] = Blockly.Msg["CONTROLS_REPEAT_INPUT_DO"];
 Blockly.Msg["CONTROLS_FOR_INPUT_DO"] = Blockly.Msg["CONTROLS_REPEAT_INPUT_DO"];

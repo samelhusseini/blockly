@@ -1,9 +1,6 @@
 /**
  * @license
- * Visual Blocks Editor
- *
- * Copyright 2019 Google Inc.
- * https://developers.google.com/blockly/
+ * Copyright 2019 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,7 +15,11 @@
  * limitations under the License.
  */
 
-suite('Date Fields', function() {
+/* If you want to run date tests add the date picker here:
+ * https://github.com/google/blockly/blob/master/core/blockly.js#L41
+ * before unskipping.
+ */
+suite.skip('Date Fields', function() {
   function assertValue(dateField, expectedValue) {
     var actualValue = dateField.getValue();
     var actualText = dateField.getText();
