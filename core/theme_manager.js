@@ -39,6 +39,7 @@ Blockly.ThemeManager = function(workspace, theme) {
    * @private
    */
   this.theme_ = theme;
+  this.theme_.injectCSS();
 
   /**
    * A list of workspaces that are subscribed to this theme.
@@ -80,7 +81,11 @@ Blockly.ThemeManager.prototype.getTheme = function() {
  */
 Blockly.ThemeManager.prototype.setTheme = function(theme) {
   var prevTheme = this.theme_;
+  if (prevTheme) {
+    prevTheme.dispose();
+  }
   this.theme_ = theme;
+  this.theme_.injectCSS();
 
   // Set the theme name onto the injection div.
   var injectionDiv = this.workspace_.getInjectionDiv();

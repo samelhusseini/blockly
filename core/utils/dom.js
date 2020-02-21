@@ -196,6 +196,29 @@ Blockly.utils.dom.containsNode = function(parent, descendant) {
 };
 
 /**
+ * Inject CSS into a <style> node at the head of the page, if it doesn't already
+ * exist.
+ * @param {string} id Id to use for the <style> node.
+ * @param {string} css The CSS content.
+ * @return {!HTMLStyleElement} The <style> node.
+ */
+Blockly.utils.dom.injectCSS = function(id, css) {
+  var cssNode = /** @type {HTMLStyleElement} */ (document.getElementById(id));
+  if (cssNode) {
+    // Already injected.
+    return cssNode;
+  }
+  // Inject CSS tag at start of head.
+  cssNode =
+    /** @type {!HTMLStyleElement} */ (document.createElement('style'));
+  cssNode.id = id;
+  var cssTextNode = document.createTextNode(css);
+  cssNode.appendChild(cssTextNode);
+  document.head.insertBefore(cssNode, document.head.firstChild);
+  return cssNode;
+};
+
+/**
  * Sets the CSS transform property on an element. This function sets the
  * non-vendor-prefixed and vendor-prefixed versions for backwards compatibility
  * with older browsers. See https://caniuse.com/#feat=transforms2d

@@ -1076,19 +1076,8 @@ Blockly.blockRendering.ConstantProvider.prototype.injectCSS_ = function(
     name) {
   var cssArray = this.getCSS_(name);
   var cssNodeId = 'blockly-renderer-style-' + name;
-  if (document.getElementById(cssNodeId)) {
-    // Already injected.
-    return;
-  }
   var text = cssArray.join('\n');
-  // Inject CSS tag at start of head.
-  var cssNode =
-    /** @type {!HTMLStyleElement} */ (document.createElement('style'));
-  cssNode.id = cssNodeId;
-  var cssTextNode = document.createTextNode(text);
-  cssNode.appendChild(cssTextNode);
-  document.head.insertBefore(cssNode, document.head.firstChild);
-  this.cssNode_ = cssNode;
+  this.cssNode_ = Blockly.utils.dom.injectCSS(cssNodeId, text);
 };
 
 /**

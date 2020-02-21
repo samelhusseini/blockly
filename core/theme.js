@@ -13,21 +13,23 @@ goog.provide('Blockly.Theme');
 
 goog.require('Blockly.utils');
 goog.require('Blockly.utils.colour');
+goog.require('Blockly.utils.dom');
+goog.require('Blockly.utils.object');
 
 
 /**
  * Class for a theme.
  * @param {string} name Theme name.
- * @param {!Object.<string, Blockly.Theme.BlockStyle>} blockStyles A map from
- *     style names (strings) to objects with style attributes for blocks.
- * @param {!Object.<string, Blockly.Theme.CategoryStyle>} categoryStyles A map
- *     from style names (strings) to objects with style attributes for
+ * @param {!Object.<string, Blockly.Theme.BlockStyle>=} opt_blockStyles A map
+ *     from style names (strings) to objects with style attributes for blocks.
+ * @param {!Object.<string, Blockly.Theme.CategoryStyle>=} opt_categoryStyles A
+ *     map from style names (strings) to objects with style attributes for
  *     categories.
  * @param {!Object.<string, *>=} opt_componentStyles A map of Blockly component
  *     names to style value.
  * @constructor
  */
-Blockly.Theme = function(name, blockStyles, categoryStyles,
+Blockly.Theme = function(name, opt_blockStyles, opt_categoryStyles,
     opt_componentStyles) {
 
   /**
@@ -42,27 +44,41 @@ Blockly.Theme = function(name, blockStyles, categoryStyles,
    * @type {!Object.<string, !Blockly.Theme.BlockStyle>}
    * @package
    */
-  this.blockStyles = blockStyles;
+  this.blockStyles = opt_blockStyles || Object.create(null);
 
   /**
    * The category styles map.
    * @type {!Object.<string, Blockly.Theme.CategoryStyle>}
    * @package
    */
-  this.categoryStyles = categoryStyles;
+  this.categoryStyles = opt_categoryStyles || Object.create(null);
 
   /**
    * The UI components styles map.
    * @type {!Object.<string, *>}
-   * @private
+   * @package
    */
-  this.componentStyles_ = opt_componentStyles || Object.create(null);
+  this.componentStyles = opt_componentStyles || Object.create(null);
+
+  /**
+   * @type {!Object.<string, !Array.<Blockly.Theme.CSSRule>>}
+   * @package
+   */
+  this.cssRules = Object.create(null);
 
   /**
    * The font style.
-   * @type {?Blockly.Theme.FontStyle}
+   * @type {Blockly.Theme.FontStyle}
+   * @package
    */
-  this.fontStyle = null;
+  this.fontStyle = /** @type {Blockly.Theme.FontStyle} */ (Object.create(null));
+
+  /**
+   * The <style> element to use for injecting renderer specific CSS.
+   * @type {HTMLStyleElement}
+   * @private
+   */
+  this.cssNode_ = null;
 };
 
 /**
@@ -95,6 +111,17 @@ Blockly.Theme.CategoryStyle;
 Blockly.Theme.FontStyle;
 
 /**
+ * A CSS style.
+ * @typedef {{
+  *            selector:string,
+  *            property:string,
+  *            value:string,
+  *            isTopLevel:?boolean,
+  *          }}
+  */
+Blockly.Theme.CSSRule;
+
+/**
  * Overrides or adds a style to the blockStyles map.
  * @param {string} blockStyleName The name of the block style.
  * @param {Blockly.Theme.BlockStyle} blockStyle The block style.
@@ -122,13 +149,79 @@ Blockly.Theme.prototype.setFontStyle = function(fontStyle) {
 };
 
 /**
+ * Overrides or adds a style to the categoryStyles map.
+ * @param {string|!Array.<string>} selectors The name of the category style.
+ * @param {string} property The category style.
+ * @param {string} value The category style.
+ * @param {boolean=} opt_isTopLevel Whether or not this selector is a top level
+ *     selector.
+*/
+Blockly.Theme.prototype.addCSSRule = function(selectors, property, value,
+    opt_isTopLevel) {
+  if (!Array.isArray(selectors)) {
+    selectors = [selectors];
+  }
+  for (var i = 0, selector; (selector = selectors[i]); i++) {
+    if (!this.cssRules[selector]) {
+      this.cssRules[selector] = [];
+    }
+    this.cssRules[selector].push({
+      selector: selector,
+      property: property,
+      value: value,
+      isTopLevel: opt_isTopLevel || null
+    });
+  }
+};
+
+/**
+ * Inject theme specific CSS into the page.
+ * @package
+ */
+Blockly.Theme.prototype.injectCSS = function() {
+  var cssNodeId = 'blockly-theme-style-' + this.name;
+  this.cssNode_ = Blockly.utils.dom.injectCSS(cssNodeId, this.getCSS_());
+};
+
+/**
+ * Dispose of this theme.
+ * Removes any theme specific CSS from the page.
+ * @package
+ */
+Blockly.Theme.prototype.dispose = function() {
+  if (this.cssNode_) {
+    Blockly.utils.dom.removeNode(this.cssNode_);
+  }
+};
+
+/**
+ * Get any theme specific CSS to inject when the theme is attached to a
+ * workspace.
+ * @return {string} A CSS string.
+ * @private
+ */
+Blockly.Theme.prototype.getCSS_ = function() {
+  var selectors = Object.keys(this.cssRules);
+  var themeSelector = '.' + this.name + '-theme';
+  var css = '';
+  for (var i = 0, selector; (selector = selectors[i]); i++) {
+    var rules = this.cssRules[selector];
+    for (var j = 0, rule; (rule = rules[j]); j++) {
+      css += themeSelector + (rule.isTopLevel ? '' : ' ') + selector + '{\n' +
+        rule.property + ':' + rule.value + ';\n' + '}\n';
+    }
+  }
+  return css;
+};
+
+/**
  * Gets the style for a given Blockly UI component.  If the style value is a
  * string, we attempt to find the value of any named references.
  * @param {string} componentName The name of the component.
  * @return {?string} The style value.
  */
 Blockly.Theme.prototype.getComponentStyle = function(componentName) {
-  var style = this.componentStyles_[componentName];
+  var style = this.componentStyles[componentName];
   if (style && typeof propertyValue == 'string' &&
       this.getComponentStyle(/** @type {string} */ (style))) {
     return this.getComponentStyle(/** @type {string} */ (style));
@@ -143,5 +236,27 @@ Blockly.Theme.prototype.getComponentStyle = function(componentName) {
 */
 Blockly.Theme.prototype.setComponentStyle = function(componentName,
     styleValue) {
-  this.componentStyles_[componentName] = styleValue;
+  this.componentStyles[componentName] = styleValue;
+};
+
+/**
+ * Define a new Blockly theme.
+ * @param {string} name The name of the theme.
+ * @param {Object} themeObj An object containing theme properties.
+ * @return {!Blockly.Theme} A new Blockly theme.
+*/
+Blockly.Theme.defineTheme = function(name, themeObj) {
+  var theme = new Blockly.Theme(name);
+  var base = themeObj['base'];
+  if (base && base instanceof Blockly.Theme) {
+    Blockly.utils.object.mixin(theme.blockStyles, base.blockStyles);
+    Blockly.utils.object.mixin(theme.categoryStyles, base.categoryStyles);
+    Blockly.utils.object.mixin(theme.componentStyles, base.componentStyles);
+    Blockly.utils.object.mixin(theme.cssRules, base.cssRules);
+  }
+  Blockly.utils.object.mixin(theme.blockStyles, themeObj['blockStyles']);
+  Blockly.utils.object.mixin(theme.categoryStyles, themeObj['categoryStyles']);
+  Blockly.utils.object.mixin(theme.componentStyles, themeObj['componentStyles']);
+  Blockly.utils.object.mixin(theme.fontStyle, themeObj['fontStyle']);
+  return theme;
 };
