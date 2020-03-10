@@ -133,16 +133,17 @@ Blockly.FieldMultilineInput.prototype.render_ = function() {
   }
 
   // Add in text elements into the group.
+  var fontConstants = this.constants_.getFontConstants();
   var lines = this.getDisplayText_().split('\n');
   var y = 0;
   for (var i = 0; i < lines.length; i++) {
-    var lineHeight = this.constants_.FIELD_TEXT_HEIGHT +
+    var lineHeight = fontConstants.height +
         this.constants_.FIELD_BORDER_RECT_Y_PADDING;
     var span = Blockly.utils.dom.createSvgElement('text', {
       'class': 'blocklyText blocklyMultilineText',
       x: this.constants_.FIELD_BORDER_RECT_X_PADDING,
       y: y + this.constants_.FIELD_BORDER_RECT_Y_PADDING,
-      dy: this.constants_.FIELD_TEXT_BASELINE
+      dy: fontConstants.baseline
     }, this.textGroup_);
     span.appendChild(document.createTextNode(lines[i]));
     y += lineHeight;
@@ -186,7 +187,7 @@ Blockly.FieldMultilineInput.prototype.updateSize_ = function() {
     if (textWidth > totalWidth) {
       totalWidth = textWidth;
     }
-    totalHeight += this.constants_.FIELD_TEXT_HEIGHT +
+    totalHeight += this.constants_.getFontConstants().height +
         (i > 0 ? this.constants_.FIELD_BORDER_RECT_Y_PADDING : 0);
   }
   if (this.borderRect_) {
@@ -210,11 +211,12 @@ Blockly.FieldMultilineInput.prototype.widgetCreate_ = function() {
   var div = Blockly.WidgetDiv.DIV;
   var scale = this.workspace_.scale;
 
+  var fontConstants = this.constants_.getFontConstants();
   var htmlInput =
     /** @type {HTMLTextAreaElement} */ (document.createElement('textarea'));
   htmlInput.className = 'blocklyHtmlInput blocklyHtmlTextAreaInput';
   htmlInput.setAttribute('spellcheck', this.spellcheck_);
-  var fontSize = (this.constants_.FIELD_TEXT_FONTSIZE * scale) + 'pt';
+  var fontSize = (fontConstants.size * scale) + 'pt';
   div.style.fontSize = fontSize;
   htmlInput.style.fontSize = fontSize;
   var borderRadius = (Blockly.FieldTextInput.BORDERRADIUS * scale) + 'px';
@@ -223,7 +225,7 @@ Blockly.FieldMultilineInput.prototype.widgetCreate_ = function() {
   var paddingY = this.constants_.FIELD_BORDER_RECT_Y_PADDING * scale / 2;
   htmlInput.style.padding = paddingY + 'px ' + paddingX + 'px ' + paddingY +
       'px ' + paddingX + 'px';
-  var lineHeight = this.constants_.FIELD_TEXT_HEIGHT +
+  var lineHeight = fontConstants.height +
       this.constants_.FIELD_BORDER_RECT_Y_PADDING;
   htmlInput.style.lineHeight = (lineHeight * scale) + 'px';
 

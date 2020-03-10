@@ -202,7 +202,14 @@ Blockly.blockRendering.ConstantProvider = function() {
    * connections. Can be overridden by 'hat' property on Theme.BlockStyle.
    * @type {boolean}
    */
-  this.ADD_START_HATS = this.DYNAMICALLY_SET_BOOLEAN_;
+  this.ADD_START_HATS = false;
+
+  /**
+   * The computed value for ``ADD_START_HATS``.  This constant is dynamically
+   * set in ``setDynamicProperties_``.
+   * @type {boolean}
+   */
+  this.DYNAMIC_ADD_START_HATS = this.DYNAMICALLY_SET_BOOLEAN_;
 
   /**
    * Height of the top hat.
@@ -254,39 +261,31 @@ Blockly.blockRendering.ConstantProvider = function() {
   this.JAGGED_TEETH_WIDTH = 6;
 
   /**
-   * Point size of text.  This constant is dynamically set in
-   * ``setFontConstants_`` to the size of the font used by the renderer/theme.
+   * Point size of text.
    * @type {number}
    */
-  this.FIELD_TEXT_FONTSIZE = this.DYNAMICALLY_SET_;
+  this.FIELD_TEXT_FONTSIZE = 11;
 
   /**
-   * Height of text.  This constant is dynamically set in ``setFontConstants_``
-   * to be the height of the text based on the font used.
-   * @type {number}
-   */
-  this.FIELD_TEXT_HEIGHT = this.DYNAMICALLY_SET_;
-
-  /**
-   * Text baseline.  This constant is dynamically set in ``setFontConstants_``
-   * to be the baseline of the text based on the font used.
-   * @type {number}
-   */
-  this.FIELD_TEXT_BASELINE = this.DYNAMICALLY_SET_;
-
-  /**
-   * Text font weight.  This constant is dynamically set in
-   * ``setFontConstants_`` to the weight of the font used by the renderer/theme.
+   * Text font weight.
    * @type {string}
    */
-  this.FIELD_TEXT_FONTWEIGHT = this.DYNAMICALLY_SET_STRING_;
+  this.FIELD_TEXT_FONTWEIGHT = 'normal';
 
   /**
-   * Text font family.  This constant is dynamically set in
-   * ``setFontConstants_`` to the family of the font used by the renderer/theme.
+   * Text font family.
    * @type {string}
    */
-  this.FIELD_TEXT_FONTFAMILY = this.DYNAMICALLY_SET_STRING_;
+  this.FIELD_TEXT_FONTFAMILY = 'sans-serif';
+
+  /**
+   * Computed value of font constants.  This is dynamically set in
+   * ``setFontConstants_`` to the computed value of font constants based on the
+   * renderer / theme in use.
+   * @type {?Blockly.blockRendering.ConstantProvider.FontConstants}
+   * @private
+   */
+  this.DYNAMIC_FONT_CONSTANTS_ = null;
 
   /**
    * A field's border rect corner radius.
@@ -537,6 +536,18 @@ Blockly.blockRendering.ConstantProvider = function() {
 };
 
 /**
+ * A font style.
+ * @typedef {{
+ *            size: number,
+ *            weight: string,
+ *            family: string,
+ *            height: number,
+ *            baseline: number
+ *          }}
+ */
+Blockly.blockRendering.ConstantProvider.FontConstants;
+
+/**
  * Initialize shape objects based on the constants set in the constructor.
  * @package
  */
@@ -613,22 +624,8 @@ Blockly.blockRendering.ConstantProvider.prototype.setDynamicProperties_ =
     /* eslint-disable indent */
   this.setFontConstants_(theme);
 
-  this.ADD_START_HATS = theme.startHats != null ? theme.startHats : false;
-}; /* eslint-enable indent */
-
-/**
- * Get an object representing the default font styles specified by the renderer.
- * @return {!Blockly.Theme.FontStyle} A theme font style.
- * @protected
- */
-Blockly.blockRendering.ConstantProvider.prototype.getDefaultFontStyle_ =
-    function() {
-    /* eslint-disable indent */
-  return {
-    'weight': 'normal',
-    'size': 11,
-    'family': 'sans-serif'
-  };
+  this.DYNAMIC_ADD_START_HATS = theme.startHats != null ? theme.startHats :
+    this.ADD_START_HATS;
 }; /* eslint-enable indent */
 
 /**
@@ -638,26 +635,43 @@ Blockly.blockRendering.ConstantProvider.prototype.getDefaultFontStyle_ =
  */
 Blockly.blockRendering.ConstantProvider.prototype.setFontConstants_ = function(
     theme) {
-  var defaultFontStyle = this.getDefaultFontStyle_();
-
-  this.FIELD_TEXT_FONTFAMILY =
+  var fontFamily =
       theme.fontStyle && theme.fontStyle['family'] != undefined ?
-      theme.fontStyle['family'] : defaultFontStyle['family'];
-  this.FIELD_TEXT_FONTWEIGHT =
+      theme.fontStyle['family'] : this.FIELD_TEXT_FONTFAMILY;
+  var fontWeight =
       theme.fontStyle && theme.fontStyle['weight'] != undefined ?
-      theme.fontStyle['weight'] : defaultFontStyle['weight'];
-  this.FIELD_TEXT_FONTSIZE =
+      theme.fontStyle['weight'] : this.FIELD_TEXT_FONTWEIGHT;
+  var fontSize =
       theme.fontStyle && theme.fontStyle['size'] != undefined ?
-      theme.fontStyle['size'] : defaultFontStyle['size'];
+      theme.fontStyle['size'] : this.FIELD_TEXT_FONTSIZE;
 
   var fontMetrics = Blockly.utils.dom.measureFontMetrics('Hg',
-      this.FIELD_TEXT_FONTSIZE + 'pt',
-      this.FIELD_TEXT_FONTWEIGHT,
-      this.FIELD_TEXT_FONTFAMILY);
+      fontSize + 'pt',
+      fontWeight,
+      fontFamily);
 
-  this.FIELD_TEXT_HEIGHT = fontMetrics.height;
-  this.FIELD_TEXT_BASELINE = fontMetrics.baseline;
+  var fontHeight = fontMetrics.height;
+  var fontBaseline = fontMetrics.baseline;
+
+  this.DYNAMIC_FONT_CONSTANTS_ = {
+    height: fontHeight,
+    baseline: fontBaseline,
+    size: fontSize,
+    weight: fontWeight,
+    family: fontFamily
+  };
 };
+
+/**
+ * Gets the computed renderer font constants.
+ * @return {Blockly.blockRendering.ConstantProvider.FontConstants} Computed
+ *     font constants.
+ */
+Blockly.blockRendering.ConstantProvider.prototype.getFontConstants =
+    function() {
+    /* eslint-disable indent */
+  return this.DYNAMIC_FONT_CONSTANTS_;
+}; /* eslint-enable indent */
 
 /**
  * Get or create a block style based on a single colour value.  Generate a name
@@ -1164,14 +1178,15 @@ Blockly.blockRendering.ConstantProvider.prototype.injectCSS_ = function(
  */
 Blockly.blockRendering.ConstantProvider.prototype.getCSS_ = function(name) {
   var selector = '.' + name + '-renderer';
+  var fontConstants = this.getFontConstants();
   return [
     /* eslint-disable indent */
     // Fields.
     selector + ' .blocklyText {',
       'fill: #fff;',
-      'font-family: ' + this.FIELD_TEXT_FONTFAMILY + ';',
-      'font-size: ' + this.FIELD_TEXT_FONTSIZE + 'pt;',
-      'font-weight: ' + this.FIELD_TEXT_FONTWEIGHT + ';',
+      'font-family: ' + fontConstants.family + ';',
+      'font-size: ' + fontConstants.size + 'pt;',
+      'font-weight: ' + fontConstants.weight + ';',
     '}',
     selector + ' .blocklyNonEditableText>rect,',
     selector + ' .blocklyEditableText>rect {',
@@ -1197,8 +1212,8 @@ Blockly.blockRendering.ConstantProvider.prototype.getCSS_ = function(name) {
 
     // Text field input.
     selector + ' .blocklyHtmlInput {',
-      'font-family: ' + this.FIELD_TEXT_FONTFAMILY + ';',
-      'font-weight: ' + this.FIELD_TEXT_FONTWEIGHT + ';',
+      'font-family: ' + fontConstants.family + ';',
+      'font-weight: ' + fontConstants.weight + ';',
     '}',
 
     // Selection highlight.

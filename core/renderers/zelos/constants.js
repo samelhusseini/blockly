@@ -237,6 +237,22 @@ Blockly.zelos.ConstantProvider = function() {
   /**
    * @override
    */
+  this.FIELD_TEXT_FONTSIZE = 3 * this.GRID_UNIT;
+
+  /**
+   * @override
+   */
+  this.FIELD_TEXT_FONTWEIGHT = 'bold';
+
+  /**
+   * @override
+   */
+  this.FIELD_TEXT_FONTFAMILY =
+    '"Helvetica Neue", "Segoe UI", Helvetica, sans-serif';
+
+  /**
+   * @override
+   */
   this.FIELD_BORDER_RECT_RADIUS = this.CORNER_RADIUS;
 
   /**
@@ -335,6 +351,20 @@ Blockly.zelos.ConstantProvider = function() {
   this.REPLACEMENT_GLOW_SIZE = 2;
 
   /**
+   * Computed value of highlight constants.  This is dynamically set in
+   * ``setDynamicProperties_`` to the computed value of higlight constants
+   * based on the renderer / theme in use.
+   * @type {?{
+   *    selectedGlowColour: string,
+   *    selectedGlowSize: number,
+   *    replacementGlowColour: string,
+   *    replacementGlowSize: number
+   * }}
+   * @private
+   */
+  this.DYNAMIC_HIGHLIGHT_CONSTANTS_ = null;
+
+  /**
    * The ID of the selected glow filter, or the empty string if no filter is
    * set.
    * @type {string}
@@ -367,17 +397,6 @@ Blockly.zelos.ConstantProvider = function() {
 Blockly.utils.object.inherits(Blockly.zelos.ConstantProvider,
     Blockly.blockRendering.ConstantProvider);
 
-/**
- * @override
- */
-Blockly.zelos.ConstantProvider.prototype.getDefaultFontStyle_ = function() {
-  var fontStyle =
-      Blockly.zelos.ConstantProvider.superClass_.getDefaultFontStyle_.call(this);
-  fontStyle['weight'] = 'bold';
-  fontStyle['size'] = 3 * this.GRID_UNIT;
-  fontStyle['family'] = '"Helvetica Neue", "Segoe UI", Helvetica, sans-serif';
-  return fontStyle;
-};
 
 /**
  * @override
@@ -386,7 +405,8 @@ Blockly.zelos.ConstantProvider.prototype.setFontConstants_ = function(theme) {
   Blockly.zelos.ConstantProvider.superClass_.setFontConstants_.call(this,
       theme);
 
-  this.FIELD_BORDER_RECT_HEIGHT = this.FIELD_TEXT_HEIGHT +
+  var fontConstants = this.getFontConstants();
+  this.FIELD_BORDER_RECT_HEIGHT = fontConstants.height +
       this.FIELD_BORDER_RECT_Y_PADDING * 2;
   this.FIELD_DROPDOWN_BORDER_RECT_HEIGHT = this.FIELD_BORDER_RECT_HEIGHT;
 };
@@ -412,22 +432,29 @@ Blockly.zelos.ConstantProvider.prototype.setDynamicProperties_ = function(
   Blockly.zelos.ConstantProvider.superClass_.setDynamicProperties_.call(this,
       theme);
 
-  this.SELECTED_GLOW_COLOUR =
+  var selectedGlowColour =
       theme.getComponentStyle('selectedGlowColour') ||
       this.SELECTED_GLOW_COLOUR;
-  var selectedGlowSize =
+  var selectedGlowSize_ =
       Number(theme.getComponentStyle('selectedGlowSize'));
-  this.SELECTED_GLOW_SIZE =
-      selectedGlowSize && !isNaN(selectedGlowSize) ?
-      selectedGlowSize : this.SELECTED_GLOW_SIZE;
-  this.REPLACEMENT_GLOW_COLOUR =
+  var selectedGlowSize =
+      selectedGlowSize_ && !isNaN(selectedGlowSize_) ?
+      selectedGlowSize_ : this.SELECTED_GLOW_SIZE;
+  var replacementGlowColour =
       theme.getComponentStyle('replacementGlowColour') ||
       this.REPLACEMENT_GLOW_COLOUR;
-  var replacementGlowSize =
+  var replacementGlowSize_ =
       Number(theme.getComponentStyle('replacementGlowSize'));
-  this.REPLACEMENT_GLOW_SIZE =
-      replacementGlowSize && !isNaN(replacementGlowSize) ?
-      replacementGlowSize : this.REPLACEMENT_GLOW_SIZE;
+  var replacementGlowSize =
+      replacementGlowSize_ && !isNaN(replacementGlowSize_) ?
+      replacementGlowSize_ : this.REPLACEMENT_GLOW_SIZE;
+  
+  this.DYNAMIC_HIGHLIGHT_CONSTANTS_ = {
+    selectedGlowColour: selectedGlowColour,
+    selectedGlowSize: selectedGlowSize,
+    replacementGlowColour: replacementGlowColour,
+    replacementGlowSize: replacementGlowSize
+  };
 };
 
 /**
@@ -797,6 +824,8 @@ Blockly.zelos.ConstantProvider.prototype.createDom = function(svg,
     rendererName) {
   Blockly.zelos.ConstantProvider.superClass_.createDom.call(this, svg,
       rendererName);
+
+  var highlightConstants = this.DYNAMIC_HIGHLIGHT_CONSTANTS_;
   /*
   <defs>
     ... filters go here ...
@@ -817,7 +846,7 @@ Blockly.zelos.ConstantProvider.prototype.createDom = function(svg,
   Blockly.utils.dom.createSvgElement('feGaussianBlur',
       {
         'in': 'SourceGraphic',
-        'stdDeviation': this.SELECTED_GLOW_SIZE
+        'stdDeviation': highlightConstants.selectedGlowSize
       },
       selectedGlowFilter);
   // Set all gaussian blur pixels to 1 opacity before applying flood
@@ -831,7 +860,7 @@ Blockly.zelos.ConstantProvider.prototype.createDom = function(svg,
   // Color the highlight
   Blockly.utils.dom.createSvgElement('feFlood',
       {
-        'flood-color': this.SELECTED_GLOW_COLOUR,
+        'flood-color': highlightConstants.selectedGlowColour,
         'flood-opacity': 1,
         'result': 'outColor'
       },
@@ -859,7 +888,7 @@ Blockly.zelos.ConstantProvider.prototype.createDom = function(svg,
   Blockly.utils.dom.createSvgElement('feGaussianBlur',
       {
         'in': 'SourceGraphic',
-        'stdDeviation': this.REPLACEMENT_GLOW_SIZE
+        'stdDeviation': highlightConstants.replacementGlowSize
       },
       replacementGlowFilter);
   // Set all gaussian blur pixels to 1 opacity before applying flood
@@ -873,7 +902,7 @@ Blockly.zelos.ConstantProvider.prototype.createDom = function(svg,
   // Color the highlight
   Blockly.utils.dom.createSvgElement('feFlood',
       {
-        'flood-color': this.REPLACEMENT_GLOW_COLOUR,
+        'flood-color': highlightConstants.replacementGlowColour,
         'flood-opacity': 1,
         'result': 'outColor'
       },
@@ -899,14 +928,16 @@ Blockly.zelos.ConstantProvider.prototype.createDom = function(svg,
  */
 Blockly.zelos.ConstantProvider.prototype.getCSS_ = function(name) {
   var selector = '.' + name + '-renderer';
+  var fontConstants = this.getFontConstants();
+  var highlightConstants = this.DYNAMIC_HIGHLIGHT_CONSTANTS_;
   return [
     /* eslint-disable indent */
     // Fields.
     selector + ' .blocklyText {',
       'fill: #fff;',
-      'font-family: ' + this.FIELD_TEXT_FONTFAMILY + ';',
-      'font-size: ' + this.FIELD_TEXT_FONTSIZE + 'pt;',
-      'font-weight: ' + this.FIELD_TEXT_FONTWEIGHT + ';',
+      'font-family: ' + fontConstants.family + ';',
+      'font-size: ' + fontConstants.size + 'pt;',
+      'font-weight: ' + fontConstants.weight + ';',
     '}',
     selector + ' .blocklyNonEditableText>rect:not(.blocklyDropdownRect),',
     selector + ' .blocklyEditableText>rect:not(.blocklyDropdownRect) {',
@@ -935,8 +966,8 @@ Blockly.zelos.ConstantProvider.prototype.getCSS_ = function(name) {
 
     // Text field input.
     selector + ' .blocklyHtmlInput {',
-      'font-family: ' + this.FIELD_TEXT_FONTFAMILY + ';',
-      'font-weight: ' + this.FIELD_TEXT_FONTWEIGHT + ';',
+      'font-family: ' + fontConstants.family + ';',
+      'font-weight: ' + fontConstants.weight + ';',
       'color: #575E75;',
     '}',
   
@@ -947,7 +978,7 @@ Blockly.zelos.ConstantProvider.prototype.getCSS_ = function(name) {
     // Widget and Dropdown Div
     selector + '.blocklyWidgetDiv .goog-menuitem,',
     selector + '.blocklyDropDownDiv .goog-menuitem {',
-      'font-family: ' + this.FIELD_TEXT_FONTFAMILY + ';',
+      'font-family: ' + fontConstants.family + ';',
     '}',
     selector + '.blocklyDropDownDiv .goog-menuitem-content {',
       'color: #fff;',
@@ -955,7 +986,7 @@ Blockly.zelos.ConstantProvider.prototype.getCSS_ = function(name) {
 
     // Connection highlight.
     selector + ' .blocklyHighlightedConnectionPath {',
-      'stroke: ' + this.SELECTED_GLOW_COLOUR + ';',
+      'stroke: ' + highlightConstants.selectedGlowColour + ';',
     '}',
 
     // Disabled outline paths.

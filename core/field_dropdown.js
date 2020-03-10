@@ -595,11 +595,10 @@ Blockly.FieldDropdown.prototype.renderSelectedImage_ = function(imageJson) {
     arrowWidth = this.positionSVGArrow_(imageWidth + xPadding, height / 2 -
       this.constants_.FIELD_DROPDOWN_SVG_ARROW_SIZE / 2);
   } else {
+    var fontConstants = this.constants_.getFontConstants();
     arrowWidth = Blockly.utils.dom.getFastTextWidth(
         /** @type {!SVGTSpanElement} */ (this.arrow_),
-        this.constants_.FIELD_TEXT_FONTSIZE,
-        this.constants_.FIELD_TEXT_FONTWEIGHT,
-        this.constants_.FIELD_TEXT_FONTFAMILY);
+        fontConstants.size, fontConstants.weight, fontConstants.family);
   }
   this.size_.width = imageWidth + arrowWidth + xPadding * 2;
   this.size_.height = height;
@@ -631,13 +630,14 @@ Blockly.FieldDropdown.prototype.renderSelectedText_ = function() {
 
   // Height and width include the border rect.
   var hasBorder = !!this.borderRect_;
+  var fontConstants = this.constants_.getFontConstants();
   var height = Math.max(
       hasBorder ? this.constants_.FIELD_DROPDOWN_BORDER_RECT_HEIGHT : 0,
-      this.constants_.FIELD_TEXT_HEIGHT);
+      fontConstants.height);
   var textWidth = Blockly.utils.dom.getFastTextWidth(this.textElement_,
-      this.constants_.FIELD_TEXT_FONTSIZE,
-      this.constants_.FIELD_TEXT_FONTWEIGHT,
-      this.constants_.FIELD_TEXT_FONTFAMILY);
+      fontConstants.size,
+      fontConstants.weight,
+      fontConstants.family);
   var xPadding = hasBorder ? this.constants_.FIELD_BORDER_RECT_X_PADDING : 0;
   var arrowWidth = 0;
   if (this.svgArrow_) {

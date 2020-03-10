@@ -280,7 +280,7 @@ Blockly.utils.object.inherits(Blockly.blockRendering.TopRow,
  */
 Blockly.blockRendering.TopRow.prototype.hasLeftSquareCorner = function(block) {
   var hasHat = (block.hat ?
-      block.hat === 'cap' : this.constants_.ADD_START_HATS) &&
+      block.hat === 'cap' : this.constants_.DYNAMIC_ADD_START_HATS) &&
       !block.outputConnection && !block.previousConnection;
   var prevBlock = block.getPreviousBlock();
 

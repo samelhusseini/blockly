@@ -332,7 +332,7 @@ Blockly.FieldTextInput.prototype.widgetCreate_ = function() {
   htmlInput.setAttribute('spellcheck', this.spellcheck_);
   var scale = this.workspace_.scale;
   var fontSize =
-      (this.constants_.FIELD_TEXT_FONTSIZE * scale) + 'pt';
+      (this.constants_.getFontConstants().size * scale) + 'pt';
   div.style.fontSize = fontSize;
   htmlInput.style.fontSize = fontSize;
   var borderRadius =

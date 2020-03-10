@@ -176,7 +176,7 @@ Blockly.blockRendering.Debug.prototype.drawRenderedElem = function(elem, isRtl) 
 
     if (Blockly.blockRendering.Types.isField(elem) &&
         elem.field instanceof Blockly.FieldLabel) {
-      var baseline = this.constants_.FIELD_TEXT_BASELINE;
+      var baseline = this.constants_.getFontConstants().baseline;
       this.debugElements_.push(Blockly.utils.dom.createSvgElement('rect',
           {
             'class': 'rowRenderingRect blockRenderDebug',
