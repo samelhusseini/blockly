@@ -664,7 +664,7 @@ Blockly.blockRendering.ConstantProvider.prototype.setFontConstants_ = function(
 
 /**
  * Gets the computed renderer font constants.
- * @return {Blockly.blockRendering.ConstantProvider.FontConstants} Computed
+ * @return {?Blockly.blockRendering.ConstantProvider.FontConstants} Computed
  *     font constants.
  */
 Blockly.blockRendering.ConstantProvider.prototype.getFontConstants =
