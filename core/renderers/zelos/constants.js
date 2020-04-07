@@ -981,6 +981,18 @@ Blockly.zelos.ConstantProvider.prototype.getCSS_ = function(selector) {
       'fill-opacity: ' + this.INSERTION_MARKER_OPACITY + ';',
       'stroke: none',
     '}',
+    
+    // Connection indicator.
+    selector + ' .blocklyConnectionIndicator {',
+      'fill: #ff0000;',
+      'fill-opacity: 0.5;',
+      'stroke: #ff0000;',
+      'stroke-opacity: 0.9;',
+      'display: none;',
+    '}',
+    selector + ' .blocklyBlockDragSurface > g > .blocklyDraggable > .blocklyConnectionIndicator {',
+      'display: block;',
+    '}',
     /* eslint-enable indent */
   ];
 };

@@ -144,6 +144,10 @@ Blockly.zelos.Drawer.prototype.drawLeftDynamicConnection_ = function() {
   // Close off the path.  This draws a vertical line up to the start of the
   // block's path, which may be either a rounded or a sharp corner.
   this.outlinePath_ += 'z';
+
+  this.block_.pathObject.positionConnectionIndicator(
+      this.block_.outputConnection.getOffsetInBlock().x,
+      this.block_.outputConnection.getOffsetInBlock().y);
 };
 
 /**
