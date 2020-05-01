@@ -28,6 +28,8 @@ goog.require('Blockly.utils');
 goog.require('Blockly.utils.Coordinate');
 goog.require('Blockly.WorkspaceDragger');
 
+goog.requireType('Blockly.IBubble');
+
 
 /**
  * Note: In this file "start" refers to touchstart, mousedown, and pointerstart
@@ -63,7 +65,7 @@ Blockly.Gesture = function(e, creatorWorkspace) {
   /**
    * The bubble that the gesture started on, or null if it did not start on a
    * bubble.
-   * @type {Blockly.Bubble}
+   * @type {Blockly.IBubble}
    * @private
    */
   this.startBubble_ = null;
@@ -448,7 +450,7 @@ Blockly.Gesture.prototype.startDraggingBlock_ = function() {
 // TODO (fenichel): Possibly combine this and startDraggingBlock_.
 Blockly.Gesture.prototype.startDraggingBubble_ = function() {
   this.bubbleDragger_ = new Blockly.BubbleDragger(
-      /** @type {!Blockly.Bubble} */ (this.startBubble_),
+      /** @type {!Blockly.IBubble} */ (this.startBubble_),
       /** @type {!Blockly.WorkspaceSvg} */ (this.startWorkspace_));
   this.bubbleDragger_.startBubbleDrag();
   this.bubbleDragger_.dragBubble(this.mostRecentEvent_,
@@ -689,7 +691,7 @@ Blockly.Gesture.prototype.handleBlockStart = function(e, block) {
 /**
  * Handle a mousedown/touchstart event on a bubble.
  * @param {!Event} e A mouse down or touch start event.
- * @param {!Blockly.Bubble} bubble The bubble the event hit.
+ * @param {!Blockly.IBubble} bubble The bubble the event hit.
  * @package
  */
 Blockly.Gesture.prototype.handleBubbleStart = function(e, bubble) {
@@ -800,7 +802,7 @@ Blockly.Gesture.prototype.setStartField = function(field) {
 
 /**
  * Record the bubble that a gesture started on
- * @param {Blockly.Bubble} bubble The bubble the gesture started on.
+ * @param {Blockly.IBubble} bubble The bubble the gesture started on.
  * @package
  */
 Blockly.Gesture.prototype.setStartBubble = function(bubble) {

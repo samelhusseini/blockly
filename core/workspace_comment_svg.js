@@ -26,6 +26,8 @@ goog.require('Blockly.utils.Rect');
 goog.require('Blockly.WorkspaceComment');
 
 goog.requireType('Blockly.ICopyable');
+goog.requireType('Blockly.IDeletableBubble');
+
 
 /**
  * Class for a workspace comment's SVG representation.
@@ -37,6 +39,7 @@ goog.requireType('Blockly.ICopyable');
  *     create a new ID.
  * @extends {Blockly.WorkspaceComment}
  * @implements {Blockly.ICopyable}
+ * @implements {Blockly.IDeletableBubble}
  * @constructor
  */
 Blockly.WorkspaceCommentSvg = function(workspace, content, height, width,
@@ -505,7 +508,7 @@ Blockly.WorkspaceCommentSvg.prototype.setDragging = function(adding) {
 
 /**
  * Return the root node of the SVG or null if none exists.
- * @return {SVGElement} The root SVG node (probably a group).
+ * @return {!SVGElement} The root SVG node (probably a group).
  * @package
  */
 Blockly.WorkspaceCommentSvg.prototype.getSvgRoot = function() {
@@ -549,6 +552,9 @@ Blockly.WorkspaceCommentSvg.prototype.setDeleteStyle = function(enable) {
   }
 };
 
+/**
+ * @package
+ */
 Blockly.WorkspaceCommentSvg.prototype.setAutoLayout = function() {
   // NOP for compatibility with the bubble dragger.
 };

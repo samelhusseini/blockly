@@ -21,6 +21,8 @@ goog.require('Blockly.utils.math');
 goog.require('Blockly.utils.userAgent');
 goog.require('Blockly.Workspace');
 
+goog.requireType('Blockly.IBubble');
+
 
 /**
  * Class for UI bubble.
@@ -32,6 +34,7 @@ goog.require('Blockly.Workspace');
  *     anchor point.
  * @param {?number} bubbleWidth Width of bubble, or null if not resizable.
  * @param {?number} bubbleHeight Height of bubble, or null if not resizable.
+ * @implements {Blockly.IBubble}
  * @constructor
  */
 Blockly.Bubble = function(workspace, content, shape, anchorXY,
@@ -295,7 +298,7 @@ Blockly.Bubble.prototype.createDom_ = function(content, hasResize) {
 
 /**
  * Return the root node of the bubble's SVG group.
- * @return {SVGElement} The root SVG node of the bubble's group.
+ * @return {!SVGElement} The root SVG node of the bubble's group.
  */
 Blockly.Bubble.prototype.getSvgRoot = function() {
   return this.bubbleGroup_;

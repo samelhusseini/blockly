@@ -18,20 +18,22 @@ goog.require('Blockly.Events.CommentMove');
 goog.require('Blockly.utils');
 goog.require('Blockly.utils.Coordinate');
 
+goog.requireType('Blockly.IBubble');
+
 
 /**
  * Class for a bubble dragger.  It moves things on the bubble canvas around the
  * workspace when they are being dragged by a mouse or touch.  These can be
  * block comments, mutators, warnings, or workspace comments.
- * @param {!Blockly.Bubble|!Blockly.WorkspaceCommentSvg} bubble The item on the
- *     bubble canvas to drag.
+ * @param {!Blockly.IBubble} bubble The item on the bubble canvas to
+ *     drag.
  * @param {!Blockly.WorkspaceSvg} workspace The workspace to drag on.
  * @constructor
  */
 Blockly.BubbleDragger = function(bubble, workspace) {
   /**
    * The item on the bubble canvas that is being dragged.
-   * @type {!Blockly.Bubble|!Blockly.WorkspaceCommentSvg}
+   * @type {!Blockly.IBubble}
    * @private
    */
   this.draggingBubble_ = bubble;
@@ -165,15 +167,18 @@ Blockly.BubbleDragger.prototype.maybeDeleteBubble_ = function() {
 Blockly.BubbleDragger.prototype.updateCursorDuringBubbleDrag_ = function() {
   this.wouldDeleteBubble_ = this.deleteArea_ != Blockly.DELETE_AREA_NONE;
   var trashcan = this.workspace_.trashcan;
-  if (this.wouldDeleteBubble_) {
-    this.draggingBubble_.setDeleteStyle(true);
-    if (this.deleteArea_ == Blockly.DELETE_AREA_TRASH && trashcan) {
-      trashcan.setOpen(true);
-    }
-  } else {
-    this.draggingBubble_.setDeleteStyle(false);
-    if (trashcan) {
-      trashcan.setOpen(false);
+  if (this.draggingBubble_.setDeleteStyle) {
+    var bubble = /** @type {!Blockly.IDeletableBubble} */(this.draggingBubble_);
+    if (this.wouldDeleteBubble_) {
+      bubble.setDeleteStyle(true);
+      if (this.deleteArea_ == Blockly.DELETE_AREA_TRASH && trashcan) {
+        trashcan.setOpen(true);
+      }
+    } else {
+      bubble.setDeleteStyle(false);
+      if (trashcan) {
+        trashcan.setOpen(false);
+      }
     }
   }
 };
