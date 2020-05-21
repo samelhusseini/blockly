@@ -339,7 +339,7 @@ Blockly.WorkspaceSvg.prototype.flyout_ = null;
 /**
  * Category-based toolbox providing blocks which may be dragged into this
  * workspace.
- * @type {Blockly.Toolbox}
+ * @type {Blockly.IToolbox}
  * @private
  */
 Blockly.WorkspaceSvg.prototype.toolbox_ = null;
@@ -462,7 +462,7 @@ Blockly.WorkspaceSvg.prototype.setMarkerSvg = function(markerSvg) {
  * Add a plugin to the list of plugins for this workspace. If it is of certain
  * types then add it to all lists that it applies to.
  * @param {string} type The type of the plugin.
- * @param {Object} pluginClass The constructor for a plugin.
+ * @param {Function} pluginClass The constructor for a plugin.
  * @param {Object} params The other params for the plugin.
  */
 Blockly.WorkspaceSvg.prototype.addPlugin = function(type, pluginClass, params) {
@@ -763,8 +763,9 @@ Blockly.WorkspaceSvg.prototype.createDom = function(opt_backgroundClass) {
   // Determine if there needs to be a category tree, or a simple list of
   // blocks.  This cannot be changed later, since the UI is very different.
   if (this.options.hasCategories) {
-    var toolboxClass = Blockly.registry.getClassFromOptions(this.options, 'toolbox');
-    this.toolbox_ = /** @type {!Blockly.IToolbox} */ (new toolboxClass(this));
+    var toolboxClass = Blockly.registry.getClassFromOptions(this.options,
+        Blockly.registry.Type.TOOLBOX);
+    this.toolbox_ = new toolboxClass(this);
   }
   if (this.grid_) {
     this.grid_.update(this.scale);
@@ -1212,7 +1213,7 @@ Blockly.WorkspaceSvg.prototype.setVisible = function(isVisible) {
   this.getParentSvg().style.display = isVisible ? 'block' : 'none';
   if (this.toolbox_) {
     // Currently does not support toolboxes in mutators.
-    this.toolbox_.HtmlDiv.style.display = isVisible ? 'block' : 'none';
+    (/** @type {?} */ (this.toolbox_)).HtmlDiv.style.display = isVisible ? 'block' : 'none';
   }
   var uiPlugins = this.plugins['uiplugin'];
   for (var i = 0; uiPlugins && i < uiPlugins.length; i++) {
@@ -2264,7 +2265,7 @@ Blockly.WorkspaceSvg.prototype.scroll = function(x, y) {
 
 /**
  * Get the dimensions of the given workspace component, in pixels.
- * @param {Blockly.Toolbox|Blockly.Flyout} elem The element to get the
+ * @param {Blockly.IToolbox|Blockly.Flyout} elem The element to get the
  *     dimensions of, or null.  It should be a toolbox or flyout, and should
  *     implement getWidth() and getHeight().
  * @return {!Object} An object containing width and height attributes, which

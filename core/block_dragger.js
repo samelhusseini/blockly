@@ -43,7 +43,8 @@ Blockly.BlockDragger = function(block, workspace) {
    */
   this.workspace_ = workspace;
 
-  var connectionManagerClass = Blockly.registry.getClassFromOptions(workspace.options, 'connectionManager');
+  var connectionManagerClass = Blockly.registry.getClassFromOptions(
+      workspace.options, Blockly.registry.Type.CONNECTION_MANAGER);
 
   /**
    * Object that keeps track of connections on dragged blocks.
