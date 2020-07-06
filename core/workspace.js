@@ -63,6 +63,11 @@ Blockly.Workspace = function(opt_options) {
    */
   this.listeners_ = [];
   /**
+   * @type {!Object.<string, !Function>}
+   * @private
+   */
+  this.typedListeners_ = Object.create(null);
+  /**
    * @type {!Array.<!Blockly.Events.Abstract>}
    * @protected
    */
@@ -637,6 +642,37 @@ Blockly.Workspace.prototype.removeChangeListener = function(func) {
 };
 
 /**
+ * Adds a listener function to a particular Blockly event type.
+ * @param {string} type The Blockly event type.  This can also be several
+ *     space-separated types.
+ * @param {!Function} func Function to call.
+ */
+Blockly.Workspace.prototype.on = function(type, func) {
+  var types = type.split(' ');
+  for (var i = 0, t; (t = types[i]); i++) {
+    if (!this.typedListeners_[t]) {
+      this.typedListeners_[t] = [];
+    }
+    this.typedListeners_[t].push(func);
+  }
+};
+
+/**
+ * Removes a previously added listener function.
+ * @param {string} type The Blockly event type.  This can also be several
+ *     space-separated types.
+ * @param {!Function} func Function to call.
+ */
+Blockly.Workspace.prototype.off = function(type, func) {
+  var types = type.split(' ');
+  for (var i = 0, t; (t = types[i]); i++) {
+    if (this.typedListeners_[t]) {
+      Blockly.utils.arrayRemove(this.typedListeners_[t], func);
+    }
+  }
+};
+
+/**
  * Fire a change event.
  * @param {!Blockly.Events.Abstract} event Event to fire.
  */
@@ -646,6 +682,11 @@ Blockly.Workspace.prototype.fireChangeListener = function(event) {
     this.redoStack_.length = 0;
     while (this.undoStack_.length > this.MAX_UNDO && this.MAX_UNDO >= 0) {
       this.undoStack_.shift();
+    }
+  }
+  if (this.typedListeners_[event.type]) {
+    for (var i = 0, func; (func = this.typedListeners_[event.type][i]); i++) {
+      func(event);
     }
   }
   for (var i = 0, func; (func = this.listeners_[i]); i++) {
