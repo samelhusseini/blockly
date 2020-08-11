@@ -345,7 +345,7 @@ Blockly.Toolbox.prototype.createFlyout_ = function() {
 Blockly.Toolbox.prototype.renderContents_ = function(toolboxDef) {
   for (var i = 0, childIn; (childIn = toolboxDef[i]); i++) {
     // The below type cast only exists to workaround an edge case in Closure
-    // Compiler, which cases type inference to never reach a fixed point.
+    // Compiler, which causes type inference to never reach a fixed point.
     var ToolboxItemClass = /** @type {?} */ (Blockly.registry.getClass(
         Blockly.registry.Type.TOOLBOX_ITEM, childIn['kind'].toLowerCase()));
     if (ToolboxItemClass) {
